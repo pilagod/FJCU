@@ -282,68 +282,90 @@ module.exports = OrderItem;
  */
 
 var React = require('react'),
+    assign = require('object-assign'),
+    AppStore = require('../../store/AppStore.js'),
+    AppAction = require('../../action/AppAction.js'),
+    AppConstant = require('../../constant/AppConstant.js'),
     ProductInfo = require('./ProductInfo.react.js'),
     ProductDetail = require('./ProductDetail.react.js');
 
+function getProductState() {
+  return {
+    productInfo: AppStore.getProductInfo(),
+    productSelected: AppStore.getProductSelected()
+  }
+}
+
 var ProductApp = React.createClass({displayName: "ProductApp",
 
+  getInitialState: function () {
+    return getProductState();
+  },
+
   componentDidMount: function () {
-    console.log("ProductApp Mount");
+    AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
+    AppAction.productUpdate({
+      productId: this.state.productInfo.productId,
+      productName: this.state.productInfo.productName,
+      price: this.state.productInfo.price
+    });
   },
 
   componentWillUnmount: function () {
-    console.log("ProductApp Unmount");
+    AppStore.removeChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
   },
 
   render: function () {
     return (
       React.createElement("div", {id: "ProductApp"}, 
-        React.createElement(ProductInfo, null), 
+        React.createElement(ProductInfo, {productInfo: this.state.productInfo, productSelected: this.state.productSelected}), 
         React.createElement(ProductDetail, null)
       )
     )
+  },
+
+  _onProductChange: function () {
+    this.setState(getProductState());
   }
 });
 
 module.exports = ProductApp;
 
-},{"./ProductDetail.react.js":8,"./ProductInfo.react.js":9,"react":181}],7:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"../../constant/AppConstant.js":15,"../../store/AppStore.js":17,"./ProductDetail.react.js":8,"./ProductInfo.react.js":9,"object-assign":24,"react":181}],7:[function(require,module,exports){
 /**
  *  ProductColorSelector.react.js - Select Product Color
  */
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
 var ProductColorSelector = React.createClass({displayName: "ProductColorSelector",
 
   propTypes: {
-    colorSelected: ReactPropTypes.bool.isRequired,
-    colorTable: ReactPropTypes.array.isRequired
-  },
-
-  getInitialState: function () {
-    return {
-      colorSelectActive: 0
-    }
+    colorSelected: ReactPropTypes.object.isRequired,
+    colorTable: ReactPropTypes.object.isRequired
   },
 
   componentDidMount: function () {
-    if (!this.props.colorSelected) {
-      this._colorSelectOnClick(this.props.colorTable[this.state.colorSelectActive], this.state.colorSelectActive);
-    }
+    AppAction.productUpdate(this.props.colorSelected);
   },
 
   render: function () {
-    var colorSelector = this.props.colorTable.map(function (colorObject, index) {
-      var style = { backgroundColor: colorObject.color };
-      return (
-        React.createElement("div", {key: index, className: "colorSelect", onClick: this._colorSelectOnClick.bind(this, colorObject, index)}, 
+    var colorSelector = [];
+
+    for (var key in this.props.colorTable) {
+      var style = { backgroundColor: this.props.colorTable[key].color },
+          className = classNames("colorSelect", {
+            "focus": this.props.colorTable[key].color === this.props.colorSelected.color
+          });
+      colorSelector.push((
+        React.createElement("div", {key: key, className: className, onClick: this._colorSelectOnClick.bind(this, this.props.colorTable[key])}, 
           React.createElement("div", {style: style})
         )
-      )
-    }.bind(this));
+      ));
+    }
 
     return (
       React.createElement("div", {id: "productColor"}, 
@@ -356,18 +378,14 @@ var ProductColorSelector = React.createClass({displayName: "ProductColorSelector
   /*   Html Event Handler  */
   /*************************/
 
-  _colorSelectOnClick: function (productInfo, index) {
-    var colorSelects = document.querySelectorAll('.colorSelect');
-    colorSelects[this.state.colorSelectActive].className = "colorSelect";
-    colorSelects[index].className += " focus";
-    this.setState({colorSelectActive: index});
+  _colorSelectOnClick: function (productInfo) {
     AppAction.productUpdate(productInfo);
   }
 });
 
 module.exports = ProductColorSelector;
 
-},{"../../action/AppAction.js":1,"react":181}],8:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"classnames":19,"react":181}],8:[function(require,module,exports){
 /**
  *  ProductDetail.react.js - Detail of Product
  */
@@ -388,51 +406,30 @@ module.exports = ProductDetail;
  */
 
 var React = require('react'),
-    AppStore = require('../../store/AppStore.js'),
-    AppConstant = require('../../constant/AppConstant.js'),
+    ReactPropTypes = React.PropTypes,
     ProductShow = require('./ProductShow.react.js'),
     ProductSelector = require('./ProductSelector.react.js');
 
-function getProductSelected() {
-  return {
-    productSelected: AppStore.getProductSelected()
-  };
-}
-
 var ProductInfo = React.createClass({displayName: "ProductInfo",
-  getInitialState: function () {
-    return getProductSelected();
-  },
 
-  componentWillMount: function () {
-    AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
-  },
-
-  componentWillUnmount: function () {
-    AppStore.removeChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
+  propTypes: {
+    productInfo: ReactPropTypes.object.isRequired,
+    productSelected: ReactPropTypes.object.isRequired
   },
 
   render: function () {
     return (
       React.createElement("section", {id: "productInfo"}, 
-        React.createElement(ProductShow, {productSelected: this.state.productSelected}), 
-        React.createElement(ProductSelector, {productSelected: this.state.productSelected})
+        React.createElement(ProductShow, {productSelected: this.props.productSelected}), 
+        React.createElement(ProductSelector, {productSelected: this.props.productSelected, productInfo: this.props.productInfo})
       )
     )
   },
-
-  /*************************/
-  /*  View Change Handler  */
-  /*************************/
-
-  _onProductChange: function () {
-    this.setState(getProductSelected());
-  }
 });
 
 module.exports = ProductInfo;
 
-},{"../../constant/AppConstant.js":15,"../../store/AppStore.js":17,"./ProductSelector.react.js":11,"./ProductShow.react.js":12,"react":181}],10:[function(require,module,exports){
+},{"./ProductSelector.react.js":11,"./ProductShow.react.js":12,"react":181}],10:[function(require,module,exports){
 /**
  *  ProductNumberSelector.react.js - Select Product Number
  */
@@ -530,44 +527,32 @@ module.exports = ProductNumberSelector;
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
-    AppStore = require('../../store/AppStore.js'),
     AppAction = require('../../action/AppAction.js'),
     ProductColorSelector = require('./ProductColorSelector.react.js'),
     ProductSizeSelector = require('./ProductSizeSelector.react.js'),
     ProductNumberSelector = require('./ProductNumberSelector.react.js');
 
-function getProductInfo() {
-  return {
-    productInfo: AppStore.getProductInfo()
-  }
-}
-
 var ProductSelect = React.createClass({displayName: "ProductSelect",
 
   propTypes: {
+    productInfo: ReactPropTypes.object.isRequired,
     productSelected: ReactPropTypes.object.isRequired
   },
 
-  getInitialState: function () {
-    return getProductInfo();
-  },
-
-  componentDidMount: function () {
-    AppAction.productUpdate({
-      productId: this.state.productInfo.productId,
-      productName: this.state.productInfo.productName,
-      price: this.state.productInfo.price
-    });
-  },
-
   render: function () {
-    var productName = this.state.productInfo.productName;
-        price = this.state.productInfo.price,
-        num = this.props.productSelected.num || 1,
-        colorSelected = this.props.productSelected.color ? true : false,
-        sizeSelected = this.props.productSelected.size ? true : false;
+    var productName = this.props.productInfo.productName;
 
-    if (this.props.productSelected.colorName) {
+    var colorTable = this.props.productInfo.colorTable,
+        colorSelected = this.props.productSelected.color ?
+                          colorTable[this.props.productSelected.color] :
+                          colorTable[Object.keys(colorTable)[0]];
+
+    var sizeTable = this.props.productInfo.sizeTable,
+        sizeSelected = this.props.productSelected.size ?
+                          sizeTable[this.props.productSelected.size] :
+                          sizeTable[Object.keys(sizeTable)[0]];
+
+    if (this.props.productSelected.color) {
       productName += "（" + this.props.productSelected.colorName;
       if (this.props.productSelected.size) {
         productName += "-" + this.props.productSelected.size;
@@ -580,16 +565,16 @@ var ProductSelect = React.createClass({displayName: "ProductSelect",
         React.createElement("header", null, 
           React.createElement("h3", null, productName), 
           React.createElement("div", {id: "productPrice"}, 
-            React.createElement("h1", null, price)
+            React.createElement("h1", null, this.props.productInfo.price)
           )
         ), 
-        React.createElement(ProductColorSelector, {colorSelected: colorSelected, colorTable: this.state.productInfo.colorTable}), 
-        React.createElement(ProductSizeSelector, {sizeSelected: sizeSelected, sizeTable: this.state.productInfo.sizeTable}), 
+        React.createElement(ProductColorSelector, {colorSelected: colorSelected, colorTable: colorTable}), 
+        React.createElement(ProductSizeSelector, {sizeSelected: sizeSelected, sizeTable: sizeTable}), 
         React.createElement("div", {id: "discountInfo"}, 
           React.createElement("span", null, "雙人組合折扣價$1,100!"), React.createElement("br", null), 
           React.createElement("span", null, "偶數件數以此類推，確定金額會在購物車內顯示。")
         ), 
-        React.createElement(ProductNumberSelector, {num: num, price: price})
+        React.createElement(ProductNumberSelector, {num: this.props.productSelected.num || 1, price: this.props.productInfo.price})
       )
     )
   }
@@ -597,7 +582,7 @@ var ProductSelect = React.createClass({displayName: "ProductSelect",
 
 module.exports = ProductSelect;
 
-},{"../../action/AppAction.js":1,"../../store/AppStore.js":17,"./ProductColorSelector.react.js":7,"./ProductNumberSelector.react.js":10,"./ProductSizeSelector.react.js":13,"react":181}],12:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"./ProductColorSelector.react.js":7,"./ProductNumberSelector.react.js":10,"./ProductSizeSelector.react.js":13,"react":181}],12:[function(require,module,exports){
 /**
  *  ProductShow.react.js - Show Product Image
  */
@@ -612,6 +597,7 @@ var ProductShow = React.createClass({displayName: "ProductShow",
   },
 
   render: function () {
+    console.log(this.props.productSelected);
     if (Object.keys(this.props.productSelected).length > 0) {
       var imageSrc = this.props.productSelected.image,
           imageAlt = this.props.productSelected.productName + "(" + this.props.productSelected.colorName + ")" ;
@@ -637,35 +623,34 @@ module.exports = ProductShow;
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
 var ProductSizeSelector = React.createClass({displayName: "ProductSizeSelector",
 
   propTypes: {
-    sizeSelected: ReactPropTypes.bool.isRequired,
-    sizeTable: ReactPropTypes.array.isRequired
-  },
-
-  getInitialState: function () {
-    return {
-      sizeSelectActive: 0
-    }
+    sizeSelected: ReactPropTypes.object.isRequired,
+    sizeTable: ReactPropTypes.object.isRequired
   },
 
   componentDidMount: function () {
-    if (!this.props.sizeSelected) {
-      this._sizeSelectOnClick(this.props.sizeTable[this.state.sizeSelectActive], this.state.sizeSelectActive);
-    }
+    AppAction.productUpdate(this.props.izeSelected);
   },
 
   render: function () {
-    var sizeSelector = this.props.sizeTable.map(function (sizeObject, index) {
-      return (
-        React.createElement("div", {key: index, className: "sizeSelect", onClick: this._sizeSelectOnClick.bind(this, sizeObject, index)}, 
-          React.createElement("span", null, sizeObject.size)
+    var sizeSelector = [];
+
+    for (var key in this.props.sizeTable) {
+      var className = classNames("sizeSelect", {
+        "focus": this.props.sizeTable[key].size === this.props.sizeSelected.size
+      });
+      sizeSelector.push((
+        React.createElement("div", {key: key, className: className, onClick: this._sizeSelectOnClick.bind(this, this.props.sizeTable[key])}, 
+          React.createElement("span", null, this.props.sizeTable[key].size)
         )
-      )
-    }.bind(this));
+      ));
+    }
+
     return (
       React.createElement("div", {id: "productSize"}, 
         sizeSelector
@@ -677,18 +662,14 @@ var ProductSizeSelector = React.createClass({displayName: "ProductSizeSelector",
   /*   Html Event Handler  */
   /*************************/
 
-  _sizeSelectOnClick: function (productInfo, index) {
-    var sizeSelects = document.querySelectorAll('.sizeSelect');
-    sizeSelects[this.state.sizeSelectActive].className = "sizeSelect";
-    sizeSelects[index].className += " focus";
-    this.setState({sizeSelectActive: index});
+  _sizeSelectOnClick: function (productInfo) {
     AppAction.productUpdate(productInfo);
   }
 });
 
 module.exports = ProductSizeSelector;
 
-},{"../../action/AppAction.js":1,"react":181}],14:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"classnames":19,"react":181}],14:[function(require,module,exports){
 /**
  *  Navbar Component
  */
@@ -997,18 +978,18 @@ _productInfo[_productId] = {
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
-   colorTable: [  // {color, colorName, image}
-     {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"},
-     {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png" },
-     {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png" }
-   ],
-   sizeTable: [  // {size}
-     {size: "XS"},
-     {size: "S"},
-     {size: "M"},
-     {size: "L"},
-     {size: "XL"}
-   ]
+   colorTable: {
+     "#6f0011": {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"},
+     "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png" },
+     "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png" }
+   },
+   sizeTable: {  // {size}
+     "XS": {size: "XS"},
+     "S": {size: "S"},
+     "M": {size: "M"},
+     "L": {size: "L"},
+     "XL": {size: "XL"}
+   }
 };
 
 /**************************/

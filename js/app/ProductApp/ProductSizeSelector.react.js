@@ -4,35 +4,34 @@
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
 var ProductSizeSelector = React.createClass({
 
   propTypes: {
-    sizeSelected: ReactPropTypes.bool.isRequired,
-    sizeTable: ReactPropTypes.array.isRequired
-  },
-
-  getInitialState: function () {
-    return {
-      sizeSelectActive: 0
-    }
+    sizeSelected: ReactPropTypes.object.isRequired,
+    sizeTable: ReactPropTypes.object.isRequired
   },
 
   componentDidMount: function () {
-    if (!this.props.sizeSelected) {
-      this._sizeSelectOnClick(this.props.sizeTable[this.state.sizeSelectActive], this.state.sizeSelectActive);
-    }
+    AppAction.productUpdate(this.props.izeSelected);
   },
 
   render: function () {
-    var sizeSelector = this.props.sizeTable.map(function (sizeObject, index) {
-      return (
-        <div key={index} className="sizeSelect" onClick={this._sizeSelectOnClick.bind(this, sizeObject, index)}>
-          <span>{sizeObject.size}</span>
+    var sizeSelector = [];
+
+    for (var key in this.props.sizeTable) {
+      var className = classNames("sizeSelect", {
+        "focus": this.props.sizeTable[key].size === this.props.sizeSelected.size
+      });
+      sizeSelector.push((
+        <div key={key} className={className} onClick={this._sizeSelectOnClick.bind(this, this.props.sizeTable[key])}>
+          <span>{this.props.sizeTable[key].size}</span>
         </div>
-      )
-    }.bind(this));
+      ));
+    }
+
     return (
       <div id="productSize">
         {sizeSelector}
@@ -44,11 +43,7 @@ var ProductSizeSelector = React.createClass({
   /*   Html Event Handler  */
   /*************************/
 
-  _sizeSelectOnClick: function (productInfo, index) {
-    var sizeSelects = document.querySelectorAll('.sizeSelect');
-    sizeSelects[this.state.sizeSelectActive].className = "sizeSelect";
-    sizeSelects[index].className += " focus";
-    this.setState({sizeSelectActive: index});
+  _sizeSelectOnClick: function (productInfo) {
     AppAction.productUpdate(productInfo);
   }
 });

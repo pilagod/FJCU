@@ -4,36 +4,34 @@
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
 var ProductColorSelector = React.createClass({
 
   propTypes: {
-    colorSelected: ReactPropTypes.bool.isRequired,
-    colorTable: ReactPropTypes.array.isRequired
-  },
-
-  getInitialState: function () {
-    return {
-      colorSelectActive: 0
-    }
+    colorSelected: ReactPropTypes.object.isRequired,
+    colorTable: ReactPropTypes.object.isRequired
   },
 
   componentDidMount: function () {
-    if (!this.props.colorSelected) {
-      this._colorSelectOnClick(this.props.colorTable[this.state.colorSelectActive], this.state.colorSelectActive);
-    }
+    AppAction.productUpdate(this.props.colorSelected);
   },
 
   render: function () {
-    var colorSelector = this.props.colorTable.map(function (colorObject, index) {
-      var style = { backgroundColor: colorObject.color };
-      return (
-        <div key={index} className="colorSelect" onClick={this._colorSelectOnClick.bind(this, colorObject, index)}>
+    var colorSelector = [];
+
+    for (var key in this.props.colorTable) {
+      var style = { backgroundColor: this.props.colorTable[key].color },
+          className = classNames("colorSelect", {
+            "focus": this.props.colorTable[key].color === this.props.colorSelected.color
+          });
+      colorSelector.push((
+        <div key={key} className={className} onClick={this._colorSelectOnClick.bind(this, this.props.colorTable[key])}>
           <div style={style}></div>
         </div>
-      )
-    }.bind(this));
+      ));
+    }
 
     return (
       <div id="productColor">
@@ -46,11 +44,7 @@ var ProductColorSelector = React.createClass({
   /*   Html Event Handler  */
   /*************************/
 
-  _colorSelectOnClick: function (productInfo, index) {
-    var colorSelects = document.querySelectorAll('.colorSelect');
-    colorSelects[this.state.colorSelectActive].className = "colorSelect";
-    colorSelects[index].className += " focus";
-    this.setState({colorSelectActive: index});
+  _colorSelectOnClick: function (productInfo) {
     AppAction.productUpdate(productInfo);
   }
 });

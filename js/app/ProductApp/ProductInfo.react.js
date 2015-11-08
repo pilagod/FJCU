@@ -3,46 +3,25 @@
  */
 
 var React = require('react'),
-    AppStore = require('../../store/AppStore.js'),
-    AppConstant = require('../../constant/AppConstant.js'),
+    ReactPropTypes = React.PropTypes,
     ProductShow = require('./ProductShow.react.js'),
     ProductSelector = require('./ProductSelector.react.js');
 
-function getProductSelected() {
-  return {
-    productSelected: AppStore.getProductSelected()
-  };
-}
-
 var ProductInfo = React.createClass({
-  getInitialState: function () {
-    return getProductSelected();
-  },
 
-  componentWillMount: function () {
-    AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
-  },
-
-  componentWillUnmount: function () {
-    AppStore.removeChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
+  propTypes: {
+    productInfo: ReactPropTypes.object.isRequired,
+    productSelected: ReactPropTypes.object.isRequired
   },
 
   render: function () {
     return (
       <section id="productInfo">
-        <ProductShow productSelected={this.state.productSelected}/>
-        <ProductSelector productSelected={this.state.productSelected}/>
+        <ProductShow productSelected={this.props.productSelected} />
+        <ProductSelector productSelected={this.props.productSelected} productInfo={this.props.productInfo}/>
       </section>
     )
   },
-
-  /*************************/
-  /*  View Change Handler  */
-  /*************************/
-
-  _onProductChange: function () {
-    this.setState(getProductSelected());
-  }
 });
 
 module.exports = ProductInfo;

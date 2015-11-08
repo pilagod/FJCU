@@ -55,18 +55,18 @@ _productInfo[_productId] = {
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
-   colorTable: [  // {color, colorName, image}
-     {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"},
-     {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png" },
-     {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png" }
-   ],
-   sizeTable: [  // {size}
-     {size: "XS"},
-     {size: "S"},
-     {size: "M"},
-     {size: "L"},
-     {size: "XL"}
-   ]
+   colorTable: {
+     "#6f0011": {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"},
+     "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png" },
+     "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png" }
+   },
+   sizeTable: {  // {size}
+     "XS": {size: "XS"},
+     "S": {size: "S"},
+     "M": {size: "M"},
+     "L": {size: "L"},
+     "XL": {size: "XL"}
+   }
 };
 
 /**************************/
