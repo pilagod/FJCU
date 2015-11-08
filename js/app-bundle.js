@@ -96,7 +96,7 @@ ReactDOM.render(
   document.getElementById('navbarFunctionBlock')
 );
 
-history.pushState({app: "ProductApp"}, "ProductApp", "index.html");
+history.pushState({app: "ProductApp"}, "ProductApp", "");
 
 window.onpopstate = function (event) {
   console.log("onpopstate", history.state);
@@ -114,29 +114,8 @@ window.onpopstate = function (event) {
 
 var React = require('react'),
     AppStore = require('../../store/AppStore.js'),
-    OrderDetail = require('./OrderDetail.react.js');
-
-var OrderApp = React.createClass({displayName: "OrderApp",
-  render: function () {
-    return (
-      React.createElement("div", {id: "OrderApp"}, 
-        React.createElement(OrderDetail, null)
-      )
-    )
-  }
-});
-
-module.exports = OrderApp;
-
-},{"../../store/AppStore.js":17,"./OrderDetail.react.js":4,"react":181}],4:[function(require,module,exports){
-/**
- *  OrderDetail.react.js - All ProductItems of Order
- */
-
-var React = require('react'),
-    AppStore = require('../../store/AppStore.js'),
     AppConstant = require('../../constant/AppConstant.js'),
-    OrderItem = require('./OrderItem.react.js');
+    OrderDetail = require('./OrderDetail.react.js');
 
 function getOrderState() {
   return {
@@ -144,7 +123,7 @@ function getOrderState() {
   }
 }
 
-var OrderDetail = React.createClass({displayName: "OrderDetail",
+var OrderApp = React.createClass({displayName: "OrderApp",
 
   getInitialState: function () {
     return getOrderState();
@@ -159,7 +138,33 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
   },
 
   render: function () {
-    var productItems = this.state.productItems,
+    return (
+      React.createElement("div", {id: "OrderApp"}, 
+        React.createElement(OrderDetail, {productItems: this.state.productItems})
+      )
+    )
+  },
+
+  _onOrderChange: function () {
+    console.log(getOrderState());
+    this.setState(getOrderState());
+  }
+});
+
+module.exports = OrderApp;
+
+},{"../../constant/AppConstant.js":15,"../../store/AppStore.js":17,"./OrderDetail.react.js":4,"react":181}],4:[function(require,module,exports){
+/**
+ *  OrderDetail.react.js - All ProductItems of Order
+ */
+
+var React = require('react'),
+    OrderItem = require('./OrderItem.react.js');
+
+var OrderDetail = React.createClass({displayName: "OrderDetail",
+
+  render: function () {
+    var productItems = this.props.productItems,
         orderItems = [];
 
     for (var key in productItems) {
@@ -174,16 +179,11 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
       )
     )
   },
-
-  _onOrderChange: function () {
-    console.log(getOrderState());
-    this.setState(getOrderState());
-  }
 });
 
 module.exports = OrderDetail;
 
-},{"../../constant/AppConstant.js":15,"../../store/AppStore.js":17,"./OrderItem.react.js":5,"react":181}],5:[function(require,module,exports){
+},{"./OrderItem.react.js":5,"react":181}],5:[function(require,module,exports){
 /**
 *  OrderItem.react.js - Item in Order
 */
@@ -304,11 +304,7 @@ var ProductApp = React.createClass({displayName: "ProductApp",
 
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
-    AppAction.productUpdate({
-      productId: this.state.productInfo.productId,
-      productName: this.state.productInfo.productName,
-      price: this.state.productInfo.price
-    });
+    this._initProductInfo();
   },
 
   componentWillUnmount: function () {
@@ -323,6 +319,18 @@ var ProductApp = React.createClass({displayName: "ProductApp",
       )
     )
   },
+
+  _initProductInfo: function () {
+    AppAction.productUpdate({
+      productId: this.state.productInfo.productId,
+      productName: this.state.productInfo.productName,
+      price: this.state.productInfo.price
+    });
+  },
+
+  /*************************/
+  /*  View Change Handler  */
+  /*************************/
 
   _onProductChange: function () {
     this.setState(getProductState());
@@ -597,7 +605,6 @@ var ProductShow = React.createClass({displayName: "ProductShow",
   },
 
   render: function () {
-    console.log(this.props.productSelected);
     if (Object.keys(this.props.productSelected).length > 0) {
       var imageSrc = this.props.productSelected.image,
           imageAlt = this.props.productSelected.productName + "(" + this.props.productSelected.colorName + ")" ;
@@ -634,7 +641,7 @@ var ProductSizeSelector = React.createClass({displayName: "ProductSizeSelector",
   },
 
   componentDidMount: function () {
-    AppAction.productUpdate(this.props.izeSelected);
+    AppAction.productUpdate(this.props.sizeSelected);
   },
 
   render: function () {
@@ -848,12 +855,12 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
   /*************************/
 
   _homeOnClick: function () {
-    history.pushState({app: "ProductApp"}, "ProductApp", "index.html");
+    history.pushState({app: "ProductApp"}, "ProductApp", "");
     window.onpopstate();
   },
 
   _checkOnClick: function () {
-    history.pushState({app: "OrderApp"}, "OrderApp", "index.html");
+    history.pushState({app: "OrderApp"}, "OrderApp", "");
     window.onpopstate();
   },
 

@@ -162,22 +162,19 @@ input:focus {
   width: 18%;
 }
 
-
 /*************************/
 /*        Footer         */
 /*************************/
 
 #footer {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  width: 85%;
-  min-width: 960px;
   height: 50px;
-  margin: 0 auto;
+  margin-top: 50px;
   color: rgba(100, 100, 100, 1);
   border-top: 3px double lightgray;
+}
+
+#footer > .container-960 {
+  height: 100%;
 }
 
 /*************************/

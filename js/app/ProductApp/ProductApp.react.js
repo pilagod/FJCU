@@ -25,11 +25,7 @@ var ProductApp = React.createClass({
 
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
-    AppAction.productUpdate({
-      productId: this.state.productInfo.productId,
-      productName: this.state.productInfo.productName,
-      price: this.state.productInfo.price
-    });
+    this._initProductInfo();
   },
 
   componentWillUnmount: function () {
@@ -44,6 +40,18 @@ var ProductApp = React.createClass({
       </div>
     )
   },
+
+  _initProductInfo: function () {
+    AppAction.productUpdate({
+      productId: this.state.productInfo.productId,
+      productName: this.state.productInfo.productName,
+      price: this.state.productInfo.price
+    });
+  },
+
+  /*************************/
+  /*  View Change Handler  */
+  /*************************/
 
   _onProductChange: function () {
     this.setState(getProductState());

@@ -3,32 +3,12 @@
  */
 
 var React = require('react'),
-    AppStore = require('../../store/AppStore.js'),
-    AppConstant = require('../../constant/AppConstant.js'),
     OrderItem = require('./OrderItem.react.js');
-
-function getOrderState() {
-  return {
-    productItems: AppStore.getOrderProductItem()
-  }
-}
 
 var OrderDetail = React.createClass({
 
-  getInitialState: function () {
-    return getOrderState();
-  },
-
-  componentDidMount: function () {
-    AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
-  },
-
-  componentWillUnmount: function () {
-    AppStore.removeChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
-  },
-
   render: function () {
-    var productItems = this.state.productItems,
+    var productItems = this.props.productItems,
         orderItems = [];
 
     for (var key in productItems) {
@@ -43,11 +23,6 @@ var OrderDetail = React.createClass({
       </section>
     )
   },
-
-  _onOrderChange: function () {
-    console.log(getOrderState());
-    this.setState(getOrderState());
-  }
 });
 
 module.exports = OrderDetail;

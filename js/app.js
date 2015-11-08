@@ -20,7 +20,7 @@ ReactDOM.render(
   document.getElementById('navbarFunctionBlock')
 );
 
-history.pushState({app: "ProductApp"}, "ProductApp", "index.html");
+history.pushState({app: "ProductApp"}, "ProductApp", "");
 
 window.onpopstate = function (event) {
   console.log("onpopstate", history.state);

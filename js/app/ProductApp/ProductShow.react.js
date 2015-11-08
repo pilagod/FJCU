@@ -12,7 +12,6 @@ var ProductShow = React.createClass({
   },
 
   render: function () {
-    console.log(this.props.productSelected);
     if (Object.keys(this.props.productSelected).length > 0) {
       var imageSrc = this.props.productSelected.image,
           imageAlt = this.props.productSelected.productName + "(" + this.props.productSelected.colorName + ")" ;

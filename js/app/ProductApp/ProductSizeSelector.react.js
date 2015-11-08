@@ -15,7 +15,7 @@ var ProductSizeSelector = React.createClass({
   },
 
   componentDidMount: function () {
-    AppAction.productUpdate(this.props.izeSelected);
+    AppAction.productUpdate(this.props.sizeSelected);
   },
 
   render: function () {

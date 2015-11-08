@@ -232,6 +232,10 @@
   border-bottom: 1px solid gray;
 }
 
+#OrderDetail .table-cell > .fa-trash-o:hover {
+  cursor: pointer;
+}
+
 /* Image */
 #OrderDetail .table-cell:nth-child(1) {
   width: 15%;

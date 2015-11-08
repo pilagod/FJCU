@@ -176,12 +176,12 @@ var NavbarFunctionBlock = React.createClass({
   /*************************/
 
   _homeOnClick: function () {
-    history.pushState({app: "ProductApp"}, "ProductApp", "index.html");
+    history.pushState({app: "ProductApp"}, "ProductApp", "");
     window.onpopstate();
   },
 
   _checkOnClick: function () {
-    history.pushState({app: "OrderApp"}, "OrderApp", "index.html");
+    history.pushState({app: "OrderApp"}, "OrderApp", "");
     window.onpopstate();
   },
 
