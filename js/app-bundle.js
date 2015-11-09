@@ -107,6 +107,10 @@ window.onpopstate = function (event) {
   ).forceUpdate();
 };
 
+if (navigator.userAgent.indexOf('Chrome') > -1 && navigator.userAgent.indexOf('Edge') === -1 || navigator.userAgent.indexOf('Firefox') > -1) {
+  window.onpopstate();
+}
+
 },{"./app/OrderApp/OrderApp.react.js":3,"./app/ProductApp/ProductApp.react.js":6,"./component/NavbarFunctionBlock.react.js":14,"react":181,"react-dom":25}],3:[function(require,module,exports){
 /**
  *  OrderApp - OrderDetial + OrderBuyerInfo
@@ -119,6 +123,7 @@ var React = require('react'),
 
 function getOrderState() {
   return {
+    productInfo: AppStore.getProductInfo(),
     productItems: AppStore.getOrderProductItem()
   }
 }
@@ -140,7 +145,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   render: function () {
     return (
       React.createElement("div", {id: "OrderApp"}, 
-        React.createElement(OrderDetail, {productItems: this.state.productItems})
+        React.createElement(OrderDetail, {productItems: this.state.productItems, productInfo: this.state.productInfo})
       )
     )
   },
@@ -159,23 +164,81 @@ module.exports = OrderApp;
  */
 
 var React = require('react'),
+    ReactPropTypes = React.PropTypes,
     OrderItem = require('./OrderItem.react.js');
 
 var OrderDetail = React.createClass({displayName: "OrderDetail",
 
+  propTypes: {
+    productInfo: ReactPropTypes.object.isRequired,
+    productItems: ReactPropTypes.object.isRequired
+  },
+
   render: function () {
-    var productItems = this.props.productItems,
-        orderItems = [];
+    var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
+        productItems = this.props.productItems,
+        orderItems = [],
+        orderHeader = (
+          React.createElement("div", {id: "orderDetailHeader", className: "table-row"}, 
+            React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "商品圖片")), 
+            React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "商品名稱")), 
+            React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "顏色-尺寸")), 
+            React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "數量")), 
+            React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "總價")), 
+            React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "刪除"))
+          )
+        ),
+        orderFooter;
 
     for (var key in productItems) {
+      totalNum += productItems[key].num;
+      total += productItems[key].total;
       orderItems.push(React.createElement(OrderItem, {key: key, productItem: productItems[key]}));
     }
+
+    console.log(totalNum / 2);
+    totalDiscount = Math.floor(totalNum / 2) * (this.props.productInfo.discount * 2);
+    totalAfterDiscount = total - totalDiscount;
+
+    orderFooter = (
+      React.createElement("div", {id: "orderDetailFooter", className: "flex flex-vertical-center"}, 
+        React.createElement("div", {className: "flex-align-right"}, 
+          React.createElement("div", {id: "orderDetailInfo"}, 
+            React.createElement("div", null, 
+              React.createElement("span", null, "共 ", totalNum, " 件商品，金額："), 
+              React.createElement("div", {className: "item-total"}, 
+                React.createElement("span", null, "NT$"), 
+                React.createElement("span", null, total)
+              )
+            ), 
+            React.createElement("div", null, 
+              React.createElement("span", null, "折扣："), 
+              React.createElement("div", {className: "item-total"}, 
+                React.createElement("span", null, "NT$"), 
+                React.createElement("span", null, totalDiscount)
+              )
+            )
+          ), 
+          React.createElement("div", {id: "orderDetailTotal"}, 
+            React.createElement("div", null, 
+              React.createElement("span", null, "總計："), 
+              React.createElement("div", {className: "item-total"}, 
+                React.createElement("span", null, "NT$"), 
+                React.createElement("span", null, totalAfterDiscount)
+              )
+            )
+          )
+        )
+      )
+    );
 
     return (
       React.createElement("section", {id: "OrderDetail"}, 
         React.createElement("div", {className: "table"}, 
+          orderHeader, 
           orderItems
-        )
+        ), 
+        orderFooter
       )
     )
   },
@@ -219,7 +282,7 @@ var OrderItem = React.createClass({displayName: "OrderItem",
           )
         ), 
         React.createElement("div", {className: "table-cell"}, 
-          React.createElement("span", null, "NT$" + productItem.total)
+          React.createElement("span", null, "NT$ " + productItem.total)
         ), 
         React.createElement("div", {className: "table-cell"}, 
           React.createElement("i", {className: "fa fa-trash-o", onClick: this._deleteOnClick.bind(this, productItem.id)})
@@ -270,7 +333,9 @@ var OrderItem = React.createClass({displayName: "OrderItem",
   },
 
   _deleteOnClick: function (id) {
-    AppAction.productItemDelete(id);
+    if (confirm("確定要刪除此產品？")) {
+      AppAction.productItemDelete(id);
+    }
   }
 });
 
@@ -717,6 +782,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
   },
 
   render: function () {
+    var shoppingCartHeader, shoppingCartHeaderClassName;
     var productItemNum = (function () {
       var num = 0,
       productItems = this.state.productItems;
@@ -739,6 +805,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     if (this.state.shoppingCartHover) {
       var productItems = null;
       if (Object.keys(this.state.productItems).length > 0) {
+        shoppingCartHeader = "已加入購物車商品";
         productItems = [];
         for (var key in this.state.productItems) {
           productItems.push((
@@ -761,6 +828,9 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
             )
           ));
         }
+      } else {
+        shoppingCartHeader = "購物車內目前沒有商品";
+        shoppingCartHeaderClassName = "empty";
       }
 
       shoppingCartAlertContent = (
@@ -768,8 +838,8 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
           React.createElement("div", {id: "checkButton", className: checkButtonClassNames, onClick: this._checkOnClick}, 
             React.createElement("span", null, "結帳")
           ), 
-          React.createElement("header", null, 
-            React.createElement("span", null, "已加入購物車商品")
+          React.createElement("header", {className: shoppingCartHeaderClassName}, 
+            React.createElement("span", null, shoppingCartHeader)
           ), 
           React.createElement("article", {className: "table"}, 
             productItems
@@ -860,8 +930,12 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
   },
 
   _checkOnClick: function () {
-    history.pushState({app: "OrderApp"}, "OrderApp", "");
-    window.onpopstate();
+    if (Object.keys(this.state.productItems).length > 0) {
+      history.pushState({app: "OrderApp"}, "OrderApp", "");
+      window.onpopstate();
+    } else {
+      alert("目前購物車內沒有商品，\n請先選購商品再進行結帳。");
+    }
   },
 
   /*************************/
@@ -1218,14 +1292,6 @@ var AppStore = assign({}, EventEmitter.prototype, {
 /*************************/
 /*  Register Dispatcher  */
 /*************************/
-
-// PRODUCT_ADD: null,
-// PRODUCT_DELETE: null,
-// PRODUCT_ITEM_UPDATE: null
-
-// PRODUCT_COLOR_SELECTED: null,
-// PRODUCT_SIZE_SELECTED: null,
-// PRODUCT_NUMBER_SELECTED: null,
 
 AppDispatcher.register(function (action) {
 

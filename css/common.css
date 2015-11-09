@@ -132,6 +132,10 @@ input:focus {
   border-bottom: 1px inset gray;
 }
 
+#shoppingCartAlertContent > header.empty {
+  border-bottom: none;
+}
+
 #shoppingCartAlertContent .table {
   padding: 0px 10px;
 }

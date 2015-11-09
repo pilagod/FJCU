@@ -38,6 +38,7 @@ var NavbarFunctionBlock = React.createClass({
   },
 
   render: function () {
+    var shoppingCartHeader, shoppingCartHeaderClassName;
     var productItemNum = (function () {
       var num = 0,
       productItems = this.state.productItems;
@@ -60,6 +61,7 @@ var NavbarFunctionBlock = React.createClass({
     if (this.state.shoppingCartHover) {
       var productItems = null;
       if (Object.keys(this.state.productItems).length > 0) {
+        shoppingCartHeader = "已加入購物車商品";
         productItems = [];
         for (var key in this.state.productItems) {
           productItems.push((
@@ -82,6 +84,9 @@ var NavbarFunctionBlock = React.createClass({
             </div>
           ));
         }
+      } else {
+        shoppingCartHeader = "購物車內目前沒有商品";
+        shoppingCartHeaderClassName = "empty";
       }
 
       shoppingCartAlertContent = (
@@ -89,8 +94,8 @@ var NavbarFunctionBlock = React.createClass({
           <div id="checkButton" className={checkButtonClassNames} onClick={this._checkOnClick}>
             <span>結帳</span>
           </div>
-          <header>
-            <span>已加入購物車商品</span>
+          <header className={shoppingCartHeaderClassName}>
+            <span>{shoppingCartHeader}</span>
           </header>
           <article className="table">
             {productItems}
@@ -181,8 +186,12 @@ var NavbarFunctionBlock = React.createClass({
   },
 
   _checkOnClick: function () {
-    history.pushState({app: "OrderApp"}, "OrderApp", "");
-    window.onpopstate();
+    if (Object.keys(this.state.productItems).length > 0) {
+      history.pushState({app: "OrderApp"}, "OrderApp", "");
+      window.onpopstate();
+    } else {
+      alert("目前購物車內沒有商品，\n請先選購商品再進行結帳。");
+    }
   },
 
   /*************************/

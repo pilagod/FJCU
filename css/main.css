@@ -46,6 +46,7 @@
 
 #productShow > img {
   max-width: 100%;
+  width: -moz-available;
 }
 
 /**
@@ -61,10 +62,12 @@
   flex-direction: column;
   width: 43%;
   margin-left: auto;
-  padding: 0px 5px;
+  padding: 0px 0px;
 }
 
-/* productSelect > header */
+/**
+ *  productSelect > header
+ */
 
 #productSelect > header {
   display: -webkit-flex;
@@ -74,6 +77,12 @@
   border-bottom: 1px solid black;
 }
 
+#productSelect > div {
+  margin: 20px 0px;
+  padding: 0px 10px;
+}
+
+/* productPrice */
 #productPrice {
   color: red;
   font-size: 1.2em;
@@ -82,12 +91,6 @@
   padding-bottom: 10px;
 }
 
-#productSelect > div {
-  margin: 20px 0px;
-  padding: 0px 10px;
-}
-
-/* ProductPrice */
 #productPrice > h1 {
   position: relative;
 }
@@ -99,6 +102,10 @@
   left: -35px;
   font-size: 1rem;
 }
+
+/**
+ *  colorSelect
+ */
 
 .colorSelect:hover, .sizeSelect:hover {
   cursor: pointer;
@@ -121,6 +128,10 @@
   border: 1px solid black;
 }
 
+/**
+ *  sizeSelect
+ */
+
 .sizeSelect {
   display: -webkit-inline-flex;
   display: inline-flex;
@@ -139,8 +150,12 @@
   background-color: gray;
 }
 
-/* discountInfo */
+/**
+ *  discountInfo
+ */
+
 #discountInfo {
+  line-height: 1.6;
   color: gray;
   text-decoration: underline;
 }
@@ -156,7 +171,9 @@
   color: gray;
 }
 
-/* BuyCount */
+/**
+ *  buyCount
+ */
 
 .buyCount {
   display: -webkit-inline-flex;
@@ -221,6 +238,8 @@
 
 #OrderDetail {
   padding: 20px;
+  border: 2px ridge rgba(100, 100, 100, 0.3);
+  border-radius: 10px;
 }
 
 #OrderDetail .table {
@@ -229,8 +248,26 @@
 
 #OrderDetail .table-cell {
   height: 100px;
-  border-bottom: 1px solid gray;
+  padding: 15px 0px;
+  border-bottom: 1px inset gray;
 }
+
+/**
+ *  OrderDetail Header
+ */
+
+#orderDetailHeader {
+  color: gray;
+  font-size: 0.8em;
+}
+
+#orderDetailHeader > .table-cell {
+  height: 30px;
+}
+
+/**
+ *  OrderDetail Items
+ */
 
 #OrderDetail .table-cell > .fa-trash-o:hover {
   cursor: pointer;
@@ -259,4 +296,50 @@
 
 #OrderDetail .table-cell:nth-child(6) {
   width: 10%;
+}
+
+/**
+ *  OrderDetail Footer
+ */
+
+#orderDetailFooter {
+  width: 100%;
+  height: 200px;
+}
+
+#orderDetailFooter > div {
+  margin-right: 130px;
+  text-align: right;
+}
+
+#orderDetailInfo, #orderDetailTotal {
+  padding-left: 30px;
+}
+
+#orderDetailInfo .item-total,
+#orderDetailTotal .item-total {
+  display: inline-block;
+  width: 150px;
+}
+
+#orderDetailTotal .item-total > span {
+  color: red;
+  font-size: 1.5em;
+}
+
+.item-total > span:nth-child(2) {
+  display: inline-block;
+  width: 80px;
+}
+
+#orderDetailInfo {
+  border-bottom: 1px inset gray;
+}
+
+#orderDetailInfo > div {
+  margin: 15px 0px;
+}
+
+#orderDetailTotal {
+  margin-top: 15px;
 }

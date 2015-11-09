@@ -33,7 +33,7 @@ var OrderItem = React.createClass({
           </div>
         </div>
         <div className="table-cell">
-          <span>{"NT$" + productItem.total}</span>
+          <span>{"NT$ " + productItem.total}</span>
         </div>
         <div className="table-cell">
           <i className="fa fa-trash-o" onClick={this._deleteOnClick.bind(this, productItem.id)}></i>
@@ -84,7 +84,9 @@ var OrderItem = React.createClass({
   },
 
   _deleteOnClick: function (id) {
-    AppAction.productItemDelete(id);
+    if (confirm("確定要刪除此產品？")) {
+      AppAction.productItemDelete(id);
+    }
   }
 });
 

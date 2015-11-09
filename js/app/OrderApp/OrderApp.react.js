@@ -9,6 +9,7 @@ var React = require('react'),
 
 function getOrderState() {
   return {
+    productInfo: AppStore.getProductInfo(),
     productItems: AppStore.getOrderProductItem()
   }
 }
@@ -30,7 +31,7 @@ var OrderApp = React.createClass({
   render: function () {
     return (
       <div id="OrderApp">
-        <OrderDetail productItems={this.state.productItems}/>
+        <OrderDetail productItems={this.state.productItems} productInfo={this.state.productInfo}/>
       </div>
     )
   },

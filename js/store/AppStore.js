@@ -289,14 +289,6 @@ var AppStore = assign({}, EventEmitter.prototype, {
 /*  Register Dispatcher  */
 /*************************/
 
-// PRODUCT_ADD: null,
-// PRODUCT_DELETE: null,
-// PRODUCT_ITEM_UPDATE: null
-
-// PRODUCT_COLOR_SELECTED: null,
-// PRODUCT_SIZE_SELECTED: null,
-// PRODUCT_NUMBER_SELECTED: null,
-
 AppDispatcher.register(function (action) {
 
   switch (action.actionType) {

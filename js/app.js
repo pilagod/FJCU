@@ -30,3 +30,7 @@ window.onpopstate = function (event) {
     main
   ).forceUpdate();
 };
+
+if (navigator.userAgent.indexOf('Chrome') > -1 && navigator.userAgent.indexOf('Edge') === -1 || navigator.userAgent.indexOf('Firefox') > -1) {
+  window.onpopstate();
+}
