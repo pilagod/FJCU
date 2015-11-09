@@ -9,6 +9,7 @@ var React = require('react'),
 var OrderDetail = React.createClass({
 
   propTypes: {
+    orderConfirm: ReactPropTypes.bool.isRequired,
     productInfo: ReactPropTypes.object.isRequired,
     productItems: ReactPropTypes.object.isRequired
   },
@@ -35,7 +36,6 @@ var OrderDetail = React.createClass({
       orderItems.push(<OrderItem key={key} productItem={productItems[key]} />);
     }
 
-    console.log(totalNum / 2);
     totalDiscount = Math.floor(totalNum / 2) * (this.props.productInfo.discount * 2);
     totalAfterDiscount = total - totalDiscount;
 

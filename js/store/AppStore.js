@@ -13,7 +13,7 @@ var assign = require('object-assign'),
     AppDispatcher = require('../dispatcher/AppDispatcher.js'),
     AppConstant = require('../constant/AppConstant.js');
 
-// All Products Information
+// Products Information
 var _productId = 1;
 
 var _productInfo = {},
@@ -37,11 +37,8 @@ var _productInfo = {},
       "0#242733M": 13,
       "0#242733L": 14,
       "0#242733XL": 15
-    };
-
-
-// Select Product Infomation
-var _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
+    },
+    _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
 
 // Buyer Information
 var _buyerInfo = {};
@@ -134,10 +131,22 @@ function productItemUpdate(id, updates) {
 
 /**
  *  Update Product Property Selected (color, size)
- *  @param {object} update: {color | size} json object with updated property
+ *  @param {object} updates: properties updated
  */
 function productUpdate(updates) {
   _productSelected = assign({}, (_productSelected ? _productSelected : {}), updates);
+}
+
+/**************************/
+/* Operations - BuyerInfo */
+/**************************/
+
+/**
+ *  Update Buyer's Information
+ *  @param {object} update: information updated
+ */
+function buyerInfoUpdate(updates) {
+  _buyerInfo = assign({}, _buyerInfo, updates);
 }
 
 /*************************/
@@ -329,6 +338,14 @@ AppDispatcher.register(function (action) {
       AppStore.emitChange(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT);
       break;
 
+    /*************************/
+    /*  Notification Actions */
+    /*************************/
+
+    case AppConstant.BUYERINFO_UPDATE:
+      buyerInfoUpdate(action.buyerInfo);
+      AppStore.emitChange(AppConstant.BUYERINFO_CHANGE_EVENT);
+      break;
 
     default:
   }

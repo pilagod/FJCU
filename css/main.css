@@ -236,8 +236,12 @@
 /*       OrderApp        */
 /*************************/
 
+/**
+ *  OrderDetail
+ */
+
 #orderDetail {
-  padding: 20px;
+  padding: 30px;
   border: 2px ridge rgba(100, 100, 100, 0.3);
   border-radius: 10px;
 }
@@ -342,4 +346,104 @@
 
 #orderDetailTotal {
   margin-top: 15px;
+}
+
+/**
+ *  OrderBuyerInfo
+ */
+
+#orderBuyerInfo {
+  margin: 40px auto;
+  padding: 30px;
+  color: rgba(100, 100, 100, 1);
+  border: 2px ridge rgba(100, 100, 100, 0.3);
+  border-radius: 10px;
+}
+
+#orderBuyerInfo > header {
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  border-bottom: 1px inset gray;
+}
+
+#orderBuyerInfo > header > i {
+  margin: 0px 15px;
+}
+
+#orderBuyerInfo > header > * {
+  display: inline-block;
+}
+
+#orderBuyerInfo > article {
+  width: 750px;
+  margin: 0 auto;
+}
+
+#orderBuyerInfo > article > div {
+  margin: 20px 0px;
+}
+
+#orderBuyerInfo > article > div > * {
+  display: inline-block;
+}
+
+#orderBuyerInfo > article input[type="text"] {
+  width: 300px;
+  margin: 0px 20px;
+  padding: 8px;
+  font-size: 1.1em;
+  border: 2px solid #dcdcdc;
+
+  -webkit-transition: box-shadow 0.3s, border 0.3s;
+  -moz-transition: box-shadow 0.3s, border 0.3s;
+  -ms-transition: box-shadow 0.3s, border 0.3s;
+  -o-transition: box-shadow 0.3s, border 0.3s;
+  transition: box-shadow 0.3s, border 0.3s;
+}
+
+#orderBuyerInfo > article input[type="text"]:focus {
+  border: 2px solid rgba(111, 69, 45, 0.6);
+  box-shadow: 0 0 3px 1px #6F452D;
+}
+
+.fa-check-circle {
+  -webkit-transition: color 0.3s ease-in-out;
+  -moz-transition: color 0.3s ease-in-out;
+  -ms-transition: color 0.3s ease-in-out;
+  -o-transition: color 0.3s ease-in-out;
+  transition: color 0.3s ease-in-out;
+}
+
+.fa-check-circle.pass {
+  color: green;
+}
+
+/**
+ *  OrderAction
+ */
+
+#orderAction {
+  margin: 0 auto;
+}
+
+#orderAction > div {
+  display: inline-block;
+  width: 170px;
+  margin: 0px 20px;
+  padding: 10px;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  background-color: #6F452D;
+
+  -webkit-transition: box-shadow 0.3s ease-in-out;
+  -moz-transition: box-shadow 0.3s ease-in-out;
+  -ms-transition: box-shadow 0.3s ease-in-out;
+  -o-transition: box-shadow 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+#orderAction > div:hover {
+  cursor: pointer;
+  box-shadow: 2px 2px 2px gray;
 }

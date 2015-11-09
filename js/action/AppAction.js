@@ -67,6 +67,17 @@ var AppAction = {
     AppDispatcher.dispatch({
       actionType: AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT
     });
+  },
+
+  /*************************/
+  /*    BuyerInfo Action   */
+  /*************************/
+
+  buyerInfoUpdate: function (buyerInfo) {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.BUYERINFO_UPDATE,
+      buyerInfo: buyerInfo
+    });
   }
 }
 
