@@ -80,15 +80,7 @@ input:focus {
   position: absolute;
   z-index: 100;
   opacity: 0;
-  overflow-y: scroll;
   cursor: default;
-  top: 32px;
-  right: 0;
-  width: 450px;
-  height: auto;
-  max-height: 250px;
-  border: 0px double #6F452D;
-  background-color: white;
 
   -webkit-transition: opacity 0.3s ease-in-out;
   -moz-transition: opacity 0.3s ease-in-out;
@@ -116,8 +108,15 @@ input:focus {
 }
 
 #shoppingCartAlert.shoppingCartAlertShow {
+  overflow-y: scroll;
+  top: 32px;
+  right: 0;
+  width: 450px;
+  height: auto;
+  max-height: 250px;
   opacity: 1;
   border: 2px double #6F452D;
+  background-color: white;
 }
 
 #shoppingCartAlertContent {
@@ -164,6 +163,33 @@ input:focus {
 /* Total */
 #shoppingCartAlertContent .table-cell:nth-child(5) {
   width: 18%;
+}
+
+#shoppingCartAlert.shoppingCartAlertNotificationShow {
+  top: 40px;
+  right: -100px;
+  width: 160px;
+  height: 50px;
+  color: white;
+  opacity: 1;
+  border-radius: 10px;
+  background-color: #6F452D;
+}
+
+#shoppingCartAlertNotification {
+  width: 100%;
+  height: 100%;
+}
+
+#shoppingCartAlertNotification > div.triangle-right {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  width: 0;
+	height: 0;
+	border-top: 10px solid transparent;
+	border-left: 30px solid #6F452D;
+	border-bottom: 10px solid transparent;
 }
 
 /*************************/

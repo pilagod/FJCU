@@ -773,12 +773,12 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
 
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
-    AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onShoppingCartShow);
+    AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
   },
 
   componentWillUnmount: function () {
     AppStore.removeChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
-    AppStore.removeChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onShoppingCartShow);
+    AppStore.removeChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
   },
 
   render: function () {
@@ -795,13 +795,15 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     }.bind(this)());
 
     var shoppingCartAlertClassNames = classNames({
-      "shoppingCartAlertShow": (this.state.shoppingCartHover || this.state.shoppingCartAdd)
+      "shoppingCartAlertShow": this.state.shoppingCartHover,
+      "shoppingCartAlertNotificationShow": this.state.shoppingCartAdd
     });
     var checkButtonClassNames = classNames({
       "checkButtonShow": (this.state.shoppingCartHover && this.state.check)
     });
 
     var shoppingCartAlertContent = null;
+    // Shopping Cart Hover
     if (this.state.shoppingCartHover) {
       var productItems = null;
       if (Object.keys(this.state.productItems).length > 0) {
@@ -846,30 +848,13 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
           )
         )
       )
+      // Shopping Cart Add
     } else if (this.state.shoppingCartAdd) {
-      var productSelected = AppStore.getProductSelected();
+      // var productSelected = AppStore.getProductSelected();
       shoppingCartAlertContent = (
-        React.createElement("div", {id: "shoppingCartAlertContent"}, 
-          React.createElement("header", null, "本商品已加入購物車"), 
-          React.createElement("article", {className: "table"}, 
-            React.createElement("div", {className: "table-row"}, 
-              React.createElement("div", {className: "table-cell"}, 
-                React.createElement("img", {src: productSelected.image})
-              ), 
-              React.createElement("div", {className: "table-cell"}, 
-                React.createElement("span", null, productSelected.productName)
-              ), 
-              React.createElement("div", {className: "table-cell"}, 
-                React.createElement("span", null, productSelected.colorName + "-" + productSelected.size)
-              ), 
-              React.createElement("div", {className: "table-cell"}, 
-                React.createElement("span", null, productSelected.num + "件")
-              ), 
-              React.createElement("div", {className: "table-cell"}, 
-                React.createElement("span", null, "NT$" + productSelected.total)
-              )
-            )
-          )
+        React.createElement("div", {id: "shoppingCartAlertNotification", className: "flex flex-horizontal-center flex-vertical-center"}, 
+          React.createElement("header", null, "商品已加入購物車"), 
+          React.createElement("div", {className: "triangle-right"})
        )
      );
    }
@@ -891,7 +876,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
        React.createElement("div", {id: "shoppingCart", onMouseOver: this._shoppingCartOnMouseOver, onMouseOut: this._shoppingCartOnMouseOut}, 
          React.createElement("div", {onClick: this._checkOnClick}, 
            React.createElement("i", {className: "fa fa-shopping-cart"}), 
-           React.createElement("span", null, " ", productItemNum, " 項商品")
+           React.createElement("span", null, " ", productItemNum, " 件商品")
          ), 
          React.createElement("div", {id: "shoppingCartAlert", className: shoppingCartAlertClassNames}, 
            shoppingCartAlertContent
@@ -916,7 +901,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     if (!this.state.shoppingCartAdd){
       timeoutObject = setTimeout(function () {
         this.setState({shoppingCartHover: false});
-      }.bind(this), 500);
+      }.bind(this), 200);
     }
   },
 
@@ -936,6 +921,8 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     } else {
       alert("目前購物車內沒有商品，\n請先選購商品再進行結帳。");
     }
+    clearTimeout(timeoutObject);
+    this.setState({shoppingCartHover: false});
   },
 
   /*************************/
@@ -949,12 +936,12 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     }));
   },
 
-  _onShoppingCartShow: function () {
+  _onProductAddToShoppingCart: function () {
     clearTimeout(timeoutObject);
     this.setState({shoppingCartAdd: true});
     timeoutObject = setTimeout(function () {
       this.setState({shoppingCartAdd: false});
-    }.bind(this), 1500);
+    }.bind(this), 1200);
   }
 });
 

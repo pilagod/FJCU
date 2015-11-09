@@ -29,12 +29,12 @@ var NavbarFunctionBlock = React.createClass({
 
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
-    AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onShoppingCartShow);
+    AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
   },
 
   componentWillUnmount: function () {
     AppStore.removeChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
-    AppStore.removeChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onShoppingCartShow);
+    AppStore.removeChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
   },
 
   render: function () {
@@ -51,13 +51,15 @@ var NavbarFunctionBlock = React.createClass({
     }.bind(this)());
 
     var shoppingCartAlertClassNames = classNames({
-      "shoppingCartAlertShow": (this.state.shoppingCartHover || this.state.shoppingCartAdd)
+      "shoppingCartAlertShow": this.state.shoppingCartHover,
+      "shoppingCartAlertNotificationShow": this.state.shoppingCartAdd
     });
     var checkButtonClassNames = classNames({
       "checkButtonShow": (this.state.shoppingCartHover && this.state.check)
     });
 
     var shoppingCartAlertContent = null;
+    // Shopping Cart Hover
     if (this.state.shoppingCartHover) {
       var productItems = null;
       if (Object.keys(this.state.productItems).length > 0) {
@@ -102,30 +104,13 @@ var NavbarFunctionBlock = React.createClass({
           </article>
         </div>
       )
+      // Shopping Cart Add
     } else if (this.state.shoppingCartAdd) {
-      var productSelected = AppStore.getProductSelected();
+      // var productSelected = AppStore.getProductSelected();
       shoppingCartAlertContent = (
-        <div id="shoppingCartAlertContent">
-          <header>本商品已加入購物車</header>
-          <article className="table">
-            <div className="table-row">
-              <div className="table-cell">
-                <img src={productSelected.image}></img>
-              </div>
-              <div className="table-cell">
-                <span>{productSelected.productName}</span>
-              </div>
-              <div className="table-cell">
-                <span>{productSelected.colorName + "-" + productSelected.size}</span>
-              </div>
-              <div className="table-cell">
-                <span>{productSelected.num + "件"}</span>
-              </div>
-              <div className="table-cell">
-                <span>{"NT$" + productSelected.total}</span>
-              </div>
-            </div>
-          </article>
+        <div id="shoppingCartAlertNotification" className="flex flex-horizontal-center flex-vertical-center">
+          <header>商品已加入購物車</header>
+          <div className="triangle-right"></div>
        </div>
      );
    }
@@ -147,7 +132,7 @@ var NavbarFunctionBlock = React.createClass({
        <div id="shoppingCart" onMouseOver={this._shoppingCartOnMouseOver} onMouseOut={this._shoppingCartOnMouseOut}>
          <div onClick={this._checkOnClick}>
            <i className="fa fa-shopping-cart"></i>
-           <span> {productItemNum} 項商品</span>
+           <span> {productItemNum} 件商品</span>
          </div>
          <div id="shoppingCartAlert" className={shoppingCartAlertClassNames}>
            {shoppingCartAlertContent}
@@ -172,7 +157,7 @@ var NavbarFunctionBlock = React.createClass({
     if (!this.state.shoppingCartAdd){
       timeoutObject = setTimeout(function () {
         this.setState({shoppingCartHover: false});
-      }.bind(this), 500);
+      }.bind(this), 200);
     }
   },
 
@@ -192,6 +177,8 @@ var NavbarFunctionBlock = React.createClass({
     } else {
       alert("目前購物車內沒有商品，\n請先選購商品再進行結帳。");
     }
+    clearTimeout(timeoutObject);
+    this.setState({shoppingCartHover: false});
   },
 
   /*************************/
@@ -205,12 +192,12 @@ var NavbarFunctionBlock = React.createClass({
     }));
   },
 
-  _onShoppingCartShow: function () {
+  _onProductAddToShoppingCart: function () {
     clearTimeout(timeoutObject);
     this.setState({shoppingCartAdd: true});
     timeoutObject = setTimeout(function () {
       this.setState({shoppingCartAdd: false});
-    }.bind(this), 1500);
+    }.bind(this), 1200);
   }
 });
 
