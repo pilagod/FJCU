@@ -7,7 +7,9 @@ var React = require('react'),
     AppAction = require('../../action/AppAction.js');
 
 var OrderBuyerInfo = React.createClass({
-
+  return (
+    <section id=""></section>
+  )
 });
 
 module.exports = OrderBuyerInfo;

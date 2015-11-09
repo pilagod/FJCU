@@ -233,7 +233,7 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
     );
 
     return (
-      React.createElement("section", {id: "OrderDetail"}, 
+      React.createElement("section", {id: "orderDetail"}, 
         React.createElement("div", {className: "table"}, 
           orderHeader, 
           orderItems
@@ -923,6 +923,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     }
     clearTimeout(timeoutObject);
     this.setState({shoppingCartHover: false});
+    this.setState({shoppingCartAdd: false});
   },
 
   /*************************/
@@ -941,7 +942,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     this.setState({shoppingCartAdd: true});
     timeoutObject = setTimeout(function () {
       this.setState({shoppingCartAdd: false});
-    }.bind(this), 1200);
+    }.bind(this), 1000);
   }
 });
 

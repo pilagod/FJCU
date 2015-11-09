@@ -72,7 +72,7 @@ var OrderDetail = React.createClass({
     );
 
     return (
-      <section id="OrderDetail">
+      <section id="orderDetail">
         <div className="table">
           {orderHeader}
           {orderItems}

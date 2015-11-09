@@ -236,17 +236,17 @@
 /*       OrderApp        */
 /*************************/
 
-#OrderDetail {
+#orderDetail {
   padding: 20px;
   border: 2px ridge rgba(100, 100, 100, 0.3);
   border-radius: 10px;
 }
 
-#OrderDetail .table {
+#orderDetail .table {
   width: 100%;
 }
 
-#OrderDetail .table-cell {
+#orderDetail .table-cell {
   height: 100px;
   padding: 15px 0px;
   border-bottom: 1px inset gray;
@@ -269,32 +269,32 @@
  *  OrderDetail Items
  */
 
-#OrderDetail .table-cell > .fa-trash-o:hover {
+#orderDetail .table-cell > .fa-trash-o:hover {
   cursor: pointer;
 }
 
 /* Image */
-#OrderDetail .table-cell:nth-child(1) {
+#orderDetail .table-cell:nth-child(1) {
   width: 15%;
 }
 /* Product Name */
-#OrderDetail .table-cell:nth-child(2) {
+#orderDetail .table-cell:nth-child(2) {
   width: 30%;
 }
 /* Color-Size */
-#OrderDetail .table-cell:nth-child(3) {
+#orderDetail .table-cell:nth-child(3) {
   width: 15%;
 }
 /* Number */
-#OrderDetail .table-cell:nth-child(4) {
+#orderDetail .table-cell:nth-child(4) {
   width: 15%;
 }
 /* Total */
-#OrderDetail .table-cell:nth-child(5) {
+#orderDetail .table-cell:nth-child(5) {
   width: 15%;
 }
 
-#OrderDetail .table-cell:nth-child(6) {
+#orderDetail .table-cell:nth-child(6) {
   width: 10%;
 }
 

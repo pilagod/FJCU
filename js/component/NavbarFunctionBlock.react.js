@@ -179,6 +179,7 @@ var NavbarFunctionBlock = React.createClass({
     }
     clearTimeout(timeoutObject);
     this.setState({shoppingCartHover: false});
+    this.setState({shoppingCartAdd: false});
   },
 
   /*************************/
@@ -197,7 +198,7 @@ var NavbarFunctionBlock = React.createClass({
     this.setState({shoppingCartAdd: true});
     timeoutObject = setTimeout(function () {
       this.setState({shoppingCartAdd: false});
-    }.bind(this), 1200);
+    }.bind(this), 1000);
   }
 });
 
