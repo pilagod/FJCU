@@ -4,16 +4,21 @@
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
 var OrderItem = React.createClass({
 
   propTypes: {
+    orderConfirm: ReactPropTypes.number.isRequired,
     productItem: ReactPropTypes.object.isRequired
   },
 
   render: function () {
     var productItem = this.props.productItem;
+    var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)}),
+        infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
+
     return (
       <div className="table-row">
         <div className="table-cell">
@@ -26,16 +31,17 @@ var OrderItem = React.createClass({
           <span>{productItem.colorName + "-" + productItem.size}</span>
         </div>
         <div className="table-cell">
-          <div className="flex flex-horizontal-center">
+          <div className={classNames('flex', 'flex-horizontal-center', editClassName)}>
             <div className="buyCountSub" onClick={this._buyCountSubOnClick.bind(this, productItem.id)}></div>
             <input className="buyCount" type="text" maxLength="2" onChange={this._buyCountOnChange.bind(this, productItem.id)} defaultValue={productItem.num}></input>
             <div className="buyCountAdd" onClick={this._buyCountAddOnClick.bind(this, productItem.id)}></div>
           </div>
+          <span className={infoClassName}>{productItem.num}</span>
         </div>
         <div className="table-cell">
           <span>{"NT$ " + productItem.total}</span>
         </div>
-        <div className="table-cell">
+        <div className={classNames('table-cell', editClassName)}>
           <i className="fa fa-trash-o" onClick={this._deleteOnClick.bind(this, productItem.id)}></i>
         </div>
       </div>

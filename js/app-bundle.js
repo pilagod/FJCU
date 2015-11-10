@@ -129,6 +129,7 @@ if (navigator.userAgent.indexOf('Chrome') > -1 && navigator.userAgent.indexOf('E
 
 var React = require('react'),
     assign = require('object-assign'),
+    classNames = require('classnames'),
     AppStore = require('../../store/AppStore.js'),
     AppConstant = require('../../constant/AppConstant.js'),
     OrderDetail = require('./OrderDetail.react.js'),
@@ -151,30 +152,77 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
   getInitialState: function () {
     return assign({}, getOrderState(), getBuyerInfo(), {
-      orderConfirm: false
+      orderId: null,
+      orderConfirm: 0, // 0: Initialize, 1: Success, 2: Fail
+      loading: false
     });
   },
 
   componentDidMount: function () {
+    // Order ProductItems Changed
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
+    // Order Confirm Status
+    AppStore.addChangeListener(AppConstant.ORDER_CONFIRM_EVENT, this._onOrderConfirm);
+    AppStore.addChangeListener(AppConstant.ORDER_CONFIRM_FAIL_EVENT, this._onOrderConfirmFail);
+    // Buyer Information Changed
     AppStore.addChangeListener(AppConstant.BUYERINFO_CHANGE_EVENT, this._onBuyerInfoChange);
   },
 
   componentWillUnmount: function () {
+    // Order ProductItems Changed
     AppStore.removeChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
+    // Order Confirm Status
+    AppStore.removeChangeListener(AppConstant.ORDER_CONFIRM_EVENT, this._onOrderConfirm);
+    AppStore.removeChangeListener(AppConstant.ORDER_CONFIRM_FAIL_EVENT, this._onOrderConfirmFail);
+    // Buyer Information Changed
     AppStore.removeChangeListener(AppConstant.BUYERINFO_CHANGE_EVENT, this._onBuyerInfoChange);
   },
 
   render: function () {
+
+    var orderActionNextClassName = classNames({'hidden': (this.state.orderConfirm === 1)}),
+        orderAppHeader, orderProcess;
+
+    var loadingBlock = null,
+        loadingContent = null,
+        loadingIconClassName = null;
+    if (this.state.loading) {
+      if (this.state.orderConfirm === 0) {
+        loadingContent = "訂單處理中...";
+        loadingIconClassName = "fa-spinner"
+      } else if (this.state.orderConfirm === 1) {
+        loadingContent = "訂單新增成功！";
+        loadingIconClassName = "fa-check-circle";
+      } else if (this.state.orderConfirm === 2) {
+        loadingContent = "訂單新增失敗！";
+        loadingIconClassName = "fa-times-circle";
+      }
+      loadingBlock = (
+        React.createElement("div", {id: "loadingBlock", className: "flex flex-vertical-center flex-horizontal-center"}, 
+          React.createElement("div", {className: "flex flex-vertical-center flex-horizontal-center flex-direction-column"}, 
+            React.createElement("div", {className: "loadingInfo"}, 
+              React.createElement("h3", null, loadingContent)
+            ), 
+            React.createElement("i", {className: classNames('fa', loadingIconClassName, 'fa-3x')})
+          )
+        )
+      )
+    }
+
     return (
       React.createElement("div", {id: "OrderApp"}, 
+        loadingBlock, 
+        React.createElement("header", {className: classNames({'hidden': (this.state.orderConfirm !== 1)})}, 
+          React.createElement("span", null, "訂單編號："), 
+          React.createElement("h2", {id: "orderId"}, "12121124124")
+        ), 
         React.createElement(OrderDetail, {orderConfirm: this.state.orderConfirm, productItems: this.state.productItems, productInfo: this.state.productInfo}), 
         React.createElement(OrderBuyerInfo, {orderConfirm: this.state.orderConfirm, buyerInfo: this.state.buyerInfo}), 
         React.createElement("div", {id: "orderAction", className: "flex flex-vertical-center flex-horizontal-center"}, 
           React.createElement("div", {id: "orderActionBack", onClick: this._orderActionBackOnClick}, 
             React.createElement("span", null, "回上一頁")
           ), 
-          React.createElement("div", {id: "orderActionNext", onClick: this._orderActionNextOnClick}, 
+          React.createElement("div", {id: "orderActionNext", className: orderActionNextClassName, onClick: this._orderActionNextOnClick}, 
             React.createElement("span", null, "訂單確認")
           )
         )
@@ -182,33 +230,57 @@ var OrderApp = React.createClass({displayName: "OrderApp",
     )
   },
 
+  /*************************/
+  /*   Html Event Handler  */
+  /*************************/
+
   _orderActionBackOnClick: function () {
     history.back();
   },
 
   _orderActionNextOnClick: function () {
+    this.setState({loading: true});
     console.log(this.state.buyerInfo);
   },
 
+  /*************************/
+  /*  View Change Handler  */
+  /*************************/
+
   _onOrderChange: function () {
-    console.log(getOrderState());
     this.setState(getOrderState());
   },
 
   _onBuyerInfoChange: function () {
     this.setState(getBuyerInfo());
+  },
+
+  _onOrderConfirm: function () {
+    this.setState({orderConfirm: 1});
+    setTimeout(function () {
+      this.setState({loading: false});
+    }.bind(this), 1500);
+  },
+
+  _onOrderConfirmFail: function () {
+    this.setState({orderConfirm: 2});
+    setTimeout(function () {
+      this.setState({loading: false});
+      this.setState({orderConfirm: 0});
+    }.bind(this), 1500);
   }
 });
 
 module.exports = OrderApp;
 
-},{"../../constant/AppConstant.js":16,"../../store/AppStore.js":18,"./OrderBuyerInfo.react.js":4,"./OrderDetail.react.js":5,"object-assign":25,"react":182}],4:[function(require,module,exports){
+},{"../../constant/AppConstant.js":16,"../../store/AppStore.js":18,"./OrderBuyerInfo.react.js":4,"./OrderDetail.react.js":5,"classnames":20,"object-assign":25,"react":182}],4:[function(require,module,exports){
 /**
  *  OrderBuyerInfo.react.js - Buyer's Information
  */
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    assign = require('object-assign'),
     classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
@@ -219,7 +291,7 @@ var nameRegexp = /^[\u4e00-\u9fa5]{2,4}$/,
 var OrderBuyerInfo = React.createClass({displayName: "OrderBuyerInfo",
 
   propTypes: {
-    orderConfirm: ReactPropTypes.bool.isRequired,
+    orderConfirm: ReactPropTypes.number.isRequired,
     buyerInfo: ReactPropTypes.object.isRequired
   },
 
@@ -228,9 +300,12 @@ var OrderBuyerInfo = React.createClass({displayName: "OrderBuyerInfo",
       width: "500px"
     };
 
-    var namePassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.name}),
-        phonePassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.phone}),
-        emailPassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.email});
+    var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)}),
+        infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
+
+    var namePassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.name}, editClassName),
+        phonePassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.phone}, editClassName),
+        emailPassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.email}, editClassName);
 
     return (
       React.createElement("section", {id: "orderBuyerInfo"}, 
@@ -240,19 +315,28 @@ var OrderBuyerInfo = React.createClass({displayName: "OrderBuyerInfo",
         ), 
         React.createElement("article", null, 
           React.createElement("div", null, 
-            React.createElement("h3", null, "中文全名"), 
-            React.createElement("input", {type: "text", onChange: this._nameInputTextOnChange, defaultValue: this.props.buyerInfo.name}), 
-            React.createElement("i", {className: namePassClassName})
+            React.createElement("h3", null, "中文全名："), 
+            React.createElement("input", {type: "text", className: editClassName, onChange: this._nameInputTextOnChange, defaultValue: this.props.buyerInfo.name}), 
+            React.createElement("i", {className: namePassClassName}), 
+            React.createElement("span", {className: infoClassName}, 
+              React.createElement("h3", null, this.props.buyerInfo.name)
+            )
           ), 
           React.createElement("div", null, 
-            React.createElement("h3", null, "手機號碼"), 
-            React.createElement("input", {type: "text", onChange: this._phoneInputTextOnChange, defaultValue: this.props.buyerInfo.phone}), 
-            React.createElement("i", {className: phonePassClassName})
+            React.createElement("h3", null, "手機號碼："), 
+            React.createElement("input", {type: "text", className: editClassName, onChange: this._phoneInputTextOnChange, defaultValue: this.props.buyerInfo.phone}), 
+            React.createElement("i", {className: phonePassClassName}), 
+            React.createElement("span", {className: infoClassName}, 
+              React.createElement("h3", null, this.props.buyerInfo.phone)
+            )
           ), 
           React.createElement("div", null, 
-            React.createElement("h3", null, "電子信箱"), 
-            React.createElement("input", {type: "text", style: emailInputTextStyle, onChange: this._emailInputTextOnChange, defaultValue: this.props.buyerInfo.email}), 
-            React.createElement("i", {className: emailPassClassName})
+            React.createElement("h3", null, "電子信箱："), 
+            React.createElement("input", {type: "text", className: editClassName, style: emailInputTextStyle, onChange: this._emailInputTextOnChange, defaultValue: this.props.buyerInfo.email}), 
+            React.createElement("i", {className: emailPassClassName}), 
+            React.createElement("span", {className: infoClassName}, 
+              React.createElement("h3", null, this.props.buyerInfo.email)
+            )
           )
         )
       )
@@ -286,24 +370,26 @@ var OrderBuyerInfo = React.createClass({displayName: "OrderBuyerInfo",
 
 module.exports = OrderBuyerInfo;
 
-},{"../../action/AppAction.js":1,"classnames":20,"react":182}],5:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"classnames":20,"object-assign":25,"react":182}],5:[function(require,module,exports){
 /**
  *  OrderDetail.react.js - All ProductItems of Order
  */
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     OrderItem = require('./OrderItem.react.js');
 
 var OrderDetail = React.createClass({displayName: "OrderDetail",
 
   propTypes: {
-    orderConfirm: ReactPropTypes.bool.isRequired,
+    orderConfirm: ReactPropTypes.number.isRequired,
     productInfo: ReactPropTypes.object.isRequired,
     productItems: ReactPropTypes.object.isRequired
   },
 
   render: function () {
+    var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)});
     var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
         productItems = this.props.productItems,
         orderItems = [],
@@ -314,7 +400,7 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
             React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "顏色-尺寸")), 
             React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "數量")), 
             React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "總價")), 
-            React.createElement("div", {className: "table-cell"}, React.createElement("span", null, "刪除"))
+            React.createElement("div", {className: classNames("table-cell", editClassName)}, React.createElement("span", null, "刪除"))
           )
         ),
         orderFooter;
@@ -322,7 +408,7 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
     for (var key in productItems) {
       totalNum += productItems[key].num;
       total += productItems[key].total;
-      orderItems.push(React.createElement(OrderItem, {key: key, productItem: productItems[key]}));
+      orderItems.push(React.createElement(OrderItem, {key: key, orderConfirm: this.props.orderConfirm, productItem: productItems[key]}));
     }
 
     totalDiscount = Math.floor(totalNum / 2) * (this.props.productInfo.discount * 2);
@@ -374,23 +460,28 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
 
 module.exports = OrderDetail;
 
-},{"./OrderItem.react.js":6,"react":182}],6:[function(require,module,exports){
+},{"./OrderItem.react.js":6,"classnames":20,"react":182}],6:[function(require,module,exports){
 /**
 *  OrderItem.react.js - Item in Order
 */
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
 var OrderItem = React.createClass({displayName: "OrderItem",
 
   propTypes: {
+    orderConfirm: ReactPropTypes.number.isRequired,
     productItem: ReactPropTypes.object.isRequired
   },
 
   render: function () {
     var productItem = this.props.productItem;
+    var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)}),
+        infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
+
     return (
       React.createElement("div", {className: "table-row"}, 
         React.createElement("div", {className: "table-cell"}, 
@@ -403,16 +494,17 @@ var OrderItem = React.createClass({displayName: "OrderItem",
           React.createElement("span", null, productItem.colorName + "-" + productItem.size)
         ), 
         React.createElement("div", {className: "table-cell"}, 
-          React.createElement("div", {className: "flex flex-horizontal-center"}, 
+          React.createElement("div", {className: classNames('flex', 'flex-horizontal-center', editClassName)}, 
             React.createElement("div", {className: "buyCountSub", onClick: this._buyCountSubOnClick.bind(this, productItem.id)}), 
             React.createElement("input", {className: "buyCount", type: "text", maxLength: "2", onChange: this._buyCountOnChange.bind(this, productItem.id), defaultValue: productItem.num}), 
             React.createElement("div", {className: "buyCountAdd", onClick: this._buyCountAddOnClick.bind(this, productItem.id)})
-          )
+          ), 
+          React.createElement("span", {className: infoClassName}, productItem.num)
         ), 
         React.createElement("div", {className: "table-cell"}, 
           React.createElement("span", null, "NT$ " + productItem.total)
         ), 
-        React.createElement("div", {className: "table-cell"}, 
+        React.createElement("div", {className: classNames('table-cell', editClassName)}, 
           React.createElement("i", {className: "fa fa-trash-o", onClick: this._deleteOnClick.bind(this, productItem.id)})
         )
       )
@@ -469,7 +561,7 @@ var OrderItem = React.createClass({displayName: "OrderItem",
 
 module.exports = OrderItem;
 
-},{"../../action/AppAction.js":1,"react":182}],7:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"classnames":20,"react":182}],7:[function(require,module,exports){
 /**
  *  InfoApp.react.js - ProductInfo + ProductDetail
  */
@@ -1090,6 +1182,9 @@ module.exports = keymirror({
   /*************************/
 
   ORDER_CHANGE_EVENT: null,
+  ORDER_CONFIRM_EVENT: null,
+  ORDER_CONFIRM_FAIL_EVENT: null,
+
   PRODUCT_CHANGE_EVENT: null,
   BUYERINFO_CHANGE_EVENT: null,
   SHOPPING_CART_NOTIFICATION_SHOW_EVENT: null,
@@ -1142,7 +1237,8 @@ var assign = require('object-assign'),
     AppConstant = require('../constant/AppConstant.js');
 
 // Products Information
-var _productId = 1;
+var _productId = 1,
+    _orderId = undefined;
 
 var _productInfo = {},
     _productItems = {},  // All Products in Orders
@@ -1150,40 +1246,50 @@ var _productInfo = {},
 
     },
     _productItemIdQueryTable = {
-      "0#6f0011XS": 1,
-      "0#6f0011S": 2,
-      "0#6f0011M": 3,
-      "0#6f0011L": 4,
-      "0#6f0011XL": 5,
-      "0#9e9f99XS": 6,
-      "0#9e9f99S": 7,
-      "0#9e9f99M": 8,
-      "0#9e9f99L": 9,
-      "0#9e9f99XL": 10,
-      "0#242733XS": 11,
-      "0#242733S": 12,
-      "0#242733M": 13,
-      "0#242733L": 14,
-      "0#242733XL": 15
+
+      // Gray
+      "1#9e9f99XS": 1,
+      "1#9e9f99S": 2,
+      "1#9e9f99M": 3,
+      "1#9e9f99L": 4,
+      "1#9e9f99XL": 5,
+
+      // Blue
+      "1#242733XS": 6,
+      "1#242733S": 7,
+      "1#242733M": 8,
+      "1#242733L": 9,
+      "1#242733XL": 10,
+
+      // Red
+      "1#6f0011XS": 11,
+      "1#6f0011S": 12,
+      "1#6f0011M": 13,
+      "1#6f0011L": 14,
+      "1#6f0011XL": 15
     },
     _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
 
 // Buyer Information
-var _buyerInfo = {};
+var _buyerInfo = {
+  name: "葉承儒",
+  phone: "1234567890",
+  email: "asdasd@asd.com"
+};
 
 /* red: rgb(111,0,17)  #6f0011 */
 /* grey: rgb(158,159,153)  #9e9f99*/
 /* navy: rgb(36,39,51)  #242733*/
 
 _productInfo[_productId] = {
-   productId: 0,
+   productId: _productId,
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
    colorTable: {
-     "#6f0011": {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"},
-     "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png" },
-     "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png" }
+     "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
+     "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png"},
+     "#6f0011": {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"}
    },
    sizeTable: {  // {size}
      "XS": {size: "XS"},
@@ -1199,7 +1305,14 @@ _productInfo[_productId] = {
 /**************************/
 
 /**
- *  Get Product Order ID by Product Information
+ *  Get Order ID by sending ProductItems User Bought
+ */
+function getOrderId() {
+  // Ajax to Server
+}
+
+/**
+ *  Get ProductItem ID by Product Information
  *  @param {object} productInfo: {
  *    productId: {number},
  *    color: {string},
@@ -1275,6 +1388,20 @@ function productUpdate(updates) {
  */
 function buyerInfoUpdate(updates) {
   _buyerInfo = assign({}, _buyerInfo, updates);
+}
+
+/**************************/
+/* Operations - ClearData */
+/**************************/
+
+/**
+ *  Clear All Store Datra
+ */
+function clearAllStoreData() {
+  _orderId = undefined;
+  _productItems = {};
+  _productSelected = {};
+  _buyerInfo = {};
 }
 
 /*************************/
@@ -1388,6 +1515,15 @@ var AppStore = assign({}, EventEmitter.prototype, {
    */
   getBuyerInfo: function () {
     return _buyerInfo;
+  },
+
+  /**
+   *  Get Order ID
+   *
+   *  @return {object} _orderId
+   */
+  getOrderId: function () {
+    return _orderId;
   },
 
   /*************************/

@@ -14,7 +14,8 @@ var assign = require('object-assign'),
     AppConstant = require('../constant/AppConstant.js');
 
 // Products Information
-var _productId = 1;
+var _productId = 1,
+    _orderId = undefined;
 
 var _productInfo = {},
     _productItems = {},  // All Products in Orders
@@ -22,40 +23,50 @@ var _productInfo = {},
 
     },
     _productItemIdQueryTable = {
-      "0#6f0011XS": 1,
-      "0#6f0011S": 2,
-      "0#6f0011M": 3,
-      "0#6f0011L": 4,
-      "0#6f0011XL": 5,
-      "0#9e9f99XS": 6,
-      "0#9e9f99S": 7,
-      "0#9e9f99M": 8,
-      "0#9e9f99L": 9,
-      "0#9e9f99XL": 10,
-      "0#242733XS": 11,
-      "0#242733S": 12,
-      "0#242733M": 13,
-      "0#242733L": 14,
-      "0#242733XL": 15
+
+      // Gray
+      "1#9e9f99XS": 1,
+      "1#9e9f99S": 2,
+      "1#9e9f99M": 3,
+      "1#9e9f99L": 4,
+      "1#9e9f99XL": 5,
+
+      // Blue
+      "1#242733XS": 6,
+      "1#242733S": 7,
+      "1#242733M": 8,
+      "1#242733L": 9,
+      "1#242733XL": 10,
+
+      // Red
+      "1#6f0011XS": 11,
+      "1#6f0011S": 12,
+      "1#6f0011M": 13,
+      "1#6f0011L": 14,
+      "1#6f0011XL": 15
     },
     _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
 
 // Buyer Information
-var _buyerInfo = {};
+var _buyerInfo = {
+  name: "葉承儒",
+  phone: "1234567890",
+  email: "asdasd@asd.com"
+};
 
 /* red: rgb(111,0,17)  #6f0011 */
 /* grey: rgb(158,159,153)  #9e9f99*/
 /* navy: rgb(36,39,51)  #242733*/
 
 _productInfo[_productId] = {
-   productId: 0,
+   productId: _productId,
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
    colorTable: {
-     "#6f0011": {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"},
-     "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png" },
-     "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png" }
+     "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
+     "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png"},
+     "#6f0011": {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"}
    },
    sizeTable: {  // {size}
      "XS": {size: "XS"},
@@ -71,7 +82,14 @@ _productInfo[_productId] = {
 /**************************/
 
 /**
- *  Get Product Order ID by Product Information
+ *  Get Order ID by sending ProductItems User Bought
+ */
+function getOrderId() {
+  // Ajax to Server
+}
+
+/**
+ *  Get ProductItem ID by Product Information
  *  @param {object} productInfo: {
  *    productId: {number},
  *    color: {string},
@@ -147,6 +165,20 @@ function productUpdate(updates) {
  */
 function buyerInfoUpdate(updates) {
   _buyerInfo = assign({}, _buyerInfo, updates);
+}
+
+/**************************/
+/* Operations - ClearData */
+/**************************/
+
+/**
+ *  Clear All Store Datra
+ */
+function clearAllStoreData() {
+  _orderId = undefined;
+  _productItems = {};
+  _productSelected = {};
+  _buyerInfo = {};
 }
 
 /*************************/
@@ -260,6 +292,15 @@ var AppStore = assign({}, EventEmitter.prototype, {
    */
   getBuyerInfo: function () {
     return _buyerInfo;
+  },
+
+  /**
+   *  Get Order ID
+   *
+   *  @return {object} _orderId
+   */
+  getOrderId: function () {
+    return _orderId;
   },
 
   /*************************/

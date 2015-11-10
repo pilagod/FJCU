@@ -4,17 +4,19 @@
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     OrderItem = require('./OrderItem.react.js');
 
 var OrderDetail = React.createClass({
 
   propTypes: {
-    orderConfirm: ReactPropTypes.bool.isRequired,
+    orderConfirm: ReactPropTypes.number.isRequired,
     productInfo: ReactPropTypes.object.isRequired,
     productItems: ReactPropTypes.object.isRequired
   },
 
   render: function () {
+    var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)});
     var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
         productItems = this.props.productItems,
         orderItems = [],
@@ -25,7 +27,7 @@ var OrderDetail = React.createClass({
             <div className="table-cell"><span>顏色-尺寸</span></div>
             <div className="table-cell"><span>數量</span></div>
             <div className="table-cell"><span>總價</span></div>
-            <div className="table-cell"><span>刪除</span></div>
+            <div className={classNames("table-cell", editClassName)}><span>刪除</span></div>
           </div>
         ),
         orderFooter;
@@ -33,7 +35,7 @@ var OrderDetail = React.createClass({
     for (var key in productItems) {
       totalNum += productItems[key].num;
       total += productItems[key].total;
-      orderItems.push(<OrderItem key={key} productItem={productItems[key]} />);
+      orderItems.push(<OrderItem key={key} orderConfirm={this.props.orderConfirm} productItem={productItems[key]} />);
     }
 
     totalDiscount = Math.floor(totalNum / 2) * (this.props.productInfo.discount * 2);

@@ -236,14 +236,131 @@
 /*       OrderApp        */
 /*************************/
 
+#OrderApp > header,
+#orderDetail,
+#orderBuyerInfo {
+  padding: 30px;
+  border: 2px ridge rgba(100, 100, 100, 0.3);
+  border-radius: 10px;
+}
+
+/**
+ *  OrderApp > header
+ */
+
+#OrderApp > header {
+  margin-bottom: 30px;
+  padding: 20px 40px;
+}
+
+#orderId {
+  display: inline-block;
+  color: red;
+  font-weight: bold;
+}
+
+/**
+ *  Loading
+ */
+#loadingBlock {
+  position: absolute;
+  /*position: fixed;*/
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#loadingBlock > div {
+  padding: 25px 60px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+#loadingBlock .loadingInfo {
+  margin-bottom: 20px;
+}
+
+#loadingBlock i {
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+#loadingBlock .fa-spinner {
+  color: rgba(50, 50, 50, 1);
+
+  -webkit-animation: spinner-animation 2s infinite;
+  -moz-animation: spinner-animation 2s infinite;
+  -ms-animation: spinner-animation 2s infinite;
+  -o-animation: spinner-animation 2s infinite;
+  animation: spinner-animation 2s infinite;
+
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -ms-transform-origin: 50% 50%;
+  -o-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+}
+
+#loadingBlock .fa-check-circle {
+  color: green;
+}
+
+#loadingBlock .fa-times-circle {
+  color: red;
+}
+
+@-webkit-keyframes spinner-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-moz-keyframes spinner-animation {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@-o-keyframes spinner-animation {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes spinner-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
 /**
  *  OrderDetail
  */
 
 #orderDetail {
-  padding: 30px;
-  border: 2px ridge rgba(100, 100, 100, 0.3);
-  border-radius: 10px;
 }
 
 #orderDetail .table {
@@ -353,11 +470,8 @@
  */
 
 #orderBuyerInfo {
-  margin: 40px auto;
-  padding: 30px;
+  margin: 30px auto;
   color: rgba(100, 100, 100, 1);
-  border: 2px ridge rgba(100, 100, 100, 0.3);
-  border-radius: 10px;
 }
 
 #orderBuyerInfo > header {

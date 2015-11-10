@@ -4,6 +4,7 @@
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    assign = require('object-assign'),
     classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
@@ -14,7 +15,7 @@ var nameRegexp = /^[\u4e00-\u9fa5]{2,4}$/,
 var OrderBuyerInfo = React.createClass({
 
   propTypes: {
-    orderConfirm: ReactPropTypes.bool.isRequired,
+    orderConfirm: ReactPropTypes.number.isRequired,
     buyerInfo: ReactPropTypes.object.isRequired
   },
 
@@ -23,9 +24,12 @@ var OrderBuyerInfo = React.createClass({
       width: "500px"
     };
 
-    var namePassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.name}),
-        phonePassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.phone}),
-        emailPassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.email});
+    var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)}),
+        infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
+
+    var namePassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.name}, editClassName),
+        phonePassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.phone}, editClassName),
+        emailPassClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.buyerInfo.email}, editClassName);
 
     return (
       <section id="orderBuyerInfo">
@@ -35,19 +39,28 @@ var OrderBuyerInfo = React.createClass({
         </header>
         <article>
           <div>
-            <h3>中文全名</h3>
-            <input type="text" onChange={this._nameInputTextOnChange} defaultValue={this.props.buyerInfo.name}></input>
+            <h3>中文全名：</h3>
+            <input type="text" className={editClassName} onChange={this._nameInputTextOnChange} defaultValue={this.props.buyerInfo.name}></input>
             <i className={namePassClassName}></i>
+            <span className={infoClassName}>
+              <h3>{this.props.buyerInfo.name}</h3>
+            </span>
           </div>
           <div>
-            <h3>手機號碼</h3>
-            <input type="text" onChange={this._phoneInputTextOnChange} defaultValue={this.props.buyerInfo.phone}></input>
+            <h3>手機號碼：</h3>
+            <input type="text" className={editClassName} onChange={this._phoneInputTextOnChange} defaultValue={this.props.buyerInfo.phone}></input>
             <i className={phonePassClassName}></i>
+            <span className={infoClassName}>
+              <h3>{this.props.buyerInfo.phone}</h3>
+            </span>
           </div>
           <div>
-            <h3>電子信箱</h3>
-            <input type="text" style={emailInputTextStyle} onChange={this._emailInputTextOnChange} defaultValue={this.props.buyerInfo.email}></input>
+            <h3>電子信箱：</h3>
+            <input type="text" className={editClassName} style={emailInputTextStyle} onChange={this._emailInputTextOnChange} defaultValue={this.props.buyerInfo.email}></input>
             <i className={emailPassClassName}></i>
+            <span className={infoClassName}>
+              <h3>{this.props.buyerInfo.email}</h3>
+            </span>
           </div>
         </article>
       </section>
