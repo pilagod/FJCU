@@ -445,5 +445,5 @@
 
 #orderAction > div:hover {
   cursor: pointer;
-  box-shadow: 2px 2px 2px gray;
+  box-shadow: 0px 0px 8px #6F452D;
 }

@@ -187,6 +187,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   },
 
   _orderActionNextOnClick: function () {
+    console.log(this.state.buyerInfo);
   },
 
   _onOrderChange: function () {
@@ -210,6 +211,10 @@ var React = require('react'),
     ReactPropTypes = React.PropTypes,
     classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
+
+var nameRegexp = /^[\u4e00-\u9fa5]{2,4}$/,
+    phoneRegexp = /^09\d{8}$/,
+    emailRegexp = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i;
 
 var OrderBuyerInfo = React.createClass({displayName: "OrderBuyerInfo",
 
@@ -255,15 +260,27 @@ var OrderBuyerInfo = React.createClass({displayName: "OrderBuyerInfo",
   },
 
   _nameInputTextOnChange: function (event) {
-    AppAction.buyerInfoUpdate({name: event.target.value});
+    if (nameRegexp.test(event.target.value)) {
+      AppAction.buyerInfoUpdate({name: event.target.value});
+    } else {
+      AppAction.buyerInfoUpdate({name: null});
+    }
   },
 
   _phoneInputTextOnChange: function (event) {
-    AppAction.buyerInfoUpdate({phone: event.target.value});
+    if (phoneRegexp.test(event.target.value)) {
+      AppAction.buyerInfoUpdate({phone: event.target.value});
+    } else {
+      AppAction.buyerInfoUpdate({phone: null});
+    }
   },
 
   _emailInputTextOnChange: function (event) {
-    AppAction.buyerInfoUpdate({email: event.target.value});
+    if (emailRegexp.test(event.target.value)) {
+      AppAction.buyerInfoUpdate({email: event.target.value});
+    } else {
+      AppAction.buyerInfoUpdate({email: null});
+    }
   }
 });
 

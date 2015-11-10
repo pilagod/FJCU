@@ -62,6 +62,7 @@ var OrderApp = React.createClass({
   },
 
   _orderActionNextOnClick: function () {
+    console.log(this.state.buyerInfo);
   },
 
   _onOrderChange: function () {
