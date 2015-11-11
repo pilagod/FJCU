@@ -34,7 +34,6 @@ var ProductApp = React.createClass({
   },
 
   render: function () {
-    console.log("productSelected:", this.state.productSelected);
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
     } else {

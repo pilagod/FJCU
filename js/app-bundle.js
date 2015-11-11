@@ -662,7 +662,6 @@ var ProductApp = React.createClass({displayName: "ProductApp",
   },
 
   render: function () {
-    console.log("productSelected:", this.state.productSelected);
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
     } else {
@@ -945,8 +944,6 @@ var ProductSelector = React.createClass({displayName: "ProductSelector",
     var productItemKey = "";
         productId = this.props.productInfo.productId,
         productName = this.props.productInfo.productName;
-
-    console.log("ProductSelected:", this.props.productInfo);
 
     var colorTable = this.props.productInfo.colorTable,
         colorSelected = this.props.productSelected.color ?

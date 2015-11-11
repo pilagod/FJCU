@@ -21,8 +21,6 @@ var ProductSelector = React.createClass({
         productId = this.props.productInfo.productId,
         productName = this.props.productInfo.productName;
 
-    console.log("ProductSelected:", this.props.productInfo);
-
     var colorTable = this.props.productInfo.colorTable,
         colorSelected = this.props.productSelected.color ?
                           colorTable[this.props.productSelected.color] :
