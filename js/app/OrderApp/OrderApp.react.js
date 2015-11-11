@@ -10,27 +10,21 @@ var React = require('react'),
     OrderDetail = require('./OrderDetail.react.js'),
     OrderBuyerInfo = require('./OrderBuyerInfo.react.js');
 
-function getOrderState() {
-  return {
-    productInfo: AppStore.getProductInfo(),
-    productItems: AppStore.getOrderProductItem()
-  }
-}
-
-function getBuyerInfo() {
-  return {
-    buyerInfo: AppStore.getBuyerInfo()
-  }
-}
-
 var OrderApp = React.createClass({
 
   getInitialState: function () {
-    return assign({}, getOrderState(), getBuyerInfo(), {
+    return {
+      productInfo: {},
+      productItems: AppStore.getOrderProductItem(),
+      buyerInfo: AppStore.getBuyerInfo(),
       orderId: null,
       orderConfirm: 0, // 0: Initialize, 1: Success, 2: Fail
       loading: false
-    });
+    };
+  },
+
+  componentWillMount: function () {
+    this._initProductInfo();
   },
 
   componentDidMount: function () {
@@ -54,6 +48,12 @@ var OrderApp = React.createClass({
   },
 
   render: function () {
+
+    console.log(this.state.productInfo);
+
+    if (Object.keys(this.state.productInfo).length === 0) {
+      return null;
+    }
 
     var orderActionNextClassName = classNames({'hidden': (this.state.orderConfirm === 1)}),
         orderAppHeader, orderProcess;
@@ -105,6 +105,14 @@ var OrderApp = React.createClass({
     )
   },
 
+  _initProductInfo: function () {
+    AppStore.getProductInfo().then(function (productInfo) {
+      this.setState({
+        productInfo: productInfo
+      });
+    }.bind(this));
+  },
+
   /*************************/
   /*   Html Event Handler  */
   /*************************/
@@ -115,7 +123,6 @@ var OrderApp = React.createClass({
 
   _orderActionNextOnClick: function () {
     this.setState({loading: true});
-    console.log(this.state.buyerInfo);
   },
 
   /*************************/
@@ -123,11 +130,15 @@ var OrderApp = React.createClass({
   /*************************/
 
   _onOrderChange: function () {
-    this.setState(getOrderState());
+    this.setState({
+      productItems: AppStore.getOrderProductItem()
+    });
   },
 
   _onBuyerInfoChange: function () {
-    this.setState(getBuyerInfo());
+    this.setState({
+      buyerInfo: AppStore.getBuyerInfo()
+    });
   },
 
   _onOrderConfirm: function () {

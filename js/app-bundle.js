@@ -135,27 +135,21 @@ var React = require('react'),
     OrderDetail = require('./OrderDetail.react.js'),
     OrderBuyerInfo = require('./OrderBuyerInfo.react.js');
 
-function getOrderState() {
-  return {
-    productInfo: AppStore.getProductInfo(),
-    productItems: AppStore.getOrderProductItem()
-  }
-}
-
-function getBuyerInfo() {
-  return {
-    buyerInfo: AppStore.getBuyerInfo()
-  }
-}
-
 var OrderApp = React.createClass({displayName: "OrderApp",
 
   getInitialState: function () {
-    return assign({}, getOrderState(), getBuyerInfo(), {
+    return {
+      productInfo: {},
+      productItems: AppStore.getOrderProductItem(),
+      buyerInfo: AppStore.getBuyerInfo(),
       orderId: null,
       orderConfirm: 0, // 0: Initialize, 1: Success, 2: Fail
       loading: false
-    });
+    };
+  },
+
+  componentWillMount: function () {
+    this._initProductInfo();
   },
 
   componentDidMount: function () {
@@ -179,6 +173,12 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   },
 
   render: function () {
+
+    console.log(this.state.productInfo);
+
+    if (Object.keys(this.state.productInfo).length === 0) {
+      return null;
+    }
 
     var orderActionNextClassName = classNames({'hidden': (this.state.orderConfirm === 1)}),
         orderAppHeader, orderProcess;
@@ -230,6 +230,14 @@ var OrderApp = React.createClass({displayName: "OrderApp",
     )
   },
 
+  _initProductInfo: function () {
+    AppStore.getProductInfo().then(function (productInfo) {
+      this.setState({
+        productInfo: productInfo
+      });
+    }.bind(this));
+  },
+
   /*************************/
   /*   Html Event Handler  */
   /*************************/
@@ -240,7 +248,6 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
   _orderActionNextOnClick: function () {
     this.setState({loading: true});
-    console.log(this.state.buyerInfo);
   },
 
   /*************************/
@@ -248,11 +255,15 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   /*************************/
 
   _onOrderChange: function () {
-    this.setState(getOrderState());
+    this.setState({
+      productItems: AppStore.getOrderProductItem()
+    });
   },
 
   _onBuyerInfoChange: function () {
-    this.setState(getBuyerInfo());
+    this.setState({
+      buyerInfo: AppStore.getBuyerInfo()
+    });
   },
 
   _onOrderConfirm: function () {
@@ -574,22 +585,21 @@ var React = require('react'),
     ProductInfo = require('./ProductInfo.react.js'),
     ProductDetail = require('./ProductDetail.react.js');
 
-function getProductState() {
-  return {
-    productInfo: AppStore.getProductInfo(),
-    productSelected: AppStore.getProductSelected()
-  }
-}
-
 var ProductApp = React.createClass({displayName: "ProductApp",
 
   getInitialState: function () {
-    return getProductState();
+    return {
+      productInfo: {},
+      productSelected: AppStore.getProductSelected()
+    }
+  },
+
+  componentWillMount: function () {
+    this._initProductInfo();
   },
 
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
-    this._initProductInfo();
   },
 
   componentWillUnmount: function () {
@@ -597,20 +607,32 @@ var ProductApp = React.createClass({displayName: "ProductApp",
   },
 
   render: function () {
-    return (
-      React.createElement("div", {id: "ProductApp"}, 
-        React.createElement(ProductInfo, {productInfo: this.state.productInfo, productSelected: this.state.productSelected}), 
-        React.createElement(ProductDetail, null)
+    if (Object.keys(this.state.productInfo).length === 0) {
+      return null;
+    } else {
+      return (
+        React.createElement("div", {id: "ProductApp"}, 
+          React.createElement(ProductInfo, {productInfo: this.state.productInfo, productSelected: this.state.productSelected}), 
+          React.createElement(ProductDetail, null)
+        )
       )
-    )
+    }
   },
 
   _initProductInfo: function () {
-    AppAction.productUpdate({
-      productId: this.state.productInfo.productId,
-      productName: this.state.productInfo.productName,
-      price: this.state.productInfo.price
-    });
+    AppStore.getProductInfo().then(function (productInfo) {
+      console.log(productInfo);
+      this.setState({
+        productInfo: productInfo
+      });
+      if (!this.state.productSelected.productId) {
+        AppAction.productUpdate({
+          productId: this.state.productInfo.productId,
+          productName: this.state.productInfo.productName,
+          price: this.state.productInfo.price
+        });
+      }
+    }.bind(this));
   },
 
   /*************************/
@@ -618,7 +640,9 @@ var ProductApp = React.createClass({displayName: "ProductApp",
   /*************************/
 
   _onProductChange: function () {
-    this.setState(getProductState());
+    this.setState({
+      productSelected: AppStore.getProductSelected()
+    });
   }
 });
 
@@ -1286,6 +1310,7 @@ _productInfo[_productId] = {
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
+   amountTable: {},
    colorTable: {
      "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
      "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png"},
@@ -1299,6 +1324,51 @@ _productInfo[_productId] = {
      "XL": {size: "XL"}
    }
 };
+
+/**************************/
+/*   Operations - Ajax    */
+/**************************/
+
+function makeRequest(method, url, data) {
+  return new Promise(function (resolve, reject) {
+    var httpRequest;
+    if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+      httpRequest = new XMLHttpRequest();
+      if (httpRequest.overrideMimeType) {
+        httpRequest.overrideMimeType('text/xml');
+      }
+    } else if (window.ActiveXObject) { // IE
+      try {
+        httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+      }
+      catch (e) {
+        console.log(e);
+        try {
+          httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        catch (e) {
+          console.log(e);
+        }
+      }
+    }
+    if (!httpRequest) {
+      alert('Giving up :( Cannot create an XMLHTTP instance');
+      reject(false);
+    }
+    httpRequest.onreadystatechange = function() {
+      if (this.readyState === 4) {
+        if (this.status === 200) {
+          resolve(this.responseText);
+        } else {
+          reject(false);
+        }
+      }
+    };
+    httpRequest.open(method, url, true);
+    httpRequest.send(data);
+  });
+}
+
 
 /**************************/
 /*   Operations - Order   */
@@ -1410,55 +1480,6 @@ function clearAllStoreData() {
 
 var AppStore = assign({}, EventEmitter.prototype, {
 
-  // /**
-  //  *  Get Product Information from Server
-  //  *  @param {number} id: product id
-  //  *
-  //  *  @return {Promise}
-  //  */
-  // getProductItemInfo: function (id) {
-  //   return new Promise(function (resolve, reject) {
-  //     var httpRequest = new XMLHttpRequest();
-  //     httpRequest.overrideMimeType('text/xml');
-  //     httpRequest.onreadystatechange = function () {
-  //       if (this.readyState === 4) {
-  //         if (this.status === 200) {
-  //           var productItems = JSON.parse(this.responseText);
-  //           for (var i in productItems) {
-  //             /**
-  //              *  productItem: {
-  //              *    id: {number},
-  //              *    productId: {number},
-  //              *    name: {string},
-  //              *    image: {string},
-  //              *    color: {string},
-  //              *    size: {string},
-  //              *    price: {number}
-  //              *  }
-  //              */
-  //              var productItem = productItems[i],
-  //                  queryIndex = productItem.productId + productItem.color + productItem.size;
-  //
-  //              _productItemInfo[productItem.id] = {
-  //                productId: productItem.productId,
-  //                name: productItem.name,
-  //                image: productItem.image,
-  //                color: productItem.color,
-  //                size: productItem.size,
-  //              }
-  //              _productItemIdQueryTable[queryIndex] = productItem.id;
-  //           }
-  //           resolve(this.responseText);
-  //         } else {
-  //           reject('There was a problem with the request');
-  //         }
-  //       }
-  //     };
-  //     httpRequest.open('GET', 'url', true);
-  //     httpRequest.send(null);
-  //   });
-  // },
-
   /*************************/
   /*     Get Store Data    */
   /*************************/
@@ -1475,10 +1496,37 @@ var AppStore = assign({}, EventEmitter.prototype, {
   /**
    *  Get Product Information
    *
-   *  @return {object} _productInfo
+   *  @return {object}
    */
   getProductInfo: function () {
-    return _productInfo[this.getProductId()];
+    var productId = this.getProductId();
+    if (Object.keys(_productInfo[productId].amountTable).length === 0) {
+      return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
+        console.log("in Ajax");
+        var responseData = JSON.parse(response),
+            items;
+        console.log(responseData.success);
+        if (responseData.success) {
+          items = responseData.data.Order.Item;
+          for (var key in items) {
+            _productInfo[productId].amountTable[items[key].ID] = {
+              id: items[key].ID,
+              amount: items[key].Amount,
+              amountMax: items[key].AmountMax
+            }
+          }
+          return _productInfo[productId];
+        } else {
+          alert(data.message);
+          console.log(data.message);
+          return {};
+        }
+      });
+    } else {
+      return new Promise.resolve(1).then(function () {
+        return _productInfo[productId];
+      });
+    }
   },
 
   /**
@@ -1571,6 +1619,7 @@ AppDispatcher.register(function (action) {
     /*************************/
 
     case AppConstant.PRODUCT_ITEM_ADD:
+      console.log(AppStore.getProductSelected());
       productItemAdd(AppStore.getProductSelected());
       AppStore.emitChange(AppConstant.ORDER_CHANGE_EVENT);
       break;

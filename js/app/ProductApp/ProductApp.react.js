@@ -10,22 +10,21 @@ var React = require('react'),
     ProductInfo = require('./ProductInfo.react.js'),
     ProductDetail = require('./ProductDetail.react.js');
 
-function getProductState() {
-  return {
-    productInfo: AppStore.getProductInfo(),
-    productSelected: AppStore.getProductSelected()
-  }
-}
-
 var ProductApp = React.createClass({
 
   getInitialState: function () {
-    return getProductState();
+    return {
+      productInfo: {},
+      productSelected: AppStore.getProductSelected()
+    }
+  },
+
+  componentWillMount: function () {
+    this._initProductInfo();
   },
 
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
-    this._initProductInfo();
   },
 
   componentWillUnmount: function () {
@@ -33,20 +32,32 @@ var ProductApp = React.createClass({
   },
 
   render: function () {
-    return (
-      <div id="ProductApp">
-        <ProductInfo productInfo={this.state.productInfo} productSelected={this.state.productSelected}/>
-        <ProductDetail />
-      </div>
-    )
+    if (Object.keys(this.state.productInfo).length === 0) {
+      return null;
+    } else {
+      return (
+        <div id="ProductApp">
+          <ProductInfo productInfo={this.state.productInfo} productSelected={this.state.productSelected}/>
+          <ProductDetail />
+        </div>
+      )
+    }
   },
 
   _initProductInfo: function () {
-    AppAction.productUpdate({
-      productId: this.state.productInfo.productId,
-      productName: this.state.productInfo.productName,
-      price: this.state.productInfo.price
-    });
+    AppStore.getProductInfo().then(function (productInfo) {
+      console.log(productInfo);
+      this.setState({
+        productInfo: productInfo
+      });
+      if (!this.state.productSelected.productId) {
+        AppAction.productUpdate({
+          productId: this.state.productInfo.productId,
+          productName: this.state.productInfo.productName,
+          price: this.state.productInfo.price
+        });
+      }
+    }.bind(this));
   },
 
   /*************************/
@@ -54,7 +65,9 @@ var ProductApp = React.createClass({
   /*************************/
 
   _onProductChange: function () {
-    this.setState(getProductState());
+    this.setState({
+      productSelected: AppStore.getProductSelected()
+    });
   }
 });
 
