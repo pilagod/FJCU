@@ -60,15 +60,15 @@ var _buyerInfo = {
 
 _productInfo[_productId] = {
    productId: _productId,
-   productName: "輔大90週年校慶紀念T",
+   productName: "創校90週年校慶園遊會紀念T",
    price: 580,
    discount: 30,
    amountLimit: 20,
    amountTable: {},
    colorTable: {
-     "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
-     "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png"},
-     "#6f0011": {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"}
+     "#9e9f99": {color: "#9e9f99", colorName: "麻灰", image: "./img/GREY.png"},
+     "#242733": {color: "#242733", colorName: "丈青", image: "./img/NAVY.png"},
+     "#6f0011": {color: "#6f0011", colorName: "深紅", image: "./img/RED.png"}
    },
    sizeTable: {  // {size}
      "XS": {size: "XS"},
@@ -288,8 +288,10 @@ var AppStore = assign({}, EventEmitter.prototype, {
             amountAvailable = Math.floor(Math.random() * 5);
             _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
-              amountMax: items[key].AmountMax,
+              // amountMax: items[key].AmountMax,
+              amountMax: 4,
               amountAvailable: amountAvailable > 0 ? amountAvailable : 0,
+              originalAmountAvailable: amountAvailable > 0 ? amountAvailable : 0,
               isSoldout: !(amountAvailable > 0)
             }
           }

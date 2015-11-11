@@ -16,6 +16,8 @@ var OrderDetail = React.createClass({
   },
 
   render: function () {
+    var productItemKey, amountMax, amountAvailable, originalAmountAvailable,
+        amountTable = this.props.productInfo.amountTable;
     var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)});
     var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
         productItems = this.props.productItems,
@@ -33,9 +35,24 @@ var OrderDetail = React.createClass({
         orderFooter;
 
     for (var key in productItems) {
+      productItemKey = productItems[key].productId + productItems[key].color + productItems[key].size;
+      amountMax = amountTable[productItemKey].amountMax;
+      amountAvailable = amountTable[productItemKey].amountAvailable;
+      originalAmountAvailable = amountTable[productItemKey].originalAmountAvailable;
+
       totalNum += productItems[key].num;
       total += productItems[key].total;
-      orderItems.push(<OrderItem key={key} orderConfirm={this.props.orderConfirm} productItem={productItems[key]} />);
+
+      orderItems.push(
+        <OrderItem
+          key={key}
+          productItemKey={productItemKey}
+          orderConfirm={this.props.orderConfirm}
+          productItem={productItems[key]}
+          amountMax={amountMax}
+          amountAvailable={amountAvailable}
+          originalAmountAvailable={originalAmountAvailable}/>
+      );
     }
 
     totalDiscount = Math.floor(totalNum / 2) * (this.props.productInfo.discount * 2);

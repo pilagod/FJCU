@@ -16,13 +16,11 @@ var ProductNumberSelector = React.createClass({
     colorSelected: ReactPropTypes.object.isRequired,
     sizeSelected: ReactPropTypes.object.isRequired,
     amountMax: ReactPropTypes.number.isRequired,
-    amountLimit: ReactPropTypes.number.isRequired,
     amountAvailable: ReactPropTypes.number.isRequired
   },
 
   render: function () {
-    var amountAvailable = this.props.amountAvailable < this.props.amountLimit ?
-                            this.props.amountAvailable : this.props.amountLimit;
+    var amountAvailable = this.props.amountAvailable;
     var shoppingNumberCheck = (this.props.amountAvailable >= 0 && this.props.num > this.props.amountAvailable);
         shoppingCartAddActive = (this.props.colorSelected.color && this.props.sizeSelected.size && this.props.num > 0);
     var shoppingCartAddClassName = classNames({

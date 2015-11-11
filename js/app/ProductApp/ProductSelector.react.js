@@ -41,11 +41,11 @@ var ProductSelector = React.createClass({
     }
 
     if (this.props.productSelected.color) {
-      productName += "（" + this.props.productSelected.colorName;
+      productName += "(" + this.props.productSelected.colorName;
       if (this.props.productSelected.size) {
         productName += "-" + this.props.productSelected.size;
       }
-      productName += "）";
+      productName += ")";
     }
 
     return (
@@ -66,7 +66,7 @@ var ProductSelector = React.createClass({
           sizeSelected={sizeSelected}
           sizeTable={sizeTable} />
         <div id="discountInfo">
-          <span>雙人組合折扣價$1,100!</span><br/>
+          <span>雙人組合折扣價$1,100</span><br/>
           <span>偶數件數以此類推，確定金額會在購物車內顯示。</span>
         </div>
         <ProductNumberSelector
@@ -76,7 +76,6 @@ var ProductSelector = React.createClass({
           sizeSelected={sizeSelected}
           colorSelected={colorSelected}
           amountMax={amountMax}
-          amountLimit={this.props.productInfo.amountLimit}
           amountAvailable={amountAvailable}/>
       </div>
     )

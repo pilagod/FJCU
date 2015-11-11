@@ -453,6 +453,8 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
   },
 
   render: function () {
+    var productItemKey, amountMax, amountAvailable, originalAmountAvailable,
+        amountTable = this.props.productInfo.amountTable;
     var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)});
     var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
         productItems = this.props.productItems,
@@ -470,9 +472,24 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
         orderFooter;
 
     for (var key in productItems) {
+      productItemKey = productItems[key].productId + productItems[key].color + productItems[key].size;
+      amountMax = amountTable[productItemKey].amountMax;
+      amountAvailable = amountTable[productItemKey].amountAvailable;
+      originalAmountAvailable = amountTable[productItemKey].originalAmountAvailable;
+
       totalNum += productItems[key].num;
       total += productItems[key].total;
-      orderItems.push(React.createElement(OrderItem, {key: key, orderConfirm: this.props.orderConfirm, productItem: productItems[key]}));
+
+      orderItems.push(
+        React.createElement(OrderItem, {
+          key: key, 
+          productItemKey: productItemKey, 
+          orderConfirm: this.props.orderConfirm, 
+          productItem: productItems[key], 
+          amountMax: amountMax, 
+          amountAvailable: amountAvailable, 
+          originalAmountAvailable: originalAmountAvailable})
+      );
     }
 
     totalDiscount = Math.floor(totalNum / 2) * (this.props.productInfo.discount * 2);
@@ -537,17 +554,34 @@ var React = require('react'),
 var OrderItem = React.createClass({displayName: "OrderItem",
 
   propTypes: {
+    productItemKey: ReactPropTypes.string.isRequired,
     orderConfirm: ReactPropTypes.number.isRequired,
-    productItem: ReactPropTypes.object.isRequired
+    productItem: ReactPropTypes.object.isRequired,
+    amountMax: ReactPropTypes.number.isRequired,
+    amountAvailable: ReactPropTypes.number.isRequired,
+    originalAmountAvailable: ReactPropTypes.number.isRequired
   },
 
   render: function () {
+    console.log(this.props.originalAmountAvailable);
     var productItem = this.props.productItem;
-    var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)}),
-        infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
+    var productItemNumberCheck = (this.props.productItem.num + this.props.amountAvailable > this.props.originalAmountAvailable);
+    var warningClassName = classNames({
+          'warning': productItemNumberCheck
+        }),
+        editClassName = classNames({
+          'hidden': (this.props.orderConfirm === 1)
+        }),
+        infoClassName = classNames({
+          'hidden': (this.props.orderConfirm !== 1)
+        });
+
+    if (productItemNumberCheck) {
+      alert("超過訂購上限！");
+    }
 
     return (
-      React.createElement("div", {className: "table-row"}, 
+      React.createElement("div", {className: classNames('table-row', warningClassName)}, 
         React.createElement("div", {className: "table-cell"}, 
           React.createElement("img", {src: productItem.image, alt: productItem.productName})
         ), 
@@ -619,6 +653,10 @@ var OrderItem = React.createClass({displayName: "OrderItem",
   _deleteOnClick: function (id) {
     if (confirm("確定要刪除此產品？")) {
       AppAction.productItemDelete(id);
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: this.props.originalAmountAvailable,
+        isSoldout: false
+      })
     }
   }
 });
@@ -834,13 +872,11 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
     colorSelected: ReactPropTypes.object.isRequired,
     sizeSelected: ReactPropTypes.object.isRequired,
     amountMax: ReactPropTypes.number.isRequired,
-    amountLimit: ReactPropTypes.number.isRequired,
     amountAvailable: ReactPropTypes.number.isRequired
   },
 
   render: function () {
-    var amountAvailable = this.props.amountAvailable < this.props.amountLimit ?
-                            this.props.amountAvailable : this.props.amountLimit;
+    var amountAvailable = this.props.amountAvailable;
     var shoppingNumberCheck = (this.props.amountAvailable >= 0 && this.props.num > this.props.amountAvailable);
         shoppingCartAddActive = (this.props.colorSelected.color && this.props.sizeSelected.size && this.props.num > 0);
     var shoppingCartAddClassName = classNames({
@@ -965,11 +1001,11 @@ var ProductSelector = React.createClass({displayName: "ProductSelector",
     }
 
     if (this.props.productSelected.color) {
-      productName += "（" + this.props.productSelected.colorName;
+      productName += "(" + this.props.productSelected.colorName;
       if (this.props.productSelected.size) {
         productName += "-" + this.props.productSelected.size;
       }
-      productName += "）";
+      productName += ")";
     }
 
     return (
@@ -990,7 +1026,7 @@ var ProductSelector = React.createClass({displayName: "ProductSelector",
           sizeSelected: sizeSelected, 
           sizeTable: sizeTable}), 
         React.createElement("div", {id: "discountInfo"}, 
-          React.createElement("span", null, "雙人組合折扣價$1,100!"), React.createElement("br", null), 
+          React.createElement("span", null, "雙人組合折扣價$1,100"), React.createElement("br", null), 
           React.createElement("span", null, "偶數件數以此類推，確定金額會在購物車內顯示。")
         ), 
         React.createElement(ProductNumberSelector, {
@@ -1000,7 +1036,6 @@ var ProductSelector = React.createClass({displayName: "ProductSelector",
           sizeSelected: sizeSelected, 
           colorSelected: colorSelected, 
           amountMax: amountMax, 
-          amountLimit: this.props.productInfo.amountLimit, 
           amountAvailable: amountAvailable})
       )
     )
@@ -1442,15 +1477,15 @@ var _buyerInfo = {
 
 _productInfo[_productId] = {
    productId: _productId,
-   productName: "輔大90週年校慶紀念T",
+   productName: "創校90週年校慶園遊會紀念T",
    price: 580,
    discount: 30,
    amountLimit: 20,
    amountTable: {},
    colorTable: {
-     "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
-     "#242733": {color: "#242733", colorName: "海軍藍", image: "./img/NAVY.png"},
-     "#6f0011": {color: "#6f0011", colorName: "紅色", image: "./img/RED.png"}
+     "#9e9f99": {color: "#9e9f99", colorName: "麻灰", image: "./img/GREY.png"},
+     "#242733": {color: "#242733", colorName: "丈青", image: "./img/NAVY.png"},
+     "#6f0011": {color: "#6f0011", colorName: "深紅", image: "./img/RED.png"}
    },
    sizeTable: {  // {size}
      "XS": {size: "XS"},
@@ -1670,8 +1705,10 @@ var AppStore = assign({}, EventEmitter.prototype, {
             amountAvailable = Math.floor(Math.random() * 5);
             _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
-              amountMax: items[key].AmountMax,
+              // amountMax: items[key].AmountMax,
+              amountMax: 4,
               amountAvailable: amountAvailable > 0 ? amountAvailable : 0,
+              originalAmountAvailable: amountAvailable > 0 ? amountAvailable : 0,
               isSoldout: !(amountAvailable > 0)
             }
           }

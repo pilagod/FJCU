@@ -10,17 +10,34 @@ var React = require('react'),
 var OrderItem = React.createClass({
 
   propTypes: {
+    productItemKey: ReactPropTypes.string.isRequired,
     orderConfirm: ReactPropTypes.number.isRequired,
-    productItem: ReactPropTypes.object.isRequired
+    productItem: ReactPropTypes.object.isRequired,
+    amountMax: ReactPropTypes.number.isRequired,
+    amountAvailable: ReactPropTypes.number.isRequired,
+    originalAmountAvailable: ReactPropTypes.number.isRequired
   },
 
   render: function () {
+    console.log(this.props.originalAmountAvailable);
     var productItem = this.props.productItem;
-    var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)}),
-        infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
+    var productItemNumberCheck = (this.props.productItem.num + this.props.amountAvailable > this.props.originalAmountAvailable);
+    var warningClassName = classNames({
+          'warning': productItemNumberCheck
+        }),
+        editClassName = classNames({
+          'hidden': (this.props.orderConfirm === 1)
+        }),
+        infoClassName = classNames({
+          'hidden': (this.props.orderConfirm !== 1)
+        });
+
+    if (productItemNumberCheck) {
+      alert("超過訂購上限！");
+    }
 
     return (
-      <div className="table-row">
+      <div className={classNames('table-row', warningClassName)}>
         <div className="table-cell">
           <img src={productItem.image} alt={productItem.productName}></img>
         </div>
@@ -92,6 +109,10 @@ var OrderItem = React.createClass({
   _deleteOnClick: function (id) {
     if (confirm("確定要刪除此產品？")) {
       AppAction.productItemDelete(id);
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: this.props.originalAmountAvailable,
+        isSoldout: false
+      })
     }
   }
 });
