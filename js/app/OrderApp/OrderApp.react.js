@@ -49,14 +49,18 @@ var OrderApp = React.createClass({
 
   render: function () {
 
-    console.log(this.state.productInfo);
-
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
     }
 
-    var orderActionNextClassName = classNames({'hidden': (this.state.orderConfirm === 1)}),
-        orderAppHeader, orderProcess;
+    var isEmpty = (Object.keys(this.state.productItems).length === 0);
+
+    var orderActionNextClassName = classNames({
+      'hidden': (this.state.orderConfirm === 1),
+      'active': !isEmpty
+    });
+    var orderActionNextOnClick = isEmpty ? null : this._orderActionNextOnClick;
+    var orderAppHeader, orderProcess;
 
     var loadingBlock = null,
         loadingContent = null,
@@ -94,10 +98,10 @@ var OrderApp = React.createClass({
         <OrderDetail orderConfirm={this.state.orderConfirm} productItems={this.state.productItems} productInfo={this.state.productInfo}/>
         <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo}/>
         <div id="orderAction" className="flex flex-vertical-center flex-horizontal-center">
-          <div id="orderActionBack" onClick={this._orderActionBackOnClick}>
+          <div id="orderActionBack" className="active" onClick={this._orderActionBackOnClick}>
             <span>回上一頁</span>
           </div>
-          <div id="orderActionNext" className={orderActionNextClassName} onClick={this._orderActionNextOnClick}>
+          <div id="orderActionNext" className={orderActionNextClassName} onClick={orderActionNextOnClick}>
             <span>訂單確認</span>
           </div>
         </div>
@@ -107,6 +111,10 @@ var OrderApp = React.createClass({
 
   _initProductInfo: function () {
     AppStore.getProductInfo().then(function (productInfo) {
+      if (Object.keys(productInfo).length === 0) {
+        alert("載入資料發生錯誤，請稍候再重新整理看看。")
+        return false;
+      }
       this.setState({
         productInfo: productInfo
       });
@@ -122,6 +130,7 @@ var OrderApp = React.createClass({
   },
 
   _orderActionNextOnClick: function () {
+    // Num為零跳過
     this.setState({loading: true});
   },
 

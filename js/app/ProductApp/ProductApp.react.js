@@ -37,7 +37,9 @@ var ProductApp = React.createClass({
     } else {
       return (
         <div id="ProductApp">
-          <ProductInfo productInfo={this.state.productInfo} productSelected={this.state.productSelected}/>
+          <ProductInfo
+            productInfo={this.state.productInfo}
+            productSelected={this.state.productSelected}/>
           <ProductDetail />
         </div>
       )
@@ -46,7 +48,10 @@ var ProductApp = React.createClass({
 
   _initProductInfo: function () {
     AppStore.getProductInfo().then(function (productInfo) {
-      console.log(productInfo);
+      if (Object.keys(productInfo).length === 0) {
+        alert("載入資料發生錯誤，請稍候再重新整理看看。")
+        return false;
+      }
       this.setState({
         productInfo: productInfo
       });

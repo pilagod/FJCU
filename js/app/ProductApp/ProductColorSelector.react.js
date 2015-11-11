@@ -4,6 +4,7 @@
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    assign = require('object-assign'),
     classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
@@ -27,7 +28,7 @@ var ProductColorSelector = React.createClass({
             "focus": this.props.colorTable[key].color === this.props.colorSelected.color
           });
       colorSelector.push((
-        <div key={key} className={className} onClick={this._colorSelectOnClick.bind(this, this.props.colorTable[key])}>
+        <div key={key} className={className} onClick={this._colorSelectOnClick.bind(this, assign({}, this.props.colorTable[key], {size: ""}))}>
           <div style={style}></div>
         </div>
       ));

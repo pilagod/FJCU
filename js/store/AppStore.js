@@ -63,6 +63,7 @@ _productInfo[_productId] = {
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
+   amountMax: 20,
    amountTable: {},
    colorTable: {
      "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
@@ -198,7 +199,7 @@ function productItemUpdate(id, updates) {
  *  @param {object} updates: properties updated
  */
 function productUpdate(updates) {
-  _productSelected = assign({}, (_productSelected ? _productSelected : {}), updates);
+  _productSelected = assign({}, _productSelected, updates);
 }
 
 /**************************/
@@ -249,29 +250,27 @@ var AppStore = assign({}, EventEmitter.prototype, {
   /**
    *  Get Product Information
    *
-   *  @return {object}
+   *  @return {object} Promise
    */
   getProductInfo: function () {
     var productId = this.getProductId();
     if (Object.keys(_productInfo[productId].amountTable).length === 0) {
       return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
-        console.log("in Ajax");
         var responseData = JSON.parse(response),
-            items;
-        console.log(responseData.success);
+            items, amountAvailable;
         if (responseData.success) {
           items = responseData.data.Order.Item;
           for (var key in items) {
-            _productInfo[productId].amountTable[items[key].ID] = {
+            amountAvailable = items[key].AmountMax - items[key].Amount;
+            _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
-              amount: items[key].Amount,
-              amountMax: items[key].AmountMax
+              amountAvailable: amountAvailable > 0 ? amountAvailable : 0,
+              soldout: !(amountAvailable > 0)
             }
           }
           return _productInfo[productId];
         } else {
           alert(data.message);
-          console.log(data.message);
           return {};
         }
       });

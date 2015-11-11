@@ -21,7 +21,7 @@
 /*************************/
 
 #ProductApp {
-  padding: 20px;
+  padding: 10px;
 }
 
 #productInfo {
@@ -62,7 +62,6 @@
   flex-direction: column;
   width: 43%;
   margin-left: auto;
-  padding: 0px 0px;
 }
 
 /**
@@ -150,6 +149,15 @@
   background-color: gray;
 }
 
+.sizeSelect.soldout {
+  opacity: 0.8;
+  color: rgba(200, 200, 200, 1);
+}
+
+.sizeSelect.soldout:hover {
+  cursor: default;
+}
+
 /**
  *  discountInfo
  */
@@ -224,12 +232,27 @@
 #shoppingCartAdd {
   margin-left: 20px;
   padding: 8px 30px;
+  color: rgba(200, 200, 200, 1);
+  background-color: gray;
+}
+
+#shoppingCartAdd.active {
   color: #FFFBEF;
   background-color: #6F452D;
 }
 
-#shoppingCartAdd:hover {
+#shoppingCartAdd.active:hover {
   cursor: pointer;
+}
+
+#shoppingCartAddMessage {
+  display: none;
+  margin-left: 15px;
+  color: red;
+}
+
+#shoppingCartAddMessage.active {
+  display: inline-block;
 }
 
 /*************************/
@@ -262,6 +285,7 @@
 /**
  *  Loading
  */
+
 #loadingBlock {
   /*position: absolute;*/
   position: fixed;
@@ -545,10 +569,10 @@
   width: 170px;
   margin: 0px 20px;
   padding: 10px;
-  color: white;
+  color: rgba(200, 200, 200, 1);
   text-align: center;
   border-radius: 5px;
-  background-color: #6F452D;
+  background-color: gray;
 
   -webkit-transition: box-shadow 0.3s ease-in-out;
   -moz-transition: box-shadow 0.3s ease-in-out;
@@ -557,7 +581,12 @@
   transition: box-shadow 0.3s ease-in-out;
 }
 
-#orderAction > div:hover {
+#orderAction > div.active {
+  color: white;
+  background-color: #6F452D;
+}
+
+#orderAction > div.active:hover {
   cursor: pointer;
   box-shadow: 0px 0px 8px #6F452D;
 }

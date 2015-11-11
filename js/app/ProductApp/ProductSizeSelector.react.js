@@ -10,6 +10,9 @@ var React = require('react'),
 var ProductSizeSelector = React.createClass({
 
   propTypes: {
+    productId: ReactPropTypes.number.isRequired,
+    amountTable: ReactPropTypes.object.isRequired,
+    colorSelected: ReactPropTypes.object.isRequired,
     sizeSelected: ReactPropTypes.object.isRequired,
     sizeTable: ReactPropTypes.object.isRequired
   },
@@ -19,14 +22,26 @@ var ProductSizeSelector = React.createClass({
   },
 
   render: function () {
-    var sizeSelector = [];
+    var productItemKey,
+        productItemKeyPrefix = this.props.productId + this.props.colorSelected.color;
+    var sizeSelector = [],
+        sizeSelectClassNames = [],
+        className, sizeSelectOnClick, amountAvailable, isSoldout;
 
     for (var key in this.props.sizeTable) {
-      var className = classNames("sizeSelect", {
-        "focus": this.props.sizeTable[key].size === this.props.sizeSelected.size
+      productItemKey = productItemKeyPrefix + this.props.sizeTable[key].size;
+      amountAvailable = this.props.amountTable[productItemKey].amountAvailable;
+      isSoldout = this.props.amountTable[productItemKey].soldout;
+
+      className = classNames("sizeSelect", {
+        "focus": this.props.sizeTable[key].size === this.props.sizeSelected.size,
+        "soldout": isSoldout
       });
+
+      sizeSelectOnClick = isSoldout ? null : this._sizeSelectOnClick.bind(this, this.props.sizeTable[key]);
+
       sizeSelector.push((
-        <div key={key} className={className} onClick={this._sizeSelectOnClick.bind(this, this.props.sizeTable[key])}>
+        <div key={key} className={className} onClick={sizeSelectOnClick}>
           <span>{this.props.sizeTable[key].size}</span>
         </div>
       ));

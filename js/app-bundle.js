@@ -174,14 +174,18 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
   render: function () {
 
-    console.log(this.state.productInfo);
-
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
     }
 
-    var orderActionNextClassName = classNames({'hidden': (this.state.orderConfirm === 1)}),
-        orderAppHeader, orderProcess;
+    var isEmpty = (Object.keys(this.state.productItems).length === 0);
+
+    var orderActionNextClassName = classNames({
+      'hidden': (this.state.orderConfirm === 1),
+      'active': !isEmpty
+    });
+    var orderActionNextOnClick = isEmpty ? null : this._orderActionNextOnClick;
+    var orderAppHeader, orderProcess;
 
     var loadingBlock = null,
         loadingContent = null,
@@ -219,10 +223,10 @@ var OrderApp = React.createClass({displayName: "OrderApp",
         React.createElement(OrderDetail, {orderConfirm: this.state.orderConfirm, productItems: this.state.productItems, productInfo: this.state.productInfo}), 
         React.createElement(OrderBuyerInfo, {orderConfirm: this.state.orderConfirm, buyerInfo: this.state.buyerInfo}), 
         React.createElement("div", {id: "orderAction", className: "flex flex-vertical-center flex-horizontal-center"}, 
-          React.createElement("div", {id: "orderActionBack", onClick: this._orderActionBackOnClick}, 
+          React.createElement("div", {id: "orderActionBack", className: "active", onClick: this._orderActionBackOnClick}, 
             React.createElement("span", null, "回上一頁")
           ), 
-          React.createElement("div", {id: "orderActionNext", className: orderActionNextClassName, onClick: this._orderActionNextOnClick}, 
+          React.createElement("div", {id: "orderActionNext", className: orderActionNextClassName, onClick: orderActionNextOnClick}, 
             React.createElement("span", null, "訂單確認")
           )
         )
@@ -232,6 +236,10 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
   _initProductInfo: function () {
     AppStore.getProductInfo().then(function (productInfo) {
+      if (Object.keys(productInfo).length === 0) {
+        alert("載入資料發生錯誤，請稍候再重新整理看看。")
+        return false;
+      }
       this.setState({
         productInfo: productInfo
       });
@@ -247,6 +255,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   },
 
   _orderActionNextOnClick: function () {
+    // Num為零跳過
     this.setState({loading: true});
   },
 
@@ -612,7 +621,9 @@ var ProductApp = React.createClass({displayName: "ProductApp",
     } else {
       return (
         React.createElement("div", {id: "ProductApp"}, 
-          React.createElement(ProductInfo, {productInfo: this.state.productInfo, productSelected: this.state.productSelected}), 
+          React.createElement(ProductInfo, {
+            productInfo: this.state.productInfo, 
+            productSelected: this.state.productSelected}), 
           React.createElement(ProductDetail, null)
         )
       )
@@ -621,7 +632,10 @@ var ProductApp = React.createClass({displayName: "ProductApp",
 
   _initProductInfo: function () {
     AppStore.getProductInfo().then(function (productInfo) {
-      console.log(productInfo);
+      if (Object.keys(productInfo).length === 0) {
+        alert("載入資料發生錯誤，請稍候再重新整理看看。")
+        return false;
+      }
       this.setState({
         productInfo: productInfo
       });
@@ -655,6 +669,7 @@ module.exports = ProductApp;
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    assign = require('object-assign'),
     classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
@@ -678,7 +693,7 @@ var ProductColorSelector = React.createClass({displayName: "ProductColorSelector
             "focus": this.props.colorTable[key].color === this.props.colorSelected.color
           });
       colorSelector.push((
-        React.createElement("div", {key: key, className: className, onClick: this._colorSelectOnClick.bind(this, this.props.colorTable[key])}, 
+        React.createElement("div", {key: key, className: className, onClick: this._colorSelectOnClick.bind(this, assign({}, this.props.colorTable[key], {size: ""}))}, 
           React.createElement("div", {style: style})
         )
       ));
@@ -702,7 +717,7 @@ var ProductColorSelector = React.createClass({displayName: "ProductColorSelector
 
 module.exports = ProductColorSelector;
 
-},{"../../action/AppAction.js":1,"classnames":20,"react":182}],9:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"classnames":20,"object-assign":25,"react":182}],9:[function(require,module,exports){
 /**
  *  ProductDetail.react.js - Detail of Product
  */
@@ -753,13 +768,17 @@ module.exports = ProductInfo;
 
 var React = require('react'),
     ReactPropTypes = React.PropTypes,
+    classNames = require('classnames'),
     AppAction = require('../../action/AppAction.js');
 
 var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelector",
 
   propTypes: {
-    num: ReactPropTypes.number.isRequired,
-    price: ReactPropTypes.number.isRequired
+    num: ReactPropTypes.number,
+    price: ReactPropTypes.number.isRequired,
+    colorSelected: ReactPropTypes.object.isRequired,
+    sizeSelected: ReactPropTypes.object.isRequired,
+    amountAvailable: ReactPropTypes.number.isRequired
   },
 
   componentDidMount: function () {
@@ -770,14 +789,27 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
   },
 
   render: function () {
+    var shoppingNumberCheck = (this.props.amountAvailable >= 0 && this.props.num > this.props.amountAvailable);
+        shoppingCartAddActive = (this.props.colorSelected.color && this.props.sizeSelected.size && this.props.num > 0);
+    var shoppingCartAddClassName = classNames({
+          'active': shoppingCartAddActive && !shoppingNumberCheck
+        });
+    var shoppingCartAddMessageClassName = classNames({
+          'active': shoppingNumberCheck
+        });
+    var shoppingCartAddOnClick = (shoppingCartAddActive && !shoppingNumberCheck) ? this._shoppingCartAddOnClick : null;
+
     return (
       React.createElement("div", {id: "productNumber"}, 
         React.createElement("span", null, "數量："), 
         React.createElement("div", {className: "buyCountSub", onClick: this._buyCountSubOnClick}), 
         React.createElement("input", {className: "buyCount", type: "text", maxLength: "2", onChange: this._buyCountOnChange, defaultValue: this.props.num}), 
         React.createElement("div", {className: "buyCountAdd", onClick: this._buyCountAddOnClick}), 
-        React.createElement("div", {id: "shoppingCartAdd", onClick: this._shoppingCartAddOnClick}, 
+        React.createElement("div", {id: "shoppingCartAdd", className: shoppingCartAddClassName, onClick: shoppingCartAddOnClick}, 
           React.createElement("span", null, "加入購物車")
+        ), 
+        React.createElement("div", {id: "shoppingCartAddMessage", className: shoppingCartAddMessageClassName}, 
+          React.createElement("span", null, "超過訂購上限")
         )
       )
     );
@@ -818,6 +850,7 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
         updateNum = isNaN(buyCount.value) ? 1 : buyCount.value;
 
     buyCount.value = updateNum;
+    console.log("update num", updateNum);
     AppAction.productUpdate({
       num: parseInt(updateNum),
       total: parseInt(updateNum) * this.props.price
@@ -825,19 +858,15 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
   },
 
   _shoppingCartAddOnClick: function () {
-    var currentNum = document.querySelector('#productNumber > .buyCount').value;
-    if (currentNum === "") {
-      alert("數量尚未填寫！");
-    } else {
-      AppAction.productItemAdd();
-      AppAction.sendShoppingCartNotificationShowEvent();
-    }
+    AppAction.productItemAdd();
+    AppAction.productUpdate({size: undefined});
+    AppAction.sendShoppingCartNotificationShowEvent();
   }
 });
 
 module.exports = ProductNumberSelector;
 
-},{"../../action/AppAction.js":1,"react":182}],12:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"classnames":20,"react":182}],12:[function(require,module,exports){
 /**
  *  ProductSelector.react.js - Select Product Property
  */
@@ -857,7 +886,8 @@ var ProductSelect = React.createClass({displayName: "ProductSelect",
   },
 
   render: function () {
-    var productName = this.props.productInfo.productName;
+    var productId = this.props.productInfo.productId,
+        productName = this.props.productInfo.productName;
 
     var colorTable = this.props.productInfo.colorTable,
         colorSelected = this.props.productSelected.color ?
@@ -866,8 +896,16 @@ var ProductSelect = React.createClass({displayName: "ProductSelect",
 
     var sizeTable = this.props.productInfo.sizeTable,
         sizeSelected = this.props.productSelected.size ?
-                          sizeTable[this.props.productSelected.size] :
-                          sizeTable[Object.keys(sizeTable)[0]];
+                          sizeTable[this.props.productSelected.size] : {size: undefined};
+
+    var amountTable = this.props.productInfo.amountTable,
+        amountMax = this.props.productInfo.amountMax,
+        amountAvailable = -1;
+
+    if (sizeSelected.size) {
+      amountAvailable = amountTable[productId + colorSelected.color + sizeSelected.size].amountAvailable;
+    }
+
 
     if (this.props.productSelected.color) {
       productName += "（" + this.props.productSelected.colorName;
@@ -885,13 +923,25 @@ var ProductSelect = React.createClass({displayName: "ProductSelect",
             React.createElement("h1", null, this.props.productInfo.price)
           )
         ), 
-        React.createElement(ProductColorSelector, {colorSelected: colorSelected, colorTable: colorTable}), 
-        React.createElement(ProductSizeSelector, {sizeSelected: sizeSelected, sizeTable: sizeTable}), 
+        React.createElement(ProductColorSelector, {
+          colorSelected: colorSelected, 
+          colorTable: colorTable}), 
+        React.createElement(ProductSizeSelector, {
+          productId: productId, 
+          amountTable: amountTable, 
+          colorSelected: colorSelected, 
+          sizeSelected: sizeSelected, 
+          sizeTable: sizeTable}), 
         React.createElement("div", {id: "discountInfo"}, 
           React.createElement("span", null, "雙人組合折扣價$1,100!"), React.createElement("br", null), 
           React.createElement("span", null, "偶數件數以此類推，確定金額會在購物車內顯示。")
         ), 
-        React.createElement(ProductNumberSelector, {num: this.props.productSelected.num || 1, price: this.props.productInfo.price})
+        React.createElement(ProductNumberSelector, {
+          num: this.props.productSelected.num, 
+          price: this.props.productInfo.price, 
+          sizeSelected: sizeSelected, 
+          colorSelected: colorSelected, 
+          amountAvailable: amountAvailable < amountMax ? amountAvailable : amountMax})
       )
     )
   }
@@ -945,6 +995,9 @@ var React = require('react'),
 var ProductSizeSelector = React.createClass({displayName: "ProductSizeSelector",
 
   propTypes: {
+    productId: ReactPropTypes.number.isRequired,
+    amountTable: ReactPropTypes.object.isRequired,
+    colorSelected: ReactPropTypes.object.isRequired,
     sizeSelected: ReactPropTypes.object.isRequired,
     sizeTable: ReactPropTypes.object.isRequired
   },
@@ -954,14 +1007,26 @@ var ProductSizeSelector = React.createClass({displayName: "ProductSizeSelector",
   },
 
   render: function () {
-    var sizeSelector = [];
+    var productItemKey,
+        productItemKeyPrefix = this.props.productId + this.props.colorSelected.color;
+    var sizeSelector = [],
+        sizeSelectClassNames = [],
+        className, sizeSelectOnClick, amountAvailable, isSoldout;
 
     for (var key in this.props.sizeTable) {
-      var className = classNames("sizeSelect", {
-        "focus": this.props.sizeTable[key].size === this.props.sizeSelected.size
+      productItemKey = productItemKeyPrefix + this.props.sizeTable[key].size;
+      amountAvailable = this.props.amountTable[productItemKey].amountAvailable;
+      isSoldout = this.props.amountTable[productItemKey].soldout;
+
+      className = classNames("sizeSelect", {
+        "focus": this.props.sizeTable[key].size === this.props.sizeSelected.size,
+        "soldout": isSoldout
       });
+
+      sizeSelectOnClick = isSoldout ? null : this._sizeSelectOnClick.bind(this, this.props.sizeTable[key]);
+
       sizeSelector.push((
-        React.createElement("div", {key: key, className: className, onClick: this._sizeSelectOnClick.bind(this, this.props.sizeTable[key])}, 
+        React.createElement("div", {key: key, className: className, onClick: sizeSelectOnClick}, 
           React.createElement("span", null, this.props.sizeTable[key].size)
         )
       ));
@@ -1310,6 +1375,7 @@ _productInfo[_productId] = {
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
+   amountMax: 20,
    amountTable: {},
    colorTable: {
      "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
@@ -1445,7 +1511,7 @@ function productItemUpdate(id, updates) {
  *  @param {object} updates: properties updated
  */
 function productUpdate(updates) {
-  _productSelected = assign({}, (_productSelected ? _productSelected : {}), updates);
+  _productSelected = assign({}, _productSelected, updates);
 }
 
 /**************************/
@@ -1496,29 +1562,27 @@ var AppStore = assign({}, EventEmitter.prototype, {
   /**
    *  Get Product Information
    *
-   *  @return {object}
+   *  @return {object} Promise
    */
   getProductInfo: function () {
     var productId = this.getProductId();
     if (Object.keys(_productInfo[productId].amountTable).length === 0) {
       return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
-        console.log("in Ajax");
         var responseData = JSON.parse(response),
-            items;
-        console.log(responseData.success);
+            items, amountAvailable;
         if (responseData.success) {
           items = responseData.data.Order.Item;
           for (var key in items) {
-            _productInfo[productId].amountTable[items[key].ID] = {
+            amountAvailable = items[key].AmountMax - items[key].Amount;
+            _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
-              amount: items[key].Amount,
-              amountMax: items[key].AmountMax
+              amountAvailable: amountAvailable > 0 ? amountAvailable : 0,
+              soldout: !(amountAvailable > 0)
             }
           }
           return _productInfo[productId];
         } else {
           alert(data.message);
-          console.log(data.message);
           return {};
         }
       });
