@@ -9,7 +9,7 @@ var React = require('react'),
     ProductSizeSelector = require('./ProductSizeSelector.react.js'),
     ProductNumberSelector = require('./ProductNumberSelector.react.js');
 
-var ProductSelect = React.createClass({
+var ProductSelector = React.createClass({
 
   propTypes: {
     productInfo: ReactPropTypes.object.isRequired,
@@ -17,8 +17,11 @@ var ProductSelect = React.createClass({
   },
 
   render: function () {
-    var productId = this.props.productInfo.productId,
+    var productItemKey = "";
+        productId = this.props.productInfo.productId,
         productName = this.props.productInfo.productName;
+
+    console.log("ProductSelected:", this.props.productInfo);
 
     var colorTable = this.props.productInfo.colorTable,
         colorSelected = this.props.productSelected.color ?
@@ -30,13 +33,14 @@ var ProductSelect = React.createClass({
                           sizeTable[this.props.productSelected.size] : {size: undefined};
 
     var amountTable = this.props.productInfo.amountTable,
-        amountMax = this.props.productInfo.amountMax,
+        amountMax = -1,
         amountAvailable = -1;
 
     if (sizeSelected.size) {
-      amountAvailable = amountTable[productId + colorSelected.color + sizeSelected.size].amountAvailable;
+      productItemKey = productId + colorSelected.color + sizeSelected.size;
+      amountMax = amountTable[productItemKey].amountMax;
+      amountAvailable = amountTable[productItemKey].amountAvailable;
     }
-
 
     if (this.props.productSelected.color) {
       productName += "（" + this.props.productSelected.colorName;
@@ -68,14 +72,17 @@ var ProductSelect = React.createClass({
           <span>偶數件數以此類推，確定金額會在購物車內顯示。</span>
         </div>
         <ProductNumberSelector
+          productItemKey={productItemKey}
           num={this.props.productSelected.num}
           price={this.props.productInfo.price}
           sizeSelected={sizeSelected}
           colorSelected={colorSelected}
-          amountAvailable={amountAvailable < amountMax ? amountAvailable : amountMax}/>
+          amountMax={amountMax}
+          amountLimit={this.props.productInfo.amountLimit}
+          amountAvailable={amountAvailable}/>
       </div>
     )
   }
 });
 
-module.exports = ProductSelect;
+module.exports = ProductSelector;

@@ -10,21 +10,19 @@ var React = require('react'),
 var ProductNumberSelector = React.createClass({
 
   propTypes: {
+    productItemKey: ReactPropTypes.string.isRequired,
     num: ReactPropTypes.number,
     price: ReactPropTypes.number.isRequired,
     colorSelected: ReactPropTypes.object.isRequired,
     sizeSelected: ReactPropTypes.object.isRequired,
+    amountMax: ReactPropTypes.number.isRequired,
+    amountLimit: ReactPropTypes.number.isRequired,
     amountAvailable: ReactPropTypes.number.isRequired
   },
 
-  componentDidMount: function () {
-    AppAction.productUpdate({
-      num: this.props.num,
-      total: this.props.num * this.props.price
-    });
-  },
-
   render: function () {
+    var amountAvailable = this.props.amountAvailable < this.props.amountLimit ?
+                            this.props.amountAvailable : this.props.amountLimit;
     var shoppingNumberCheck = (this.props.amountAvailable >= 0 && this.props.num > this.props.amountAvailable);
         shoppingCartAddActive = (this.props.colorSelected.color && this.props.sizeSelected.size && this.props.num > 0);
     var shoppingCartAddClassName = classNames({
@@ -86,7 +84,6 @@ var ProductNumberSelector = React.createClass({
         updateNum = isNaN(buyCount.value) ? 1 : buyCount.value;
 
     buyCount.value = updateNum;
-    console.log("update num", updateNum);
     AppAction.productUpdate({
       num: parseInt(updateNum),
       total: parseInt(updateNum) * this.props.price
@@ -96,6 +93,10 @@ var ProductNumberSelector = React.createClass({
   _shoppingCartAddOnClick: function () {
     AppAction.productItemAdd();
     AppAction.productUpdate({size: undefined});
+    AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      amountAvailable: (this.props.amountAvailable - this.props.num),
+      isSoldout: ((this.props.amountAvailable - this.props.num) === 0)
+    });
     AppAction.sendShoppingCartNotificationShowEvent();
   }
 });

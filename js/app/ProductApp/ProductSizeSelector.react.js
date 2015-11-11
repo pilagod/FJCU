@@ -31,7 +31,7 @@ var ProductSizeSelector = React.createClass({
     for (var key in this.props.sizeTable) {
       productItemKey = productItemKeyPrefix + this.props.sizeTable[key].size;
       amountAvailable = this.props.amountTable[productItemKey].amountAvailable;
-      isSoldout = this.props.amountTable[productItemKey].soldout;
+      isSoldout = this.props.amountTable[productItemKey].isSoldout;
 
       className = classNames("sizeSelect", {
         "focus": this.props.sizeTable[key].size === this.props.sizeSelected.size,

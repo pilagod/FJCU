@@ -63,7 +63,7 @@ _productInfo[_productId] = {
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
-   amountMax: 20,
+   amountLimit: 20,
    amountTable: {},
    colorTable: {
      "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
@@ -215,6 +215,29 @@ function buyerInfoUpdate(updates) {
 }
 
 /**************************/
+/*Operations - ProductInfo*/
+/**************************/
+
+/**
+ *  Update ProductInfo
+ *  @param {object} update: productInfo updated
+ */
+function productInfoUpdate(updates) {
+  _productInfo[_productId] = assign({}, _productInfo[_productId], updates);
+}
+
+/**
+ *  Update ProductInfo Amount Available
+ *  @param {object} update: amountAvailable updated
+ */
+function productInfoAmountUpdate(productItemKey, updates) {
+  _productInfo[_productId].amountTable[productItemKey] =
+    assign({}, _productInfo[_productId].amountTable[productItemKey], updates);
+  console.log(_productInfo[_productId].amountTable);
+  console.log(_productSelected);
+}
+
+/**************************/
 /* Operations - ClearData */
 /**************************/
 
@@ -261,11 +284,13 @@ var AppStore = assign({}, EventEmitter.prototype, {
         if (responseData.success) {
           items = responseData.data.Order.Item;
           for (var key in items) {
-            amountAvailable = items[key].AmountMax - items[key].Amount;
+            // amountAvailable = items[key].AmountMax - items[key].Amount;
+            amountAvailable = Math.floor(Math.random() * 5);
             _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
+              amountMax: items[key].AmountMax,
               amountAvailable: amountAvailable > 0 ? amountAvailable : 0,
-              soldout: !(amountAvailable > 0)
+              isSoldout: !(amountAvailable > 0)
             }
           }
           return _productInfo[productId];
@@ -373,6 +398,7 @@ AppDispatcher.register(function (action) {
     case AppConstant.PRODUCT_ITEM_ADD:
       console.log(AppStore.getProductSelected());
       productItemAdd(AppStore.getProductSelected());
+      console.log(AppStore.getProductSelected());
       AppStore.emitChange(AppConstant.ORDER_CHANGE_EVENT);
       break;
 
@@ -404,12 +430,26 @@ AppDispatcher.register(function (action) {
       break;
 
     /*************************/
-    /*  Notification Actions */
+    /*    BuyerInfo Actions  */
     /*************************/
 
     case AppConstant.BUYERINFO_UPDATE:
       buyerInfoUpdate(action.buyerInfo);
       AppStore.emitChange(AppConstant.BUYERINFO_CHANGE_EVENT);
+      break;
+
+    /*************************/
+    /*   ProductInfo Action  */
+    /*************************/
+
+    case AppConstant.PRODUCTINFO_UPDATE:
+      productInfoUpdate(action.productInfo);
+      AppStore.emitChange(AppConstant.PRODUCTINFO_CHANGE_EVENT);
+      break;
+
+    case AppConstant.PRODUCTINFO_AMOUNT_UPDATE:
+      productInfoAmountUpdate(action.productItemKey, action.amountInfo);
+      AppStore.emitChange(AppConstant.PRODUCTINFO_CHANGE_EVENT);
       break;
 
     default:

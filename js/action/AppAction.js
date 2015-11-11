@@ -50,7 +50,7 @@ var AppAction = {
 
   /**
    *  Action of Product Update
-   *  @param {object} productInfo
+   *  @param {object} productInfo: properties updated
    */
   productUpdate: function (productInfo) {
     AppDispatcher.dispatch({
@@ -63,6 +63,9 @@ var AppAction = {
   /*   Send Event Action   */
   /*************************/
 
+  /**
+   *  Send Shopping Cart Notification Show Event
+   */
   sendShoppingCartNotificationShowEvent: function () {
     AppDispatcher.dispatch({
       actionType: AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT
@@ -73,12 +76,43 @@ var AppAction = {
   /*    BuyerInfo Action   */
   /*************************/
 
+  /**
+   *  Action of BuyerInfo Update
+   *  @param {object} buyerInfo: properties updated
+   */
   buyerInfoUpdate: function (buyerInfo) {
     AppDispatcher.dispatch({
       actionType: AppConstant.BUYERINFO_UPDATE,
       buyerInfo: buyerInfo
     });
+  },
+
+  /*************************/
+  /*   ProductInfo Action  */
+  /*************************/
+
+  /**
+   *  Action of ProductInfo Update
+   *  @param {object} productInfo: properties updated
+   */
+  productInfoUpdate: function (productInfo) {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.PRODUCTINFO_UPDATE,
+      productInfo: productInfo
+    })
+  },
+
+  /**
+   *  Action of ProductInfo Amount Update
+   *  @param {object} amountInfo: properties updated
+   */
+  productInfoAmountUpdate: function (productItemKey, amountInfo) {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.PRODUCTINFO_AMOUNT_UPDATE,
+      productItemKey: productItemKey,
+      amountInfo: amountInfo
+    });
   }
-}
+};
 
 module.exports = AppAction;

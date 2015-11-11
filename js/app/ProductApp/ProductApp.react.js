@@ -25,13 +25,16 @@ var ProductApp = React.createClass({
 
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
+    AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
   componentWillUnmount: function () {
     AppStore.removeChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
+    AppStore.removeChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
   render: function () {
+    console.log("productSelected:", this.state.productSelected);
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
     } else {
@@ -73,6 +76,14 @@ var ProductApp = React.createClass({
     this.setState({
       productSelected: AppStore.getProductSelected()
     });
+  },
+
+  _onProductInfoChange: function () {
+    AppStore.getProductInfo().then(function (productInfo) {
+      this.setState({
+        productInfo: productInfo
+      });
+    }.bind(this));
   }
 });
 

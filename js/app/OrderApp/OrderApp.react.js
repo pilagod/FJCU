@@ -35,6 +35,8 @@ var OrderApp = React.createClass({
     AppStore.addChangeListener(AppConstant.ORDER_CONFIRM_FAIL_EVENT, this._onOrderConfirmFail);
     // Buyer Information Changed
     AppStore.addChangeListener(AppConstant.BUYERINFO_CHANGE_EVENT, this._onBuyerInfoChange);
+    // Product Information Changed
+    AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
   componentWillUnmount: function () {
@@ -45,6 +47,8 @@ var OrderApp = React.createClass({
     AppStore.removeChangeListener(AppConstant.ORDER_CONFIRM_FAIL_EVENT, this._onOrderConfirmFail);
     // Buyer Information Changed
     AppStore.removeChangeListener(AppConstant.BUYERINFO_CHANGE_EVENT, this._onBuyerInfoChange);
+    // Product Information Changed
+    AppStore.removeChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
   render: function () {
@@ -147,6 +151,12 @@ var OrderApp = React.createClass({
   _onBuyerInfoChange: function () {
     this.setState({
       buyerInfo: AppStore.getBuyerInfo()
+    });
+  },
+
+  _onProductInfoChange: function () {
+    this.setState({
+      productInfo: AppStore.getProductInfo()
     });
   },
 

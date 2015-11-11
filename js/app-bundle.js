@@ -51,7 +51,7 @@ var AppAction = {
 
   /**
    *  Action of Product Update
-   *  @param {object} productInfo
+   *  @param {object} productInfo: properties updated
    */
   productUpdate: function (productInfo) {
     AppDispatcher.dispatch({
@@ -64,6 +64,9 @@ var AppAction = {
   /*   Send Event Action   */
   /*************************/
 
+  /**
+   *  Send Shopping Cart Notification Show Event
+   */
   sendShoppingCartNotificationShowEvent: function () {
     AppDispatcher.dispatch({
       actionType: AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT
@@ -74,13 +77,44 @@ var AppAction = {
   /*    BuyerInfo Action   */
   /*************************/
 
+  /**
+   *  Action of BuyerInfo Update
+   *  @param {object} buyerInfo: properties updated
+   */
   buyerInfoUpdate: function (buyerInfo) {
     AppDispatcher.dispatch({
       actionType: AppConstant.BUYERINFO_UPDATE,
       buyerInfo: buyerInfo
     });
+  },
+
+  /*************************/
+  /*   ProductInfo Action  */
+  /*************************/
+
+  /**
+   *  Action of ProductInfo Update
+   *  @param {object} productInfo: properties updated
+   */
+  productInfoUpdate: function (productInfo) {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.PRODUCTINFO_UPDATE,
+      productInfo: productInfo
+    })
+  },
+
+  /**
+   *  Action of ProductInfo Amount Update
+   *  @param {object} amountInfo: properties updated
+   */
+  productInfoAmountUpdate: function (productItemKey, amountInfo) {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.PRODUCTINFO_AMOUNT_UPDATE,
+      productItemKey: productItemKey,
+      amountInfo: amountInfo
+    });
   }
-}
+};
 
 module.exports = AppAction;
 
@@ -160,6 +194,8 @@ var OrderApp = React.createClass({displayName: "OrderApp",
     AppStore.addChangeListener(AppConstant.ORDER_CONFIRM_FAIL_EVENT, this._onOrderConfirmFail);
     // Buyer Information Changed
     AppStore.addChangeListener(AppConstant.BUYERINFO_CHANGE_EVENT, this._onBuyerInfoChange);
+    // Product Information Changed
+    AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
   componentWillUnmount: function () {
@@ -170,6 +206,8 @@ var OrderApp = React.createClass({displayName: "OrderApp",
     AppStore.removeChangeListener(AppConstant.ORDER_CONFIRM_FAIL_EVENT, this._onOrderConfirmFail);
     // Buyer Information Changed
     AppStore.removeChangeListener(AppConstant.BUYERINFO_CHANGE_EVENT, this._onBuyerInfoChange);
+    // Product Information Changed
+    AppStore.removeChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
   render: function () {
@@ -272,6 +310,12 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   _onBuyerInfoChange: function () {
     this.setState({
       buyerInfo: AppStore.getBuyerInfo()
+    });
+  },
+
+  _onProductInfoChange: function () {
+    this.setState({
+      productInfo: AppStore.getProductInfo()
     });
   },
 
@@ -609,13 +653,16 @@ var ProductApp = React.createClass({displayName: "ProductApp",
 
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
+    AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
   componentWillUnmount: function () {
     AppStore.removeChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
+    AppStore.removeChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
   render: function () {
+    console.log("productSelected:", this.state.productSelected);
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
     } else {
@@ -657,6 +704,14 @@ var ProductApp = React.createClass({displayName: "ProductApp",
     this.setState({
       productSelected: AppStore.getProductSelected()
     });
+  },
+
+  _onProductInfoChange: function () {
+    AppStore.getProductInfo().then(function (productInfo) {
+      this.setState({
+        productInfo: productInfo
+      });
+    }.bind(this));
   }
 });
 
@@ -774,21 +829,19 @@ var React = require('react'),
 var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelector",
 
   propTypes: {
+    productItemKey: ReactPropTypes.string.isRequired,
     num: ReactPropTypes.number,
     price: ReactPropTypes.number.isRequired,
     colorSelected: ReactPropTypes.object.isRequired,
     sizeSelected: ReactPropTypes.object.isRequired,
+    amountMax: ReactPropTypes.number.isRequired,
+    amountLimit: ReactPropTypes.number.isRequired,
     amountAvailable: ReactPropTypes.number.isRequired
   },
 
-  componentDidMount: function () {
-    AppAction.productUpdate({
-      num: this.props.num,
-      total: this.props.num * this.props.price
-    });
-  },
-
   render: function () {
+    var amountAvailable = this.props.amountAvailable < this.props.amountLimit ?
+                            this.props.amountAvailable : this.props.amountLimit;
     var shoppingNumberCheck = (this.props.amountAvailable >= 0 && this.props.num > this.props.amountAvailable);
         shoppingCartAddActive = (this.props.colorSelected.color && this.props.sizeSelected.size && this.props.num > 0);
     var shoppingCartAddClassName = classNames({
@@ -850,7 +903,6 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
         updateNum = isNaN(buyCount.value) ? 1 : buyCount.value;
 
     buyCount.value = updateNum;
-    console.log("update num", updateNum);
     AppAction.productUpdate({
       num: parseInt(updateNum),
       total: parseInt(updateNum) * this.props.price
@@ -860,6 +912,10 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
   _shoppingCartAddOnClick: function () {
     AppAction.productItemAdd();
     AppAction.productUpdate({size: undefined});
+    AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      amountAvailable: (this.props.amountAvailable - this.props.num),
+      isSoldout: ((this.props.amountAvailable - this.props.num) === 0)
+    });
     AppAction.sendShoppingCartNotificationShowEvent();
   }
 });
@@ -878,7 +934,7 @@ var React = require('react'),
     ProductSizeSelector = require('./ProductSizeSelector.react.js'),
     ProductNumberSelector = require('./ProductNumberSelector.react.js');
 
-var ProductSelect = React.createClass({displayName: "ProductSelect",
+var ProductSelector = React.createClass({displayName: "ProductSelector",
 
   propTypes: {
     productInfo: ReactPropTypes.object.isRequired,
@@ -886,8 +942,11 @@ var ProductSelect = React.createClass({displayName: "ProductSelect",
   },
 
   render: function () {
-    var productId = this.props.productInfo.productId,
+    var productItemKey = "";
+        productId = this.props.productInfo.productId,
         productName = this.props.productInfo.productName;
+
+    console.log("ProductSelected:", this.props.productInfo);
 
     var colorTable = this.props.productInfo.colorTable,
         colorSelected = this.props.productSelected.color ?
@@ -899,13 +958,14 @@ var ProductSelect = React.createClass({displayName: "ProductSelect",
                           sizeTable[this.props.productSelected.size] : {size: undefined};
 
     var amountTable = this.props.productInfo.amountTable,
-        amountMax = this.props.productInfo.amountMax,
+        amountMax = -1,
         amountAvailable = -1;
 
     if (sizeSelected.size) {
-      amountAvailable = amountTable[productId + colorSelected.color + sizeSelected.size].amountAvailable;
+      productItemKey = productId + colorSelected.color + sizeSelected.size;
+      amountMax = amountTable[productItemKey].amountMax;
+      amountAvailable = amountTable[productItemKey].amountAvailable;
     }
-
 
     if (this.props.productSelected.color) {
       productName += "（" + this.props.productSelected.colorName;
@@ -937,17 +997,20 @@ var ProductSelect = React.createClass({displayName: "ProductSelect",
           React.createElement("span", null, "偶數件數以此類推，確定金額會在購物車內顯示。")
         ), 
         React.createElement(ProductNumberSelector, {
+          productItemKey: productItemKey, 
           num: this.props.productSelected.num, 
           price: this.props.productInfo.price, 
           sizeSelected: sizeSelected, 
           colorSelected: colorSelected, 
-          amountAvailable: amountAvailable < amountMax ? amountAvailable : amountMax})
+          amountMax: amountMax, 
+          amountLimit: this.props.productInfo.amountLimit, 
+          amountAvailable: amountAvailable})
       )
     )
   }
 });
 
-module.exports = ProductSelect;
+module.exports = ProductSelector;
 
 },{"../../action/AppAction.js":1,"./ProductColorSelector.react.js":8,"./ProductNumberSelector.react.js":11,"./ProductSizeSelector.react.js":14,"react":182}],13:[function(require,module,exports){
 /**
@@ -1016,7 +1079,7 @@ var ProductSizeSelector = React.createClass({displayName: "ProductSizeSelector",
     for (var key in this.props.sizeTable) {
       productItemKey = productItemKeyPrefix + this.props.sizeTable[key].size;
       amountAvailable = this.props.amountTable[productItemKey].amountAvailable;
-      isSoldout = this.props.amountTable[productItemKey].soldout;
+      isSoldout = this.props.amountTable[productItemKey].isSoldout;
 
       className = classNames("sizeSelect", {
         "focus": this.props.sizeTable[key].size === this.props.sizeSelected.size,
@@ -1275,7 +1338,10 @@ module.exports = keymirror({
   ORDER_CONFIRM_FAIL_EVENT: null,
 
   PRODUCT_CHANGE_EVENT: null,
+  PRODUCTINFO_CHANGE_EVENT: null,
+
   BUYERINFO_CHANGE_EVENT: null,
+
   SHOPPING_CART_NOTIFICATION_SHOW_EVENT: null,
 
   /*************************/
@@ -1296,7 +1362,14 @@ module.exports = keymirror({
   /*     Buyer Actions     */
   /*************************/
 
-  BUYERINFO_UPDATE: null
+  BUYERINFO_UPDATE: null,
+
+  /*************************/
+  /*   ProductInfo Action  */
+  /*************************/
+
+  PRODUCTINFO_UPDATE: null,
+  PRODUCTINFO_AMOUNT_UPDATE: null
 
 });
 
@@ -1375,7 +1448,7 @@ _productInfo[_productId] = {
    productName: "輔大90週年校慶紀念T",
    price: 580,
    discount: 30,
-   amountMax: 20,
+   amountLimit: 20,
    amountTable: {},
    colorTable: {
      "#9e9f99": {color: "#9e9f99", colorName: "灰色", image: "./img/GREY.png"},
@@ -1527,6 +1600,29 @@ function buyerInfoUpdate(updates) {
 }
 
 /**************************/
+/*Operations - ProductInfo*/
+/**************************/
+
+/**
+ *  Update ProductInfo
+ *  @param {object} update: productInfo updated
+ */
+function productInfoUpdate(updates) {
+  _productInfo[_productId] = assign({}, _productInfo[_productId], updates);
+}
+
+/**
+ *  Update ProductInfo Amount Available
+ *  @param {object} update: amountAvailable updated
+ */
+function productInfoAmountUpdate(productItemKey, updates) {
+  _productInfo[_productId].amountTable[productItemKey] =
+    assign({}, _productInfo[_productId].amountTable[productItemKey], updates);
+  console.log(_productInfo[_productId].amountTable);
+  console.log(_productSelected);
+}
+
+/**************************/
 /* Operations - ClearData */
 /**************************/
 
@@ -1573,11 +1669,13 @@ var AppStore = assign({}, EventEmitter.prototype, {
         if (responseData.success) {
           items = responseData.data.Order.Item;
           for (var key in items) {
-            amountAvailable = items[key].AmountMax - items[key].Amount;
+            // amountAvailable = items[key].AmountMax - items[key].Amount;
+            amountAvailable = Math.floor(Math.random() * 5);
             _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
+              amountMax: items[key].AmountMax,
               amountAvailable: amountAvailable > 0 ? amountAvailable : 0,
-              soldout: !(amountAvailable > 0)
+              isSoldout: !(amountAvailable > 0)
             }
           }
           return _productInfo[productId];
@@ -1685,6 +1783,7 @@ AppDispatcher.register(function (action) {
     case AppConstant.PRODUCT_ITEM_ADD:
       console.log(AppStore.getProductSelected());
       productItemAdd(AppStore.getProductSelected());
+      console.log(AppStore.getProductSelected());
       AppStore.emitChange(AppConstant.ORDER_CHANGE_EVENT);
       break;
 
@@ -1716,12 +1815,26 @@ AppDispatcher.register(function (action) {
       break;
 
     /*************************/
-    /*  Notification Actions */
+    /*    BuyerInfo Actions  */
     /*************************/
 
     case AppConstant.BUYERINFO_UPDATE:
       buyerInfoUpdate(action.buyerInfo);
       AppStore.emitChange(AppConstant.BUYERINFO_CHANGE_EVENT);
+      break;
+
+    /*************************/
+    /*   ProductInfo Action  */
+    /*************************/
+
+    case AppConstant.PRODUCTINFO_UPDATE:
+      productInfoUpdate(action.productInfo);
+      AppStore.emitChange(AppConstant.PRODUCTINFO_CHANGE_EVENT);
+      break;
+
+    case AppConstant.PRODUCTINFO_AMOUNT_UPDATE:
+      productInfoAmountUpdate(action.productItemKey, action.amountInfo);
+      AppStore.emitChange(AppConstant.PRODUCTINFO_CHANGE_EVENT);
       break;
 
     default:
