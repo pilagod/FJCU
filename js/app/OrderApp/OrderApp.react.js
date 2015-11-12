@@ -127,7 +127,6 @@ var OrderApp = React.createClass({
       this.setState({
         productInfo: productInfo
       });
-      console.log(productInfo);
     }.bind(this));
   },
 
@@ -140,11 +139,20 @@ var OrderApp = React.createClass({
   },
 
   _orderActionNextOnClick: function () {
+
     this.setState({loading: true});
+
     var order, orderItems = [], productName, totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
         buyerInfo = this.state.buyerInfo,
         productItems = this.state.productItems,
         amountTable = this.state.productInfo.amountTable;
+
+    if (!buyerInfo.name || !buyerInfo.phone || !buyerInfo.email) {
+      alert("訂購人資訊尚未填寫完整！");
+      this.setState({loading: false});
+      return false;
+    }
+
     for (var key in productItems) {
       productName = productItems[key].productName + "（" + productItems[key].colorName + "-" + productItems[key].size + "）" ;
       if (productItems[key].num <= 0) {

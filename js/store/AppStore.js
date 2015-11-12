@@ -48,11 +48,7 @@ var _productInfo = {},
     _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
 
 // Buyer Information
-var _buyerInfo = {
-  name: "葉承儒",
-  phone: "1234567890",
-  email: "asdasd@asd.com"
-};
+var _buyerInfo = {};
 
 /* red: rgb(111,0,17)  #6f0011 */
 /* grey: rgb(158,159,153)  #9e9f99*/
@@ -270,7 +266,6 @@ function clearAllStoreData() {
  */
 function clearProductInfoAmountTable() {
   _productInfo[_productId].amountTable = {};
-  console.log("_productInfo.amountTable):", Object.keys(_productInfo[_productId].amountTable).length);
 }
 
 /*************************/

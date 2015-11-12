@@ -18,7 +18,7 @@ var OrderItem = React.createClass({
   },
 
   render: function () {
-    console.log(this.props.amountAvailable, this.props.totalAmount, this.props.productItem.num );
+    // console.log(this.props.amountAvailable, this.props.totalAmount, this.props.productItem.num );
     var productItem = this.props.productItem;
     var productItemNumberCheck = (this.props.amountAvailable < 0);
     var warningClassName = classNames({

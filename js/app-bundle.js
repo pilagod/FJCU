@@ -312,7 +312,6 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       this.setState({
         productInfo: productInfo
       });
-      console.log(productInfo);
     }.bind(this));
   },
 
@@ -325,11 +324,20 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   },
 
   _orderActionNextOnClick: function () {
+
     this.setState({loading: true});
+
     var order, orderItems = [], productName, totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
         buyerInfo = this.state.buyerInfo,
         productItems = this.state.productItems,
         amountTable = this.state.productInfo.amountTable;
+
+    if (!buyerInfo.name || !buyerInfo.phone || !buyerInfo.email) {
+      alert("訂購人資訊尚未填寫完整！");
+      this.setState({loading: false});
+      return false;
+    }
+
     for (var key in productItems) {
       productName = productItems[key].productName + "（" + productItems[key].colorName + "-" + productItems[key].size + "）" ;
       if (productItems[key].num <= 0) {
@@ -652,7 +660,7 @@ var OrderItem = React.createClass({displayName: "OrderItem",
   },
 
   render: function () {
-    console.log(this.props.amountAvailable, this.props.totalAmount, this.props.productItem.num );
+    // console.log(this.props.amountAvailable, this.props.totalAmount, this.props.productItem.num );
     var productItem = this.props.productItem;
     var productItemNumberCheck = (this.props.amountAvailable < 0);
     var warningClassName = classNames({
@@ -1592,11 +1600,7 @@ var _productInfo = {},
     _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
 
 // Buyer Information
-var _buyerInfo = {
-  name: "葉承儒",
-  phone: "1234567890",
-  email: "asdasd@asd.com"
-};
+var _buyerInfo = {};
 
 /* red: rgb(111,0,17)  #6f0011 */
 /* grey: rgb(158,159,153)  #9e9f99*/
@@ -1814,7 +1818,6 @@ function clearAllStoreData() {
  */
 function clearProductInfoAmountTable() {
   _productInfo[_productId].amountTable = {};
-  console.log("_productInfo.amountTable):", Object.keys(_productInfo[_productId].amountTable).length);
 }
 
 /*************************/
