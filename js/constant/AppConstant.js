@@ -18,8 +18,9 @@ module.exports = keymirror({
   PRODUCTINFO_CHANGE_EVENT: null,
 
   BUYERINFO_CHANGE_EVENT: null,
-
   SHOPPING_CART_NOTIFICATION_SHOW_EVENT: null,
+
+  CLEAR_ALL_EVENT: null,
 
   /*************************/
   /*     Select Actions    */
@@ -48,6 +49,12 @@ module.exports = keymirror({
   /*************************/
 
   PRODUCTINFO_UPDATE: null,
-  PRODUCTINFO_AMOUNT_UPDATE: null
+  PRODUCTINFO_AMOUNT_UPDATE: null,
+
+  /*************************/
+  /*    Clear All Action   */
+  /*************************/
+
+  CLEAR_ALL: null
 
 });

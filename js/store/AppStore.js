@@ -498,6 +498,15 @@ AppDispatcher.register(function (action) {
       AppStore.emitChange(AppConstant.PRODUCTINFO_CHANGE_EVENT);
       break;
 
+    /*************************/
+    /*   ProductInfo Action  */
+    /*************************/
+
+    case AppConstant.CLEAR_ALL:
+      clearAllStoreData();
+      AppStore.emitChange(AppConstant.CLEAR_ALL_EVENT);
+      break;
+
     default:
   }
 });

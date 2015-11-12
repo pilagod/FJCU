@@ -30,11 +30,13 @@ var NavbarFunctionBlock = React.createClass({
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
     AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
+    AppStore.addChangeListener(AppConstant.CLEAR_ALL_EVENT, this._onOrderChange);
   },
 
   componentWillUnmount: function () {
     AppStore.removeChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
     AppStore.removeChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
+    AppStore.removeChangeListener(AppConstant.CLEAR_ALL_EVENT, this._onOrderChange);
   },
 
   render: function () {

@@ -213,6 +213,7 @@ var OrderApp = React.createClass({
     this.setState({
       orderInfo: AppStore.getOrderInfo()
     });
+    AppAction.clearAll();
     setTimeout(function () {
       this.setState({loading: false});
     }.bind(this), 3000);

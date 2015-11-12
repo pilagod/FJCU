@@ -120,6 +120,19 @@ var AppAction = {
       productItemKey: productItemKey,
       amountInfo: amountInfo
     });
+  },
+
+  /*************************/
+  /*    Clear All Action   */
+  /*************************/
+
+  /**
+   *  Clear All Store Data Related to Order
+   */
+  clearAll: function () {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.CLEAR_ALL
+    });
   }
 };
 
@@ -379,6 +392,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
     this.setState({
       orderInfo: AppStore.getOrderInfo()
     });
+    AppAction.clearAll();
     setTimeout(function () {
       this.setState({loading: false});
     }.bind(this), 3000);
@@ -1263,11 +1277,13 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
   componentDidMount: function () {
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
     AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
+    AppStore.addChangeListener(AppConstant.CLEAR_ALL_EVENT, this._onOrderChange);
   },
 
   componentWillUnmount: function () {
     AppStore.removeChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
     AppStore.removeChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
+    AppStore.removeChangeListener(AppConstant.CLEAR_ALL_EVENT, this._onOrderChange);
   },
 
   render: function () {
@@ -1458,8 +1474,9 @@ module.exports = keymirror({
   PRODUCTINFO_CHANGE_EVENT: null,
 
   BUYERINFO_CHANGE_EVENT: null,
-
   SHOPPING_CART_NOTIFICATION_SHOW_EVENT: null,
+
+  CLEAR_ALL_EVENT: null,
 
   /*************************/
   /*     Select Actions    */
@@ -1488,7 +1505,13 @@ module.exports = keymirror({
   /*************************/
 
   PRODUCTINFO_UPDATE: null,
-  PRODUCTINFO_AMOUNT_UPDATE: null
+  PRODUCTINFO_AMOUNT_UPDATE: null,
+
+  /*************************/
+  /*    Clear All Action   */
+  /*************************/
+
+  CLEAR_ALL: null
 
 });
 
@@ -2000,6 +2023,15 @@ AppDispatcher.register(function (action) {
     case AppConstant.PRODUCTINFO_AMOUNT_UPDATE:
       productInfoAmountUpdate(action.productItemKey, action.amountInfo);
       AppStore.emitChange(AppConstant.PRODUCTINFO_CHANGE_EVENT);
+      break;
+
+    /*************************/
+    /*   ProductInfo Action  */
+    /*************************/
+
+    case AppConstant.CLEAR_ALL:
+      clearAllStoreData();
+      AppStore.emitChange(AppConstant.CLEAR_ALL_EVENT);
       break;
 
     default:

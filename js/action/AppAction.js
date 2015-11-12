@@ -119,6 +119,19 @@ var AppAction = {
       productItemKey: productItemKey,
       amountInfo: amountInfo
     });
+  },
+
+  /*************************/
+  /*    Clear All Action   */
+  /*************************/
+
+  /**
+   *  Clear All Store Data Related to Order
+   */
+  clearAll: function () {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.CLEAR_ALL
+    });
   }
 };
 
