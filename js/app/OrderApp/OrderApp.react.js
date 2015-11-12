@@ -6,9 +6,12 @@ var React = require('react'),
     assign = require('object-assign'),
     classNames = require('classnames'),
     AppStore = require('../../store/AppStore.js'),
+    AppAction = require('../../action/AppAction.js'),
     AppConstant = require('../../constant/AppConstant.js'),
     OrderDetail = require('./OrderDetail.react.js'),
     OrderBuyerInfo = require('./OrderBuyerInfo.react.js');
+
+var orderTimeout;
 
 var OrderApp = React.createClass({
 
@@ -17,7 +20,7 @@ var OrderApp = React.createClass({
       productInfo: {},
       productItems: AppStore.getOrderProductItem(),
       buyerInfo: AppStore.getBuyerInfo(),
-      orderId: null,
+      orderInfo: {},
       orderConfirm: 0, // 0: Initialize, 1: Success, 2: Fail
       loading: false
     };
@@ -74,10 +77,12 @@ var OrderApp = React.createClass({
         loadingContent = "訂單處理中...";
         loadingIconClassName = "fa-spinner"
       } else if (this.state.orderConfirm === 1) {
-        loadingContent = "訂單新增成功！";
+        // loadingContent = "訂單新增成功！";
+        loadingContent = this.state.orderInfo.message;
         loadingIconClassName = "fa-check-circle";
       } else if (this.state.orderConfirm === 2) {
-        loadingContent = "訂單新增失敗！";
+        // loadingContent = "訂單新增失敗！";
+        loadingContent = this.state.orderInfo.message;
         loadingIconClassName = "fa-times-circle";
       }
       loadingBlock = (
@@ -97,7 +102,7 @@ var OrderApp = React.createClass({
         {loadingBlock}
         <header className={classNames({'hidden': (this.state.orderConfirm !== 1)})}>
           <span>訂單編號：</span>
-          <h2 id="orderId">12121124124</h2>
+          <h2 id="orderId">{this.state.orderInfo.orderId}</h2>
         </header>
         <OrderDetail orderConfirm={this.state.orderConfirm} productItems={this.state.productItems} productInfo={this.state.productInfo}/>
         <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo}/>
@@ -134,8 +139,49 @@ var OrderApp = React.createClass({
   },
 
   _orderActionNextOnClick: function () {
-    // Num為零跳過
     this.setState({loading: true});
+    var order, orderItems = [], productName, totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
+        buyerInfo = this.state.buyerInfo,
+        productItems = this.state.productItems,
+        amountTable = this.state.productInfo.amountTable;
+    for (var key in productItems) {
+      productName = productItems[key].productName + "（" + productItems[key].colorName + "-" + productItems[key].size + "）" ;
+      if (productItems[key].num <= 0) {
+        alert(productName + "數量不可為0！");
+        this.setState({loading: false});
+        return false;
+      }
+      if (amountTable[productItems[key].productItemKey].amountAvailable < 0) {
+        alert(productName + "超過庫存上限！");
+        this.setState({loading: false});
+        return false;
+      }
+      totalNum += productItems[key].num;
+      total += productItems[key].total;
+
+      orderItems.push({
+        ProductItemID: productItems[key].id,
+        Amount: productItems[key].num
+      });
+    }
+
+    totalDiscount = Math.floor(totalNum / 2) * (this.state.productInfo.discount * 2);
+    totalAfterDiscount = total - totalDiscount;
+
+    order = {
+      BuyerName: buyerInfo.name,
+      BuyerPhone: buyerInfo.phone,
+      BuyerEmail: buyerInfo.email,
+      Item: orderItems,
+      OriginalPrice: total,
+      Discount: totalDiscount,
+      TotalPrice: totalAfterDiscount,
+      NoSendMail: true
+    };
+
+    console.log(order);
+
+    AppAction.orderSend(order);
   },
 
   /*************************/
@@ -164,17 +210,23 @@ var OrderApp = React.createClass({
 
   _onOrderConfirm: function () {
     this.setState({orderConfirm: 1});
+    this.setState({
+      orderInfo: AppStore.getOrderInfo()
+    });
     setTimeout(function () {
       this.setState({loading: false});
-    }.bind(this), 1500);
+    }.bind(this), 3000);
   },
 
   _onOrderConfirmFail: function () {
     this.setState({orderConfirm: 2});
+    this.setState({
+      orderInfo: AppStore.getOrderInfo()
+    });
     setTimeout(function () {
       this.setState({loading: false});
       this.setState({orderConfirm: 0});
-    }.bind(this), 1500);
+    }.bind(this), 3000);
   }
 });
 

@@ -35,7 +35,7 @@ var OrderDetail = React.createClass({
         orderFooter;
 
     for (var key in productItems) {
-      productItemKey = productItems[key].productId + productItems[key].color + productItems[key].size;
+      productItemKey = productItems[key].productItemKey;
       amountAvailable = amountTable[productItemKey].amountAvailable;
       originalAmountAvailable = amountTable[productItemKey].originalAmountAvailable;
 
@@ -45,7 +45,6 @@ var OrderDetail = React.createClass({
       orderItems.push(
         <OrderItem
           key={key}
-          productItemKey={productItemKey}
           orderConfirm={this.props.orderConfirm}
           productItem={productItems[key]}
           totalAmount={this.props.productInfo.totalAmount}

@@ -35,6 +35,8 @@ module.exports = keymirror({
   PRODUCT_ITEM_DELETE: null,
   PRODUCT_ITEM_UPDATE: null,
 
+  ORDER_SEND: null,
+
   /*************************/
   /*     Buyer Actions     */
   /*************************/

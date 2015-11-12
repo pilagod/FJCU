@@ -15,7 +15,7 @@ var assign = require('object-assign'),
 
 // Products Information
 var _productId = 1,
-    _orderId = undefined;
+    _orderInfo = {};  // orderId,
 
 var _productInfo = {},
     _productItems = {},  // All Products in Orders
@@ -106,20 +106,28 @@ function makeRequest(method, url, data) {
         }
       }
     }
+
     if (!httpRequest) {
       alert('Giving up :( Cannot create an XMLHTTP instance');
       reject(false);
     }
+
     httpRequest.onreadystatechange = function() {
       if (this.readyState === 4) {
         if (this.status === 200) {
           resolve(this.responseText);
         } else {
-          reject(false);
+          resolve(JSON.stringify({
+            status: this.status,
+            success: false
+          }));
         }
       }
     };
     httpRequest.open(method, url, true);
+    if (method === 'POST') {
+      httpRequest.setRequestHeader('Content-Type', 'application/json');
+    }
     httpRequest.send(data);
   });
 }
@@ -132,8 +140,12 @@ function makeRequest(method, url, data) {
 /**
  *  Get Order ID by sending ProductItems User Bought
  */
-function getOrderId() {
-  // Ajax to Server
+function sendOrder(orderInfo) {
+  return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
+}
+
+function orderUpdate(orderInfo) {
+  _orderInfo = assign({}, orderInfo);
 }
 
 /**
@@ -164,7 +176,10 @@ function productItemAdd (productInfo) {
       size: productInfo.size
     });
     if (!_productItems[id]) {
-      _productItems[id] = assign({}, {id: id}, productInfo);
+      _productItems[id] = assign({}, productInfo, {
+        id: id,
+        productItemKey: productInfo.productId + productInfo.color + productInfo.size
+      });
     } else {
       _productItems[id] = assign({}, _productItems[id], {
         num: _productItems[id].num + productInfo.num,
@@ -259,6 +274,10 @@ var AppStore = assign({}, EventEmitter.prototype, {
   /*************************/
   /*     Get Store Data    */
   /*************************/
+
+  getOrderInfo: function () {
+    return _orderInfo;
+  },
 
   /**
    *  Get Product Id
@@ -396,7 +415,6 @@ var AppStore = assign({}, EventEmitter.prototype, {
 /*************************/
 
 AppDispatcher.register(function (action) {
-
   switch (action.actionType) {
 
     /*************************/
@@ -404,9 +422,7 @@ AppDispatcher.register(function (action) {
     /*************************/
 
     case AppConstant.PRODUCT_ITEM_ADD:
-      console.log(AppStore.getProductSelected());
       productItemAdd(AppStore.getProductSelected());
-      console.log(AppStore.getProductSelected());
       AppStore.emitChange(AppConstant.ORDER_CHANGE_EVENT);
       break;
 
@@ -418,6 +434,28 @@ AppDispatcher.register(function (action) {
     case AppConstant.PRODUCT_ITEM_UPDATE:
       productItemUpdate(action.id, action.productInfo);
       AppStore.emitChange(AppConstant.ORDER_CHANGE_EVENT);
+      break;
+
+    case AppConstant.ORDER_SEND:
+      sendOrder(action.orderInfo).then(function (response) {
+        console.log("response:", response);
+        var responseData = JSON.parse(response);
+        if (responseData.success) {
+          var data = responseData.data;
+          orderUpdate({
+            orderId: data.Order.Code,
+            message: responseData.message,
+            expiryDate: data.Order.ExpiryDate
+          });
+          AppStore.emitChange(AppConstant.ORDER_CONFIRM_EVENT);
+        } else {
+          orderUpdate({
+            orderId: undefined,
+            message: responseData.message || "訂單下訂失敗！",
+          });
+          AppStore.emitChange(AppConstant.ORDER_CONFIRM_FAIL_EVENT);
+        }
+      });
       break;
 
     /*************************/

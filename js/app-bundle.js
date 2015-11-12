@@ -45,6 +45,13 @@ var AppAction = {
     });
   },
 
+  orderSend: function (orderInfo) {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.ORDER_SEND,
+      orderInfo: orderInfo
+    });
+  },
+
   /*************************/
   /* Product Select Action */
   /*************************/
@@ -165,9 +172,12 @@ var React = require('react'),
     assign = require('object-assign'),
     classNames = require('classnames'),
     AppStore = require('../../store/AppStore.js'),
+    AppAction = require('../../action/AppAction.js'),
     AppConstant = require('../../constant/AppConstant.js'),
     OrderDetail = require('./OrderDetail.react.js'),
     OrderBuyerInfo = require('./OrderBuyerInfo.react.js');
+
+var orderTimeout;
 
 var OrderApp = React.createClass({displayName: "OrderApp",
 
@@ -176,7 +186,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       productInfo: {},
       productItems: AppStore.getOrderProductItem(),
       buyerInfo: AppStore.getBuyerInfo(),
-      orderId: null,
+      orderInfo: {},
       orderConfirm: 0, // 0: Initialize, 1: Success, 2: Fail
       loading: false
     };
@@ -233,10 +243,12 @@ var OrderApp = React.createClass({displayName: "OrderApp",
         loadingContent = "訂單處理中...";
         loadingIconClassName = "fa-spinner"
       } else if (this.state.orderConfirm === 1) {
-        loadingContent = "訂單新增成功！";
+        // loadingContent = "訂單新增成功！";
+        loadingContent = this.state.orderInfo.message;
         loadingIconClassName = "fa-check-circle";
       } else if (this.state.orderConfirm === 2) {
-        loadingContent = "訂單新增失敗！";
+        // loadingContent = "訂單新增失敗！";
+        loadingContent = this.state.orderInfo.message;
         loadingIconClassName = "fa-times-circle";
       }
       loadingBlock = (
@@ -256,7 +268,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
         loadingBlock, 
         React.createElement("header", {className: classNames({'hidden': (this.state.orderConfirm !== 1)})}, 
           React.createElement("span", null, "訂單編號："), 
-          React.createElement("h2", {id: "orderId"}, "12121124124")
+          React.createElement("h2", {id: "orderId"}, this.state.orderInfo.orderId)
         ), 
         React.createElement(OrderDetail, {orderConfirm: this.state.orderConfirm, productItems: this.state.productItems, productInfo: this.state.productInfo}), 
         React.createElement(OrderBuyerInfo, {orderConfirm: this.state.orderConfirm, buyerInfo: this.state.buyerInfo}), 
@@ -293,8 +305,49 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   },
 
   _orderActionNextOnClick: function () {
-    // Num為零跳過
     this.setState({loading: true});
+    var order, orderItems = [], productName, totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
+        buyerInfo = this.state.buyerInfo,
+        productItems = this.state.productItems,
+        amountTable = this.state.productInfo.amountTable;
+    for (var key in productItems) {
+      productName = productItems[key].productName + "（" + productItems[key].colorName + "-" + productItems[key].size + "）" ;
+      if (productItems[key].num <= 0) {
+        alert(productName + "數量不可為0！");
+        this.setState({loading: false});
+        return false;
+      }
+      if (amountTable[productItems[key].productItemKey].amountAvailable < 0) {
+        alert(productName + "超過庫存上限！");
+        this.setState({loading: false});
+        return false;
+      }
+      totalNum += productItems[key].num;
+      total += productItems[key].total;
+
+      orderItems.push({
+        ProductItemID: productItems[key].id,
+        Amount: productItems[key].num
+      });
+    }
+
+    totalDiscount = Math.floor(totalNum / 2) * (this.state.productInfo.discount * 2);
+    totalAfterDiscount = total - totalDiscount;
+
+    order = {
+      BuyerName: buyerInfo.name,
+      BuyerPhone: buyerInfo.phone,
+      BuyerEmail: buyerInfo.email,
+      Item: orderItems,
+      OriginalPrice: total,
+      Discount: totalDiscount,
+      TotalPrice: totalAfterDiscount,
+      NoSendMail: true
+    };
+
+    console.log(order);
+
+    AppAction.orderSend(order);
   },
 
   /*************************/
@@ -323,23 +376,29 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
   _onOrderConfirm: function () {
     this.setState({orderConfirm: 1});
+    this.setState({
+      orderInfo: AppStore.getOrderInfo()
+    });
     setTimeout(function () {
       this.setState({loading: false});
-    }.bind(this), 1500);
+    }.bind(this), 3000);
   },
 
   _onOrderConfirmFail: function () {
     this.setState({orderConfirm: 2});
+    this.setState({
+      orderInfo: AppStore.getOrderInfo()
+    });
     setTimeout(function () {
       this.setState({loading: false});
       this.setState({orderConfirm: 0});
-    }.bind(this), 1500);
+    }.bind(this), 3000);
   }
 });
 
 module.exports = OrderApp;
 
-},{"../../constant/AppConstant.js":16,"../../store/AppStore.js":18,"./OrderBuyerInfo.react.js":4,"./OrderDetail.react.js":5,"classnames":20,"object-assign":25,"react":182}],4:[function(require,module,exports){
+},{"../../action/AppAction.js":1,"../../constant/AppConstant.js":16,"../../store/AppStore.js":18,"./OrderBuyerInfo.react.js":4,"./OrderDetail.react.js":5,"classnames":20,"object-assign":25,"react":182}],4:[function(require,module,exports){
 /**
  *  OrderBuyerInfo.react.js - Buyer's Information
  */
@@ -474,7 +533,7 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
         orderFooter;
 
     for (var key in productItems) {
-      productItemKey = productItems[key].productId + productItems[key].color + productItems[key].size;
+      productItemKey = productItems[key].productItemKey;
       amountAvailable = amountTable[productItemKey].amountAvailable;
       originalAmountAvailable = amountTable[productItemKey].originalAmountAvailable;
 
@@ -484,7 +543,6 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
       orderItems.push(
         React.createElement(OrderItem, {
           key: key, 
-          productItemKey: productItemKey, 
           orderConfirm: this.props.orderConfirm, 
           productItem: productItems[key], 
           totalAmount: this.props.productInfo.totalAmount, 
@@ -555,7 +613,6 @@ var React = require('react'),
 var OrderItem = React.createClass({displayName: "OrderItem",
 
   propTypes: {
-    productItemKey: ReactPropTypes.string.isRequired,
     orderConfirm: ReactPropTypes.number.isRequired,
     productItem: ReactPropTypes.object.isRequired,
     totalAmount: ReactPropTypes.number.isRequired,
@@ -618,7 +675,7 @@ var OrderItem = React.createClass({displayName: "OrderItem",
       var updateNum = parseInt(currentNum) - 1;
       buyCount.value = updateNum;
       AppAction.productInfoUpdate({totalAmount: this.props.totalAmount - 1});
-      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      AppAction.productInfoAmountUpdate(this.props.productItem.productItemKey, {
         amountAvailable: this.props.amountAvailable + 1,
         isSoldout: (this.props.amountAvailable + 1 <= 0)
       });
@@ -641,7 +698,7 @@ var OrderItem = React.createClass({displayName: "OrderItem",
     } else {
       buyCount.value = updateNum;
       AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + 1});
-      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      AppAction.productInfoAmountUpdate(this.props.productItem.productItemKey, {
         amountAvailable: this.props.amountAvailable - 1,
         isSoldout: (this.props.amountAvailable - 1 <= 0)
       });
@@ -653,7 +710,6 @@ var OrderItem = React.createClass({displayName: "OrderItem",
   },
 
   _buyCountOnChange: function (id, event) {
-    console.log(this.props.productItem.num);
     var buyCount = event.target,
         updateNum = isNaN(buyCount.value) ? 1 : buyCount.value,
         updateTotalNum = ((updateNum === "") ? 0 : parseInt(updateNum));
@@ -663,7 +719,7 @@ var OrderItem = React.createClass({displayName: "OrderItem",
     } else {
       buyCount.value = updateNum;
       AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + (updateTotalNum - this.props.productItem.num)});
-      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      AppAction.productInfoAmountUpdate(this.props.productItem.productItemKey, {
         amountAvailable: this.props.amountAvailable + this.props.productItem.num - updateTotalNum,
         isSoldout: (this.props.amountAvailable + this.props.productItem.num - updateTotalNum <= 0)
       });
@@ -678,7 +734,7 @@ var OrderItem = React.createClass({displayName: "OrderItem",
     if (confirm("確定要刪除此產品？")) {
       AppAction.productItemDelete(id);
       AppAction.productInfoUpdate({totalAmount: this.props.totalAmount - this.props.productItem.num});
-      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      AppAction.productInfoAmountUpdate(this.props.productItem.productItemKey, {
         amountAvailable: this.props.originalAmountAvailable,
         isSoldout: false
       })
@@ -1419,6 +1475,8 @@ module.exports = keymirror({
   PRODUCT_ITEM_DELETE: null,
   PRODUCT_ITEM_UPDATE: null,
 
+  ORDER_SEND: null,
+
   /*************************/
   /*     Buyer Actions     */
   /*************************/
@@ -1461,7 +1519,7 @@ var assign = require('object-assign'),
 
 // Products Information
 var _productId = 1,
-    _orderId = undefined;
+    _orderInfo = {};  // orderId,
 
 var _productInfo = {},
     _productItems = {},  // All Products in Orders
@@ -1552,20 +1610,28 @@ function makeRequest(method, url, data) {
         }
       }
     }
+
     if (!httpRequest) {
       alert('Giving up :( Cannot create an XMLHTTP instance');
       reject(false);
     }
+
     httpRequest.onreadystatechange = function() {
       if (this.readyState === 4) {
         if (this.status === 200) {
           resolve(this.responseText);
         } else {
-          reject(false);
+          resolve(JSON.stringify({
+            status: this.status,
+            success: false
+          }));
         }
       }
     };
     httpRequest.open(method, url, true);
+    if (method === 'POST') {
+      httpRequest.setRequestHeader('Content-Type', 'application/json');
+    }
     httpRequest.send(data);
   });
 }
@@ -1578,8 +1644,12 @@ function makeRequest(method, url, data) {
 /**
  *  Get Order ID by sending ProductItems User Bought
  */
-function getOrderId() {
-  // Ajax to Server
+function sendOrder(orderInfo) {
+  return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
+}
+
+function orderUpdate(orderInfo) {
+  _orderInfo = assign({}, orderInfo);
 }
 
 /**
@@ -1610,7 +1680,10 @@ function productItemAdd (productInfo) {
       size: productInfo.size
     });
     if (!_productItems[id]) {
-      _productItems[id] = assign({}, {id: id}, productInfo);
+      _productItems[id] = assign({}, productInfo, {
+        id: id,
+        productItemKey: productInfo.productId + productInfo.color + productInfo.size
+      });
     } else {
       _productItems[id] = assign({}, _productItems[id], {
         num: _productItems[id].num + productInfo.num,
@@ -1705,6 +1778,10 @@ var AppStore = assign({}, EventEmitter.prototype, {
   /*************************/
   /*     Get Store Data    */
   /*************************/
+
+  getOrderInfo: function () {
+    return _orderInfo;
+  },
 
   /**
    *  Get Product Id
@@ -1842,7 +1919,6 @@ var AppStore = assign({}, EventEmitter.prototype, {
 /*************************/
 
 AppDispatcher.register(function (action) {
-
   switch (action.actionType) {
 
     /*************************/
@@ -1850,9 +1926,7 @@ AppDispatcher.register(function (action) {
     /*************************/
 
     case AppConstant.PRODUCT_ITEM_ADD:
-      console.log(AppStore.getProductSelected());
       productItemAdd(AppStore.getProductSelected());
-      console.log(AppStore.getProductSelected());
       AppStore.emitChange(AppConstant.ORDER_CHANGE_EVENT);
       break;
 
@@ -1864,6 +1938,28 @@ AppDispatcher.register(function (action) {
     case AppConstant.PRODUCT_ITEM_UPDATE:
       productItemUpdate(action.id, action.productInfo);
       AppStore.emitChange(AppConstant.ORDER_CHANGE_EVENT);
+      break;
+
+    case AppConstant.ORDER_SEND:
+      sendOrder(action.orderInfo).then(function (response) {
+        console.log("response:", response);
+        var responseData = JSON.parse(response);
+        if (responseData.success) {
+          var data = responseData.data;
+          orderUpdate({
+            orderId: data.Order.Code,
+            message: responseData.message,
+            expiryDate: data.Order.ExpiryDate
+          });
+          AppStore.emitChange(AppConstant.ORDER_CONFIRM_EVENT);
+        } else {
+          orderUpdate({
+            orderId: undefined,
+            message: responseData.message || "訂單下訂失敗！",
+          });
+          AppStore.emitChange(AppConstant.ORDER_CONFIRM_FAIL_EVENT);
+        }
+      });
       break;
 
     /*************************/

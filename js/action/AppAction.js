@@ -44,6 +44,13 @@ var AppAction = {
     });
   },
 
+  orderSend: function (orderInfo) {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.ORDER_SEND,
+      orderInfo: orderInfo
+    });
+  },
+
   /*************************/
   /* Product Select Action */
   /*************************/

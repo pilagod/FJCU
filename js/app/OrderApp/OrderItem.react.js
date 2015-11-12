@@ -10,7 +10,6 @@ var React = require('react'),
 var OrderItem = React.createClass({
 
   propTypes: {
-    productItemKey: ReactPropTypes.string.isRequired,
     orderConfirm: ReactPropTypes.number.isRequired,
     productItem: ReactPropTypes.object.isRequired,
     totalAmount: ReactPropTypes.number.isRequired,
@@ -73,7 +72,7 @@ var OrderItem = React.createClass({
       var updateNum = parseInt(currentNum) - 1;
       buyCount.value = updateNum;
       AppAction.productInfoUpdate({totalAmount: this.props.totalAmount - 1});
-      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      AppAction.productInfoAmountUpdate(this.props.productItem.productItemKey, {
         amountAvailable: this.props.amountAvailable + 1,
         isSoldout: (this.props.amountAvailable + 1 <= 0)
       });
@@ -96,7 +95,7 @@ var OrderItem = React.createClass({
     } else {
       buyCount.value = updateNum;
       AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + 1});
-      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      AppAction.productInfoAmountUpdate(this.props.productItem.productItemKey, {
         amountAvailable: this.props.amountAvailable - 1,
         isSoldout: (this.props.amountAvailable - 1 <= 0)
       });
@@ -108,7 +107,6 @@ var OrderItem = React.createClass({
   },
 
   _buyCountOnChange: function (id, event) {
-    console.log(this.props.productItem.num);
     var buyCount = event.target,
         updateNum = isNaN(buyCount.value) ? 1 : buyCount.value,
         updateTotalNum = ((updateNum === "") ? 0 : parseInt(updateNum));
@@ -118,7 +116,7 @@ var OrderItem = React.createClass({
     } else {
       buyCount.value = updateNum;
       AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + (updateTotalNum - this.props.productItem.num)});
-      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      AppAction.productInfoAmountUpdate(this.props.productItem.productItemKey, {
         amountAvailable: this.props.amountAvailable + this.props.productItem.num - updateTotalNum,
         isSoldout: (this.props.amountAvailable + this.props.productItem.num - updateTotalNum <= 0)
       });
@@ -133,7 +131,7 @@ var OrderItem = React.createClass({
     if (confirm("確定要刪除此產品？")) {
       AppAction.productItemDelete(id);
       AppAction.productInfoUpdate({totalAmount: this.props.totalAmount - this.props.productItem.num});
-      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+      AppAction.productInfoAmountUpdate(this.props.productItem.productItemKey, {
         amountAvailable: this.props.originalAmountAvailable,
         isSoldout: false
       })
