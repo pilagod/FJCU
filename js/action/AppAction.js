@@ -132,6 +132,12 @@ var AppAction = {
     AppDispatcher.dispatch({
       actionType: AppConstant.CLEAR_ALL
     });
+  },
+
+  clearProductInfoAmountTable: function () {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.CLEAR_PRODUCTINFO_AMOUNT_TABLE
+    });
   }
 };
 

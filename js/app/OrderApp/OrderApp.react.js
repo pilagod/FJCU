@@ -127,6 +127,7 @@ var OrderApp = React.createClass({
       this.setState({
         productInfo: productInfo
       });
+      console.log(productInfo);
     }.bind(this));
   },
 
@@ -161,6 +162,7 @@ var OrderApp = React.createClass({
 
       orderItems.push({
         ProductItemID: productItems[key].id,
+        // Amount: 101
         Amount: productItems[key].num
       });
     }
@@ -201,10 +203,13 @@ var OrderApp = React.createClass({
   },
 
   _onProductInfoChange: function () {
+    console.log("onOrderAppProductInfoChange");
+    console.log(this.state.productInfo);
     AppStore.getProductInfo().then(function (productInfo) {
       this.setState({
         productInfo: productInfo
       });
+      console.log("new product Info:", productInfo);
     }.bind(this));
   },
 
@@ -213,10 +218,13 @@ var OrderApp = React.createClass({
     this.setState({
       orderInfo: AppStore.getOrderInfo()
     });
+
     AppAction.clearAll();
+    AppAction.clearProductInfoAmountTable();
+
     setTimeout(function () {
       this.setState({loading: false});
-    }.bind(this), 3000);
+    }.bind(this), 2500);
   },
 
   _onOrderConfirmFail: function () {
@@ -224,10 +232,13 @@ var OrderApp = React.createClass({
     this.setState({
       orderInfo: AppStore.getOrderInfo()
     });
+
+    AppAction.clearProductInfoAmountTable();
+
     setTimeout(function () {
       this.setState({loading: false});
       this.setState({orderConfirm: 0});
-    }.bind(this), 3000);
+    }.bind(this), 2500);
   }
 });
 

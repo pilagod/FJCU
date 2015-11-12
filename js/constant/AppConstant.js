@@ -55,6 +55,6 @@ module.exports = keymirror({
   /*    Clear All Action   */
   /*************************/
 
-  CLEAR_ALL: null
-
+  CLEAR_ALL: null,
+  CLEAR_PRODUCTINFO_AMOUNT_TABLE: null
 });

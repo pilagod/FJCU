@@ -265,6 +265,14 @@ function clearAllStoreData() {
   _buyerInfo = {};
 }
 
+/**
+ *  Clear ProductInfo Amount Table
+ */
+function clearProductInfoAmountTable() {
+  _productInfo[_productId].amountTable = {};
+  console.log("_productInfo.amountTable):", Object.keys(_productInfo[_productId].amountTable).length);
+}
+
 /*************************/
 /*    AppStore Object    */
 /*************************/
@@ -303,26 +311,27 @@ var AppStore = assign({}, EventEmitter.prototype, {
           items = responseData.data.Order.Item;
           for (var key in items) {
             var originalNum = 0;
-            if (_productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]]) {
-              if (_productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num &&
-                  _productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num > 0){
-                originalNum = _productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num
+            var item = _productItems[parseInt(key) + 1];
+            if (item) {
+              if (item.num && item.num > 0) {
+                originalNum = item.num;
               }
             }
-            // amountAvailable = items[key].AmountMax - items[key].Amount - originalNum;
-            amountAvailable = Math.floor(Math.random() * 20);
+            amountAvailable = items[key].AmountMax - items[key].Amount;
+            // amountAvailable = Math.floor(Math.random() * 20);
             _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
-              // amountMax: items[key].AmountMax,
-              amountMax: 4,
-              amountAvailable: amountAvailable > 0 ? amountAvailable : 0,
-              originalAmountAvailable: amountAvailable > 0 ? amountAvailable : 0,
+              amountMax: items[key].AmountMax,
+              // amountMax: 4,
+              amountAvailable: amountAvailable - originalNum,
+              originalAmountAvailable: amountAvailable,
               isSoldout: !(amountAvailable > 0)
             }
+            // console.log(amountAvailable, _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]]);
           }
           return _productInfo[productId];
         } else {
-          alert(data.message);
+          alert(responseData.message);
           return {};
         }
       });
@@ -505,6 +514,11 @@ AppDispatcher.register(function (action) {
     case AppConstant.CLEAR_ALL:
       clearAllStoreData();
       AppStore.emitChange(AppConstant.CLEAR_ALL_EVENT);
+      break;
+
+    case AppConstant.CLEAR_PRODUCTINFO_AMOUNT_TABLE:
+      clearProductInfoAmountTable();
+      AppStore.emitChange(AppConstant.PRODUCTINFO_CHANGE_EVENT);
       break;
 
     default:
