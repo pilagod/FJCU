@@ -31,12 +31,10 @@ var ProductSelector = React.createClass({
                           sizeTable[this.props.productSelected.size] : {size: undefined};
 
     var amountTable = this.props.productInfo.amountTable,
-        amountMax = -1,
         amountAvailable = -1;
 
     if (sizeSelected.size) {
       productItemKey = productId + colorSelected.color + sizeSelected.size;
-      amountMax = amountTable[productItemKey].amountMax;
       amountAvailable = amountTable[productItemKey].amountAvailable;
     }
 
@@ -75,7 +73,7 @@ var ProductSelector = React.createClass({
           price={this.props.productInfo.price}
           sizeSelected={sizeSelected}
           colorSelected={colorSelected}
-          amountMax={amountMax}
+          totalAmount={this.props.productInfo.totalAmount}
           amountAvailable={amountAvailable}/>
       </div>
     )

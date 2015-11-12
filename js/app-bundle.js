@@ -314,9 +314,11 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   },
 
   _onProductInfoChange: function () {
-    this.setState({
-      productInfo: AppStore.getProductInfo()
-    });
+    AppStore.getProductInfo().then(function (productInfo) {
+      this.setState({
+        productInfo: productInfo
+      });
+    }.bind(this));
   },
 
   _onOrderConfirm: function () {
@@ -453,7 +455,7 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
   },
 
   render: function () {
-    var productItemKey, amountMax, amountAvailable, originalAmountAvailable,
+    var productItemKey, amountAvailable, originalAmountAvailable,
         amountTable = this.props.productInfo.amountTable;
     var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)});
     var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
@@ -473,7 +475,6 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
 
     for (var key in productItems) {
       productItemKey = productItems[key].productId + productItems[key].color + productItems[key].size;
-      amountMax = amountTable[productItemKey].amountMax;
       amountAvailable = amountTable[productItemKey].amountAvailable;
       originalAmountAvailable = amountTable[productItemKey].originalAmountAvailable;
 
@@ -486,7 +487,7 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
           productItemKey: productItemKey, 
           orderConfirm: this.props.orderConfirm, 
           productItem: productItems[key], 
-          amountMax: amountMax, 
+          totalAmount: this.props.productInfo.totalAmount, 
           amountAvailable: amountAvailable, 
           originalAmountAvailable: originalAmountAvailable})
       );
@@ -557,15 +558,15 @@ var OrderItem = React.createClass({displayName: "OrderItem",
     productItemKey: ReactPropTypes.string.isRequired,
     orderConfirm: ReactPropTypes.number.isRequired,
     productItem: ReactPropTypes.object.isRequired,
-    amountMax: ReactPropTypes.number.isRequired,
+    totalAmount: ReactPropTypes.number.isRequired,
     amountAvailable: ReactPropTypes.number.isRequired,
     originalAmountAvailable: ReactPropTypes.number.isRequired
   },
 
   render: function () {
-    console.log(this.props.originalAmountAvailable);
+    console.log(this.props.amountAvailable, this.props.totalAmount, this.props.productItem.num );
     var productItem = this.props.productItem;
-    var productItemNumberCheck = (this.props.productItem.num + this.props.amountAvailable > this.props.originalAmountAvailable);
+    var productItemNumberCheck = (this.props.amountAvailable < 0);
     var warningClassName = classNames({
           'warning': productItemNumberCheck
         }),
@@ -575,10 +576,6 @@ var OrderItem = React.createClass({displayName: "OrderItem",
         infoClassName = classNames({
           'hidden': (this.props.orderConfirm !== 1)
         });
-
-    if (productItemNumberCheck) {
-      alert("超過訂購上限！");
-    }
 
     return (
       React.createElement("div", {className: classNames('table-row', warningClassName)}, 
@@ -620,6 +617,11 @@ var OrderItem = React.createClass({displayName: "OrderItem",
     if (parseInt(currentNum) > 1) {
       var updateNum = parseInt(currentNum) - 1;
       buyCount.value = updateNum;
+      AppAction.productInfoUpdate({totalAmount: this.props.totalAmount - 1});
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: this.props.amountAvailable + 1,
+        isSoldout: (this.props.amountAvailable + 1 <= 0)
+      });
       AppAction.productItemUpdate(id, {
         num: updateNum,
         total: updateNum * this.props.productItem.price
@@ -628,26 +630,48 @@ var OrderItem = React.createClass({displayName: "OrderItem",
   },
 
   _buyCountAddOnClick: function (id, event) {
+
     var buyCount = event.target.previousSibling,
         currentNum = (isNaN(buyCount.value) || buyCount.value === "") ? 0 : buyCount.value;
 
     var updateNum = parseInt(currentNum) + 1;
-    buyCount.value = updateNum;
-    AppAction.productItemUpdate(id, {
-      num: updateNum,
-      total: updateNum * this.props.productItem.price
-    });
+
+    if (this.props.totalAmount + 1 > 20) {
+      alert("每筆訂單最多20件！");
+    } else {
+      buyCount.value = updateNum;
+      AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + 1});
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: this.props.amountAvailable - 1,
+        isSoldout: (this.props.amountAvailable - 1 <= 0)
+      });
+      AppAction.productItemUpdate(id, {
+        num: updateNum,
+        total: updateNum * this.props.productItem.price
+      });
+    }
   },
 
   _buyCountOnChange: function (id, event) {
+    console.log(this.props.productItem.num);
     var buyCount = event.target,
-        updateNum = isNaN(buyCount.value) ? 1 : buyCount.value;
-
-    buyCount.value = updateNum;
-    AppAction.productItemUpdate(id, {
-      num: parseInt(updateNum),
-      total: parseInt(updateNum) * this.props.productItem.price
-    });
+        updateNum = isNaN(buyCount.value) ? 1 : buyCount.value,
+        updateTotalNum = ((updateNum === "") ? 0 : parseInt(updateNum));
+    if (this.props.totalAmount + (updateTotalNum - this.props.productItem.num) > 20) {
+      alert("每筆訂單最多20件！");
+      buyCount.value = this.props.productItem.num;
+    } else {
+      buyCount.value = updateNum;
+      AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + (updateTotalNum - this.props.productItem.num)});
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: this.props.amountAvailable + this.props.productItem.num - updateTotalNum,
+        isSoldout: (this.props.amountAvailable + this.props.productItem.num - updateTotalNum <= 0)
+      });
+      AppAction.productItemUpdate(id, {
+        num: parseInt(updateTotalNum),
+        total: parseInt(updateTotalNum) * this.props.productItem.price
+      });
+    }
   },
 
   _deleteOnClick: function (id) {
@@ -871,7 +895,7 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
     price: ReactPropTypes.number.isRequired,
     colorSelected: ReactPropTypes.object.isRequired,
     sizeSelected: ReactPropTypes.object.isRequired,
-    amountMax: ReactPropTypes.number.isRequired,
+    totalAmount: ReactPropTypes.number.isRequired,
     amountAvailable: ReactPropTypes.number.isRequired
   },
 
@@ -880,12 +904,13 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
     var shoppingNumberCheck = (this.props.amountAvailable >= 0 && this.props.num > this.props.amountAvailable);
         shoppingCartAddActive = (this.props.colorSelected.color && this.props.sizeSelected.size && this.props.num > 0);
     var shoppingCartAddClassName = classNames({
-          'active': shoppingCartAddActive && !shoppingNumberCheck
+          'active': (shoppingCartAddActive && !shoppingNumberCheck && this.props.totalAmount <= 20)
         });
     var shoppingCartAddMessageClassName = classNames({
           'active': shoppingNumberCheck
         });
-    var shoppingCartAddOnClick = (shoppingCartAddActive && !shoppingNumberCheck) ? this._shoppingCartAddOnClick : null;
+    var shoppingCartAddOnClick = (shoppingCartAddActive && !shoppingNumberCheck && this.props.totalAmount <= 20) ?
+                                    this._shoppingCartAddOnClick : null;
 
     return (
       React.createElement("div", {id: "productNumber"}, 
@@ -897,7 +922,7 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
           React.createElement("span", null, "加入購物車")
         ), 
         React.createElement("div", {id: "shoppingCartAddMessage", className: shoppingCartAddMessageClassName}, 
-          React.createElement("span", null, "超過訂購上限")
+          React.createElement("span", null, "超過庫存上限")
         )
       )
     );
@@ -945,13 +970,18 @@ var ProductNumberSelector = React.createClass({displayName: "ProductNumberSelect
   },
 
   _shoppingCartAddOnClick: function () {
-    AppAction.productItemAdd();
-    AppAction.productUpdate({size: undefined});
-    AppAction.productInfoAmountUpdate(this.props.productItemKey, {
-      amountAvailable: (this.props.amountAvailable - this.props.num),
-      isSoldout: ((this.props.amountAvailable - this.props.num) === 0)
-    });
-    AppAction.sendShoppingCartNotificationShowEvent();
+    if (this.props.totalAmount + this.props.num > 20) {
+      alert("每筆訂單最多20件！");
+    } else {
+      AppAction.productItemAdd();
+      AppAction.productUpdate({size: undefined});
+      AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + this.props.num});
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: (this.props.amountAvailable - this.props.num),
+        isSoldout: ((this.props.amountAvailable - this.props.num) <= 0)
+      });
+      AppAction.sendShoppingCartNotificationShowEvent();
+    }
   }
 });
 
@@ -991,12 +1021,10 @@ var ProductSelector = React.createClass({displayName: "ProductSelector",
                           sizeTable[this.props.productSelected.size] : {size: undefined};
 
     var amountTable = this.props.productInfo.amountTable,
-        amountMax = -1,
         amountAvailable = -1;
 
     if (sizeSelected.size) {
       productItemKey = productId + colorSelected.color + sizeSelected.size;
-      amountMax = amountTable[productItemKey].amountMax;
       amountAvailable = amountTable[productItemKey].amountAvailable;
     }
 
@@ -1035,7 +1063,7 @@ var ProductSelector = React.createClass({displayName: "ProductSelector",
           price: this.props.productInfo.price, 
           sizeSelected: sizeSelected, 
           colorSelected: colorSelected, 
-          amountMax: amountMax, 
+          totalAmount: this.props.productInfo.totalAmount, 
           amountAvailable: amountAvailable})
       )
     )
@@ -1480,6 +1508,7 @@ _productInfo[_productId] = {
    productName: "創校90週年校慶園遊會紀念T",
    price: 580,
    discount: 30,
+   totalAmount: 0,
    amountLimit: 20,
    amountTable: {},
    colorTable: {
@@ -1650,8 +1679,6 @@ function productInfoUpdate(updates) {
 function productInfoAmountUpdate(productItemKey, updates) {
   _productInfo[_productId].amountTable[productItemKey] =
     assign({}, _productInfo[_productId].amountTable[productItemKey], updates);
-  console.log(_productInfo[_productId].amountTable);
-  console.log(_productSelected);
 }
 
 /**************************/
@@ -1701,8 +1728,15 @@ var AppStore = assign({}, EventEmitter.prototype, {
         if (responseData.success) {
           items = responseData.data.Order.Item;
           for (var key in items) {
-            // amountAvailable = items[key].AmountMax - items[key].Amount;
-            amountAvailable = Math.floor(Math.random() * 5);
+            var originalNum = 0;
+            if (_productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]]) {
+              if (_productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num &&
+                  _productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num > 0){
+                originalNum = _productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num
+              }
+            }
+            // amountAvailable = items[key].AmountMax - items[key].Amount - originalNum;
+            amountAvailable = Math.floor(Math.random() * 20);
             _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
               // amountMax: items[key].AmountMax,

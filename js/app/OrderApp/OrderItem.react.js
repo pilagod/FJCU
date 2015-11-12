@@ -13,15 +13,15 @@ var OrderItem = React.createClass({
     productItemKey: ReactPropTypes.string.isRequired,
     orderConfirm: ReactPropTypes.number.isRequired,
     productItem: ReactPropTypes.object.isRequired,
-    amountMax: ReactPropTypes.number.isRequired,
+    totalAmount: ReactPropTypes.number.isRequired,
     amountAvailable: ReactPropTypes.number.isRequired,
     originalAmountAvailable: ReactPropTypes.number.isRequired
   },
 
   render: function () {
-    console.log(this.props.originalAmountAvailable);
+    console.log(this.props.amountAvailable, this.props.totalAmount, this.props.productItem.num );
     var productItem = this.props.productItem;
-    var productItemNumberCheck = (this.props.productItem.num + this.props.amountAvailable > this.props.originalAmountAvailable);
+    var productItemNumberCheck = (this.props.amountAvailable < 0);
     var warningClassName = classNames({
           'warning': productItemNumberCheck
         }),
@@ -31,10 +31,6 @@ var OrderItem = React.createClass({
         infoClassName = classNames({
           'hidden': (this.props.orderConfirm !== 1)
         });
-
-    if (productItemNumberCheck) {
-      alert("超過訂購上限！");
-    }
 
     return (
       <div className={classNames('table-row', warningClassName)}>
@@ -76,6 +72,11 @@ var OrderItem = React.createClass({
     if (parseInt(currentNum) > 1) {
       var updateNum = parseInt(currentNum) - 1;
       buyCount.value = updateNum;
+      AppAction.productInfoUpdate({totalAmount: this.props.totalAmount - 1});
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: this.props.amountAvailable + 1,
+        isSoldout: (this.props.amountAvailable + 1 <= 0)
+      });
       AppAction.productItemUpdate(id, {
         num: updateNum,
         total: updateNum * this.props.productItem.price
@@ -84,26 +85,48 @@ var OrderItem = React.createClass({
   },
 
   _buyCountAddOnClick: function (id, event) {
+
     var buyCount = event.target.previousSibling,
         currentNum = (isNaN(buyCount.value) || buyCount.value === "") ? 0 : buyCount.value;
 
     var updateNum = parseInt(currentNum) + 1;
-    buyCount.value = updateNum;
-    AppAction.productItemUpdate(id, {
-      num: updateNum,
-      total: updateNum * this.props.productItem.price
-    });
+
+    if (this.props.totalAmount + 1 > 20) {
+      alert("每筆訂單最多20件！");
+    } else {
+      buyCount.value = updateNum;
+      AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + 1});
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: this.props.amountAvailable - 1,
+        isSoldout: (this.props.amountAvailable - 1 <= 0)
+      });
+      AppAction.productItemUpdate(id, {
+        num: updateNum,
+        total: updateNum * this.props.productItem.price
+      });
+    }
   },
 
   _buyCountOnChange: function (id, event) {
+    console.log(this.props.productItem.num);
     var buyCount = event.target,
-        updateNum = isNaN(buyCount.value) ? 1 : buyCount.value;
-
-    buyCount.value = updateNum;
-    AppAction.productItemUpdate(id, {
-      num: parseInt(updateNum),
-      total: parseInt(updateNum) * this.props.productItem.price
-    });
+        updateNum = isNaN(buyCount.value) ? 1 : buyCount.value,
+        updateTotalNum = ((updateNum === "") ? 0 : parseInt(updateNum));
+    if (this.props.totalAmount + (updateTotalNum - this.props.productItem.num) > 20) {
+      alert("每筆訂單最多20件！");
+      buyCount.value = this.props.productItem.num;
+    } else {
+      buyCount.value = updateNum;
+      AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + (updateTotalNum - this.props.productItem.num)});
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: this.props.amountAvailable + this.props.productItem.num - updateTotalNum,
+        isSoldout: (this.props.amountAvailable + this.props.productItem.num - updateTotalNum <= 0)
+      });
+      AppAction.productItemUpdate(id, {
+        num: parseInt(updateTotalNum),
+        total: parseInt(updateTotalNum) * this.props.productItem.price
+      });
+    }
   },
 
   _deleteOnClick: function (id) {

@@ -63,6 +63,7 @@ _productInfo[_productId] = {
    productName: "創校90週年校慶園遊會紀念T",
    price: 580,
    discount: 30,
+   totalAmount: 0,
    amountLimit: 20,
    amountTable: {},
    colorTable: {
@@ -233,8 +234,6 @@ function productInfoUpdate(updates) {
 function productInfoAmountUpdate(productItemKey, updates) {
   _productInfo[_productId].amountTable[productItemKey] =
     assign({}, _productInfo[_productId].amountTable[productItemKey], updates);
-  console.log(_productInfo[_productId].amountTable);
-  console.log(_productSelected);
 }
 
 /**************************/
@@ -284,8 +283,15 @@ var AppStore = assign({}, EventEmitter.prototype, {
         if (responseData.success) {
           items = responseData.data.Order.Item;
           for (var key in items) {
-            // amountAvailable = items[key].AmountMax - items[key].Amount;
-            amountAvailable = Math.floor(Math.random() * 5);
+            var originalNum = 0;
+            if (_productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]]) {
+              if (_productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num &&
+                  _productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num > 0){
+                originalNum = _productItems[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]].num
+              }
+            }
+            // amountAvailable = items[key].AmountMax - items[key].Amount - originalNum;
+            amountAvailable = Math.floor(Math.random() * 20);
             _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]] = {
               id: items[key].ID,
               // amountMax: items[key].AmountMax,

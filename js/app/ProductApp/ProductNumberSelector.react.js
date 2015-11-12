@@ -15,7 +15,7 @@ var ProductNumberSelector = React.createClass({
     price: ReactPropTypes.number.isRequired,
     colorSelected: ReactPropTypes.object.isRequired,
     sizeSelected: ReactPropTypes.object.isRequired,
-    amountMax: ReactPropTypes.number.isRequired,
+    totalAmount: ReactPropTypes.number.isRequired,
     amountAvailable: ReactPropTypes.number.isRequired
   },
 
@@ -24,12 +24,13 @@ var ProductNumberSelector = React.createClass({
     var shoppingNumberCheck = (this.props.amountAvailable >= 0 && this.props.num > this.props.amountAvailable);
         shoppingCartAddActive = (this.props.colorSelected.color && this.props.sizeSelected.size && this.props.num > 0);
     var shoppingCartAddClassName = classNames({
-          'active': shoppingCartAddActive && !shoppingNumberCheck
+          'active': (shoppingCartAddActive && !shoppingNumberCheck && this.props.totalAmount <= 20)
         });
     var shoppingCartAddMessageClassName = classNames({
           'active': shoppingNumberCheck
         });
-    var shoppingCartAddOnClick = (shoppingCartAddActive && !shoppingNumberCheck) ? this._shoppingCartAddOnClick : null;
+    var shoppingCartAddOnClick = (shoppingCartAddActive && !shoppingNumberCheck && this.props.totalAmount <= 20) ?
+                                    this._shoppingCartAddOnClick : null;
 
     return (
       <div id="productNumber">
@@ -41,7 +42,7 @@ var ProductNumberSelector = React.createClass({
           <span>加入購物車</span>
         </div>
         <div id="shoppingCartAddMessage" className={shoppingCartAddMessageClassName}>
-          <span>超過訂購上限</span>
+          <span>超過庫存上限</span>
         </div>
       </div>
     );
@@ -89,13 +90,18 @@ var ProductNumberSelector = React.createClass({
   },
 
   _shoppingCartAddOnClick: function () {
-    AppAction.productItemAdd();
-    AppAction.productUpdate({size: undefined});
-    AppAction.productInfoAmountUpdate(this.props.productItemKey, {
-      amountAvailable: (this.props.amountAvailable - this.props.num),
-      isSoldout: ((this.props.amountAvailable - this.props.num) === 0)
-    });
-    AppAction.sendShoppingCartNotificationShowEvent();
+    if (this.props.totalAmount + this.props.num > 20) {
+      alert("每筆訂單最多20件！");
+    } else {
+      AppAction.productItemAdd();
+      AppAction.productUpdate({size: undefined});
+      AppAction.productInfoUpdate({totalAmount: this.props.totalAmount + this.props.num});
+      AppAction.productInfoAmountUpdate(this.props.productItemKey, {
+        amountAvailable: (this.props.amountAvailable - this.props.num),
+        isSoldout: ((this.props.amountAvailable - this.props.num) <= 0)
+      });
+      AppAction.sendShoppingCartNotificationShowEvent();
+    }
   }
 });
 

@@ -16,7 +16,7 @@ var OrderDetail = React.createClass({
   },
 
   render: function () {
-    var productItemKey, amountMax, amountAvailable, originalAmountAvailable,
+    var productItemKey, amountAvailable, originalAmountAvailable,
         amountTable = this.props.productInfo.amountTable;
     var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)});
     var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
@@ -36,7 +36,6 @@ var OrderDetail = React.createClass({
 
     for (var key in productItems) {
       productItemKey = productItems[key].productId + productItems[key].color + productItems[key].size;
-      amountMax = amountTable[productItemKey].amountMax;
       amountAvailable = amountTable[productItemKey].amountAvailable;
       originalAmountAvailable = amountTable[productItemKey].originalAmountAvailable;
 
@@ -49,7 +48,7 @@ var OrderDetail = React.createClass({
           productItemKey={productItemKey}
           orderConfirm={this.props.orderConfirm}
           productItem={productItems[key]}
-          amountMax={amountMax}
+          totalAmount={this.props.productInfo.totalAmount}
           amountAvailable={amountAvailable}
           originalAmountAvailable={originalAmountAvailable}/>
       );

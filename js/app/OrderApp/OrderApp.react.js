@@ -155,9 +155,11 @@ var OrderApp = React.createClass({
   },
 
   _onProductInfoChange: function () {
-    this.setState({
-      productInfo: AppStore.getProductInfo()
-    });
+    AppStore.getProductInfo().then(function (productInfo) {
+      this.setState({
+        productInfo: productInfo
+      });
+    }.bind(this));
   },
 
   _onOrderConfirm: function () {
