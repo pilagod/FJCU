@@ -25,12 +25,9 @@ var OrderApp = React.createClass({
       loading: false
     };
   },
-
-  componentWillMount: function () {
-    this._initProductInfo();
-  },
-
+  
   componentDidMount: function () {
+    this._initProductInfo();
     // Order ProductItems Changed
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
     // Order Confirm Status
@@ -100,10 +97,10 @@ var OrderApp = React.createClass({
     return (
       <div id="OrderApp">
         {loadingBlock}
-        <header className={classNames({'hidden': (this.state.orderConfirm !== 1)})}>
-          <span>訂單編號：</span>
+        <div id="orderInfo" className={classNames({'hidden': (this.state.orderConfirm !== 1)})}>
+          <span>訂單代碼：</span>
           <h2 id="orderId">{this.state.orderInfo.orderId}</h2>
-        </header>
+        </div>
         <OrderDetail orderConfirm={this.state.orderConfirm} productItems={this.state.productItems} productInfo={this.state.productInfo}/>
         <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo}/>
         <div id="orderAction" className="flex flex-vertical-center flex-horizontal-center">

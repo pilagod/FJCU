@@ -20,7 +20,6 @@ var _productId = 1,
 var _productInfo = {},
     _productItems = {},  // All Products in Orders
     _productItemInfo = {  // Product Item Properties (Fixed)
-
     },
     _productItemIdQueryTable = {
 
@@ -46,6 +45,9 @@ var _productInfo = {},
       "1#6f0011XL": 15
     },
     _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
+
+var _searchBuyerInfo = {},
+    _searchProductItems = {};
 
 // Buyer Information
 var _buyerInfo = {};
@@ -134,14 +136,30 @@ function makeRequest(method, url, data) {
 /**************************/
 
 /**
- *  Get Order ID by sending ProductItems User Bought
+ *  Send New Order to Server
+ *  @param {object} orderInfo: order information
+ *
+ *  @return {object} Promise
  */
-function sendOrder(orderInfo) {
+function orderSend(orderInfo) {
   return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
 }
 
-function orderUpdate(orderInfo) {
+/**
+ *  Update Order Information
+ *  @param {object} orderInfo: order information
+ */
+function orderInfoUpdate(orderInfo) {
   _orderInfo = assign({}, orderInfo);
+}
+
+/**
+ *  Search Order by Order Id
+ *  @param {string} id: order id
+ */
+function orderSearch(id) {
+  console.log("http://fju90t.sp.ubun.tw/api/Order/" + id);
+  return makeRequest('GET', "http://fju90t.sp.ubun.tw/api/Order/" + id, null);
 }
 
 /**
@@ -210,7 +228,7 @@ function productItemUpdate(id, updates) {
  *  Update Product Property Selected (color, size)
  *  @param {object} updates: properties updated
  */
-function productUpdate(updates) {
+function productSelectedUpdate(updates) {
   _productSelected = assign({}, _productSelected, updates);
 }
 
@@ -255,7 +273,7 @@ function productInfoAmountUpdate(productItemKey, updates) {
  *  Clear All Store Datra
  */
 function clearAllStoreData() {
-  _orderId = undefined;
+  _orderInfo = {};
   _productItems = {};
   _productSelected = {};
   _buyerInfo = {};
@@ -268,6 +286,15 @@ function clearProductInfoAmountTable() {
   _productInfo[_productId].amountTable = {};
 }
 
+/**
+ *  Clear OrderSearchData
+ */
+function clearOrderSearchData () {
+  _orderInfo = {};
+  _searchBuyerInfo = {};
+  _searchProductItems = {};
+}
+
 /*************************/
 /*    AppStore Object    */
 /*************************/
@@ -278,6 +305,9 @@ var AppStore = assign({}, EventEmitter.prototype, {
   /*     Get Store Data    */
   /*************************/
 
+  /**
+   *  Get Order Information
+   */
   getOrderInfo: function () {
     return _orderInfo;
   },
@@ -374,12 +404,17 @@ var AppStore = assign({}, EventEmitter.prototype, {
   },
 
   /**
-   *  Get Order ID
-   *
-   *  @return {object} _orderId
+   *  Get SearchItems
    */
-  getOrderId: function () {
-    return _orderId;
+  getSearchProductItem: function () {
+    return _searchProductItems;
+  },
+
+  /**
+   *  Get SearchBuyerInfo
+   */
+  getSearchBuyerInfo: function () {
+    return _searchBuyerInfo;
   },
 
   /*************************/
@@ -441,23 +476,90 @@ AppDispatcher.register(function (action) {
       break;
 
     case AppConstant.ORDER_SEND:
-      sendOrder(action.orderInfo).then(function (response) {
+      orderSend(action.orderInfo).then(function (response) {
         console.log("response:", response);
         var responseData = JSON.parse(response);
         if (responseData.success) {
           var data = responseData.data;
-          orderUpdate({
+          orderInfoUpdate({
+            id: data.Order.ID,
             orderId: data.Order.Code,
             message: responseData.message,
             expiryDate: data.Order.ExpiryDate
           });
           AppStore.emitChange(AppConstant.ORDER_CONFIRM_EVENT);
         } else {
-          orderUpdate({
+          orderInfoUpdatee({
+            id: undefined,
             orderId: undefined,
             message: responseData.message || "訂單下訂失敗！",
           });
           AppStore.emitChange(AppConstant.ORDER_CONFIRM_FAIL_EVENT);
+        }
+      });
+      break;
+
+    case AppConstant.ORDER_SEARCH:
+      orderSearch(action.id).then(function (response) {
+        console.log("response:", response);
+        var responseData = JSON.parse(response);
+        if (responseData.success) {
+          var data = responseData.data,
+              searchProductItem;
+
+          orderInfoUpdate({
+            id: data.Order.ID,
+            orderId: data.Order.Code,
+            message: responseData.message,
+            expiryDate: data.Order.ExpiryDate,
+            isPaid: data.Order.IsPaid,
+            isReceived: data.Order.IsReceived,
+            isCancel: data.Order.IsCancel
+          });
+
+          _searchBuyerInfo = {
+            name: data.Order.BuyerName,
+            phone: data.Order.BuyerPhone,
+            email: data.Order.BuyerEmail
+          };
+
+          searchProductItem = assign({}, {
+            productId: _productInfo[_productId].productId,
+            productName: _productInfo[_productId].productName,
+            price: _productInfo[_productId].price
+          });
+
+          data.Order.Item.map(function (item) {
+            var productItemId = item.ProductItemID,
+                productItemKey = Object.keys(_productItemIdQueryTable)[productItemId - 1],
+                color = productItemKey.substring(productItemKey.indexOf('#'), productItemKey.indexOf('#') + 7),
+                size = productItemKey.substring(productItemKey.indexOf('#') + 7);
+
+            searchProductItem = assign({}, searchProductItem,
+              _productInfo[_productId].colorTable[color],
+              _productInfo[_productId].sizeTable[size],
+              {
+                  num: item.Amount,
+                  total: item.Amount * _productInfo[_productId].price
+              }
+            );
+
+            _searchProductItems[productItemId] = assign({}, searchProductItem, {
+              id: productItemId,
+              productItemKey: productItemKey
+            });
+          });
+
+          AppStore.emitChange(AppConstant.ORDER_SEARCH_EVENT);
+
+        } else {
+          orderInfoUpdate({
+            id: undefined,
+            orderId: undefined,
+            message: responseData.message || "訂單搜尋失敗！",
+          });
+
+          AppStore.emitChange(AppConstant.ORDER_SEARCH_FAIL_EVENT);
         }
       });
       break;
@@ -467,7 +569,7 @@ AppDispatcher.register(function (action) {
     /*************************/
 
     case AppConstant.PRODUCT_UPDATE:
-      productUpdate(action.productInfo);
+      productSelectedUpdate(action.productInfo);
       AppStore.emitChange(AppConstant.PRODUCT_CHANGE_EVENT);
       break;
 
@@ -514,6 +616,10 @@ AppDispatcher.register(function (action) {
     case AppConstant.CLEAR_PRODUCTINFO_AMOUNT_TABLE:
       clearProductInfoAmountTable();
       AppStore.emitChange(AppConstant.PRODUCTINFO_CHANGE_EVENT);
+      break;
+
+    case AppConstant.CLEAR_ORDER_SEARCH:
+      clearOrderSearchData();
       break;
 
     default:

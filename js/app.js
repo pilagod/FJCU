@@ -5,15 +5,24 @@
 var React = require('react'),
     ReactDOM = require('react-dom'),
     NavbarFunctionBlock = require('./component/NavbarFunctionBlock.react.js'),
+    SideBar = require('./component/SideBar.react.js'),
     ProductApp = require('./app/ProductApp/ProductApp.react.js'),
-    OrderApp = require('./app/OrderApp/OrderApp.react.js');
+    OrderApp = require('./app/OrderApp/OrderApp.react.js'),
+    SearchApp = require('./app/SearchApp/SearchApp.react.js');
 
-var main = document.querySelector('#main > .container-960');
+var main = document.querySelector('#main > .container');
 
 var app = {
   "ProductApp": ProductApp,
-  "OrderApp": OrderApp
-}
+  "OrderApp": OrderApp,
+  "SearchApp": SearchApp
+};
+
+//
+// ReactDOM.render(
+//   React.createElement(SideBar),
+//   document.getElementById('sidebar')
+// );
 
 ReactDOM.render(
   React.createElement(NavbarFunctionBlock),

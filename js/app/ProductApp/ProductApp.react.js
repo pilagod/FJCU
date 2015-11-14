@@ -19,11 +19,8 @@ var ProductApp = React.createClass({
     }
   },
 
-  componentWillMount: function () {
-    this._initProductInfo();
-  },
-
   componentDidMount: function () {
+    this._initProductInfo();
     AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
     AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },

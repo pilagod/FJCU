@@ -84,7 +84,6 @@ var OrderItem = React.createClass({
   },
 
   _buyCountAddOnClick: function (id, event) {
-
     var buyCount = event.target.previousSibling,
         currentNum = (isNaN(buyCount.value) || buyCount.value === "") ? 0 : buyCount.value;
 

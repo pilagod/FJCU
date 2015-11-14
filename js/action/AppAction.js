@@ -44,10 +44,25 @@ var AppAction = {
     });
   },
 
+  /**
+   *  Add New Order to Server
+   *  @param {object} orderInfo: order information
+   */
   orderSend: function (orderInfo) {
     AppDispatcher.dispatch({
       actionType: AppConstant.ORDER_SEND,
       orderInfo: orderInfo
+    });
+  },
+
+  /**
+   *  Search Order by Order Id
+   *  @param {string} id: order id
+   */
+  orderSearch: function (id) {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.ORDER_SEARCH,
+      id: id
     });
   },
 
@@ -138,6 +153,12 @@ var AppAction = {
     AppDispatcher.dispatch({
       actionType: AppConstant.CLEAR_PRODUCTINFO_AMOUNT_TABLE
     });
+  },
+
+  clearOrderSearch: function () {
+    AppDispatcher.dispatch({
+      actionType: AppConstant.CLEAR_ORDER_SEARCH
+    })
   }
 };
 

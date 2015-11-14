@@ -13,6 +13,8 @@ module.exports = keymirror({
   ORDER_CHANGE_EVENT: null,
   ORDER_CONFIRM_EVENT: null,
   ORDER_CONFIRM_FAIL_EVENT: null,
+  ORDER_SEARCH_EVENT: null,
+  ORDER_SEARCH_FAIL_EVENT: null,
 
   PRODUCT_CHANGE_EVENT: null,
   PRODUCTINFO_CHANGE_EVENT: null,
@@ -37,6 +39,7 @@ module.exports = keymirror({
   PRODUCT_ITEM_UPDATE: null,
 
   ORDER_SEND: null,
+  ORDER_SEARCH: null,
 
   /*************************/
   /*     Buyer Actions     */
@@ -56,5 +59,7 @@ module.exports = keymirror({
   /*************************/
 
   CLEAR_ALL: null,
-  CLEAR_PRODUCTINFO_AMOUNT_TABLE: null
+  CLEAR_PRODUCTINFO_AMOUNT_TABLE: null,
+  CLEAR_ORDER_SEARCH: null
+  
 });

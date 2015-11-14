@@ -16,12 +16,16 @@ html, body {
 
 body {
   position: relative;
-  font-family: Tahoma;
+  font-family: Microsoft JhengHei, Tahoma;
   font-size: 100%;
 }
 
 p {
   font-size: 1em;
+}
+
+li {
+  list-style: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -39,6 +43,32 @@ input:focus {
 }
 
 /*************************/
+/*         Main          */
+/*************************/
+
+/* red: rgb(111,0,17)  #6f0011 */
+/* grey: rgb(158,159,153)  #9e9f99*/
+/* navy: rgb(36,39,51)  #242733*/
+
+#main {
+  margin-top: 80px;
+}
+
+/*************************/
+/*       SideBar         */
+/*************************/
+
+#sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#sidebar > ul {
+  padding: 10px;
+}
+
+/*************************/
 /*        Navbar         */
 /*************************/
 
@@ -52,7 +82,7 @@ input:focus {
   background-color: #A36745;
 }
 
-#navbar > .container-960 {
+#navbar > .container {
   height: 100%;
 }
 
@@ -69,7 +99,7 @@ input:focus {
   position: relative;
 }
 
-#home, #searchOrder, #shoppingCart {
+#home, #searchOrder, #shoppingCart, #faq {
   display: inline-block;
   cursor: pointer;
   margin: 5px 10px;
@@ -198,12 +228,12 @@ input:focus {
 
 #footer {
   height: 50px;
-  margin-top: 50px;
+  margin-top: 30px;
   color: rgba(100, 100, 100, 1);
   border-top: 3px double lightgray;
 }
 
-#footer > .container-960 {
+#footer > .container {
   height: 100%;
 }
 
@@ -211,7 +241,7 @@ input:focus {
 /*       General         */
 /*************************/
 
-.container-960 {
+.container {
   width: 960px;
   margin: 0 auto;
 }

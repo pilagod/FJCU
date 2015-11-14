@@ -1,0 +1,98 @@
+/**
+ *  SearchApp Css
+ */
+
+/*************************/
+/*       SearchApp       */
+/*************************/
+
+/**
+ *  SearchBar
+ */
+#searchBar {
+  margin: 0 auto;
+  text-align: center;
+}
+
+#orderStatus {
+  text-align: center;
+}
+
+#orderStatus > div {
+  /*width: 500px;*/
+  display: inline-block;
+  margin: 20px auto;
+  padding: 10px;
+  text-align: center;
+  border: 2px ridge rgba(100, 100, 100, 0.3);
+  border-radius: 10px;
+}
+
+#searchBar > input[type="text"] {
+  width: 300px;
+  padding: 8px;
+  font-size: 1.1em;
+  border: 2px solid #dcdcdc;
+
+  -webkit-transition: box-shadow 0.3s, border 0.3s;
+  -moz-transition: box-shadow 0.3s, border 0.3s;
+  -ms-transition: box-shadow 0.3s, border 0.3s;
+  -o-transition: box-shadow 0.3s, border 0.3s;
+  transition: box-shadow 0.3s, border 0.3s;
+}
+
+#searchBar input[type="text"]:focus {
+  border: 2px solid rgba(111, 69, 45, 0.6);
+  box-shadow: 0 0 3px 1px #6F452D;
+}
+
+#btnSearch {
+  margin: 10px;
+  padding: 10px;
+  color: white;
+  background-color: gray;
+}
+
+#btnSearch:hover {
+  cursor: pointer;
+}
+
+/**
+ *  Status Block
+ */
+
+.status-block {
+  display: inline-block;
+  margin: 10px 60px;
+  text-align: center;
+}
+
+.status-block > .status {
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+.status-block > .status.done {
+  color: green;
+}
+
+.status-block > .status.done::before {
+  content: "已"
+}
+
+.status-block > .status.undone {
+  color: red;
+}
+
+.status-block > .status.undone::before {
+  content: "未"
+}
+
+/* 撤銷狀態 */
+.status-block.is-cancel > .status.done {
+  color: red;
+}
+
+.status-block.is-cancel > .status.done::before {
+  content: "已"
+}

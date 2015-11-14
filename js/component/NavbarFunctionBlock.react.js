@@ -65,7 +65,7 @@ var NavbarFunctionBlock = React.createClass({
     if (this.state.shoppingCartHover) {
       var productItems = null;
       if (Object.keys(this.state.productItems).length > 0) {
-        shoppingCartHeader = "已加入購物車商品";
+        shoppingCartHeader = "已加入購物車商品（尚未折扣）";
         productItems = [];
         for (var key in this.state.productItems) {
           productItems.push((
@@ -126,9 +126,15 @@ var NavbarFunctionBlock = React.createClass({
          </div>
        </div>
        <div id="searchOrder">
-         <div>
+         <div onClick={this._searchOnClick}>
            <i className="fa fa-search"></i>
            <span> 搜尋訂單</span>
+         </div>
+       </div>
+       <div id="faq">
+         <div>
+           <i className="fa fa-question-circle"></i>
+           <span> 常見問題FAQ</span>
          </div>
        </div>
        <div id="shoppingCart" onMouseOver={this._shoppingCartOnMouseOver} onMouseOut={this._shoppingCartOnMouseOut}>
@@ -182,6 +188,11 @@ var NavbarFunctionBlock = React.createClass({
     clearTimeout(timeoutObject);
     this.setState({shoppingCartHover: false});
     this.setState({shoppingCartAdd: false});
+  },
+
+  _searchOnClick: function () {
+    history.pushState({app: "SearchApp"}, "SearchApp", "");
+    window.onpopstate();
   },
 
   /*************************/

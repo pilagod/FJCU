@@ -38,13 +38,13 @@ var ProductSelector = React.createClass({
       amountAvailable = amountTable[productItemKey].amountAvailable;
     }
 
-    if (this.props.productSelected.color) {
-      productName += "(" + this.props.productSelected.colorName;
-      if (this.props.productSelected.size) {
-        productName += "-" + this.props.productSelected.size;
-      }
-      productName += ")";
-    }
+    // if (this.props.productSelected.color) {
+    //   productName += "(" + this.props.productSelected.colorName;
+    //   if (this.props.productSelected.size) {
+    //     productName += "-" + this.props.productSelected.size;
+    //   }
+    //   productName += ")";
+    // }
 
     return (
       <div id="productSelect">
@@ -64,8 +64,7 @@ var ProductSelector = React.createClass({
           sizeSelected={sizeSelected}
           sizeTable={sizeTable} />
         <div id="discountInfo">
-          <span>雙人組合折扣價$1,100</span><br/>
-          <span>偶數件數以此類推，確定金額會在購物車內顯示。</span>
+          <span>2件合購價$1,100，確定金額會在結帳頁面顯示。</span>
         </div>
         <ProductNumberSelector
           productItemKey={productItemKey}
