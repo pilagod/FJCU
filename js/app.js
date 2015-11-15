@@ -4,7 +4,7 @@
 
 var React = require('react'),
     ReactDOM = require('react-dom'),
-    NavbarFunctionBlock = require('./component/NavbarFunctionBlock.react.js'),
+    Navbar = require('./component/Navbar.react.js'),
     SideBar = require('./component/SideBar.react.js'),
     ProductApp = require('./app/ProductApp/ProductApp.react.js'),
     OrderApp = require('./app/OrderApp/OrderApp.react.js'),
@@ -25,8 +25,8 @@ var app = {
 // );
 
 ReactDOM.render(
-  React.createElement(NavbarFunctionBlock),
-  document.getElementById('navbarFunctionBlock')
+  React.createElement(Navbar),
+  document.getElementById('navbar')
 );
 
 history.pushState({app: "ProductApp"}, "ProductApp", "");

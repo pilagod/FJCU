@@ -172,7 +172,7 @@ module.exports = AppAction;
 
 var React = require('react'),
     ReactDOM = require('react-dom'),
-    NavbarFunctionBlock = require('./component/NavbarFunctionBlock.react.js'),
+    Navbar = require('./component/Navbar.react.js'),
     SideBar = require('./component/SideBar.react.js'),
     ProductApp = require('./app/ProductApp/ProductApp.react.js'),
     OrderApp = require('./app/OrderApp/OrderApp.react.js'),
@@ -193,8 +193,8 @@ var app = {
 // );
 
 ReactDOM.render(
-  React.createElement(NavbarFunctionBlock),
-  document.getElementById('navbarFunctionBlock')
+  React.createElement(Navbar),
+  document.getElementById('navbar')
 );
 
 history.pushState({app: "ProductApp"}, "ProductApp", "");
@@ -212,7 +212,7 @@ if (navigator.userAgent.indexOf('Chrome') > -1 && navigator.userAgent.indexOf('E
   window.onpopstate();
 }
 
-},{"./app/OrderApp/OrderApp.react.js":3,"./app/ProductApp/ProductApp.react.js":7,"./app/SearchApp/SearchApp.react.js":15,"./component/NavbarFunctionBlock.react.js":16,"./component/SideBar.react.js":17,"react":184,"react-dom":28}],3:[function(require,module,exports){
+},{"./app/OrderApp/OrderApp.react.js":3,"./app/ProductApp/ProductApp.react.js":7,"./app/SearchApp/SearchApp.react.js":15,"./component/Navbar.react.js":16,"./component/SideBar.react.js":17,"react":184,"react-dom":28}],3:[function(require,module,exports){
 /**
  *  OrderApp - OrderDetial + OrderBuyerInfo
  */
@@ -240,7 +240,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       loading: false
     };
   },
-  
+
   componentDidMount: function () {
     this._initProductInfo();
     // Order ProductItems Changed
@@ -279,7 +279,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       'active': !isEmpty
     });
     var orderActionNextOnClick = isEmpty ? null : this._orderActionNextOnClick;
-    var orderAppHeader, orderProcess;
+    var orderAppHeader, orderProcess, orderStep;
 
     var loadingBlock = null,
         loadingContent = null,
@@ -309,18 +309,58 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       )
     }
 
+    if (this.state.orderConfirm === 1) {
+      orderStep = React.createElement("img", {className: "step-img", src: "img/OrderApp/step3.png"});
+    } else {
+      orderStep = React.createElement("img", {className: "step-img", src: "img/OrderApp/step2.png"});
+    }
+    // <span>如何繳費：代碼訂單已寄至您的信箱，11/16(一) - 11/25(三)帽T預購期間，請在訂單成立起三日內，帶訂單代碼至課輔組做繳費動作。</span>
+
     return (
       React.createElement("div", {id: "OrderApp"}, 
         loadingBlock, 
+        React.createElement("div", {className: "banner"}, 
+          React.createElement("img", {src: "img/store-banner.png", alt: "store banner"}), 
+          orderStep
+        ), 
         React.createElement("div", {id: "orderInfo", className: classNames({'hidden': (this.state.orderConfirm !== 1)})}, 
-          React.createElement("span", null, "訂單代碼："), 
-          React.createElement("h2", {id: "orderId"}, this.state.orderInfo.orderId)
+          React.createElement("header", null, 
+            React.createElement("div", null, 
+              React.createElement("span", null, "訂單代碼："), 
+              React.createElement("h2", null, this.state.orderInfo.orderId)
+            ), 
+            React.createElement("div", null, 
+              React.createElement("span", null, "繳費期限："), 
+              React.createElement("h2", null, this.state.orderInfo.expiryDate)
+            )
+          ), 
+          React.createElement("article", null, 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "如何繳費："), 
+              React.createElement("p", null, "代碼訂單已寄至您的信箱，11/16(一) - 11/25(三)帽T預購期間，請在訂單成立起三日內，憑訂單代碼，至焯炤館1F大廳攤位做繳費動作。"), 
+              React.createElement("p", null, "若逾期尚未繳費，訂單將撤銷，請您重新下訂。")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "如何取貨："), 
+              React.createElement("p", null, "請在12/05(六)輔大校慶園遊會當日，持訂單代碼至輔大帽T團隊攤位領貨。"), 
+              React.createElement("p", null, "若本人不克前來領貨，請您託人代為領取，並攜帶可證明身份之證件。")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "退換貨須知："), 
+              React.createElement("p", null, "由於此款商品為活動限量商品，若有商品瑕疵、尺碼領貨錯誤，請保留原包裝，我們將退款給您，恕無法換貨。"), 
+              React.createElement("p", null, "商品穿過或是經水洗滌，都視同驗收完成，恕無法進行退貨。")
+            )
+          )
         ), 
         React.createElement(OrderDetail, {orderConfirm: this.state.orderConfirm, productItems: this.state.productItems, productInfo: this.state.productInfo}), 
         React.createElement(OrderBuyerInfo, {orderConfirm: this.state.orderConfirm, buyerInfo: this.state.buyerInfo}), 
         React.createElement("div", {id: "orderAction", className: "flex flex-vertical-center flex-horizontal-center"}, 
           React.createElement("div", {id: "orderActionBack", className: "active", onClick: this._orderActionBackOnClick}, 
-            React.createElement("span", null, "回上一頁")
+            React.createElement("span", {className: classNames({'hidden': (this.state.orderConfirm === 1)})}, "回上一頁"), 
+            React.createElement("span", {className: classNames({'hidden': (this.state.orderConfirm !== 1)})}, "訂購成功，回首頁。")
           ), 
           React.createElement("div", {id: "orderActionNext", className: orderActionNextClassName, onClick: orderActionNextOnClick}, 
             React.createElement("span", null, "訂單確認")
@@ -398,8 +438,12 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       OriginalPrice: total,
       Discount: totalDiscount,
       TotalPrice: totalAfterDiscount,
-      NoSendMail: true
+      NoSendMail: false
     };
+
+    if (buyerInfo.name === "測試員") {
+      order.NoSendMail = true;
+    }
 
     console.log(order);
 
@@ -848,6 +892,9 @@ var ProductApp = React.createClass({displayName: "ProductApp",
     } else {
       return (
         React.createElement("div", {id: "ProductApp"}, 
+          React.createElement("div", {className: "banner"}, 
+            React.createElement("img", {src: "img/store-banner.png", alt: "store banner"})
+          ), 
           React.createElement(ProductInfo, {
             productInfo: this.state.productInfo, 
             productSelected: this.state.productSelected}), 
@@ -961,7 +1008,46 @@ var React = require('react');
 
 var ProductDetail = React.createClass({displayName: "ProductDetail",
   render: function () {
-    return null
+    return (
+      React.createElement("section", {id: "productDetail"}, 
+        React.createElement("div", {id: "productInstruction"}, 
+          React.createElement("header", {className: "flex flex-vertical-center"}, 
+            React.createElement("i", {className: "fa fa-file-text-o fa-lg"}), 
+            React.createElement("h2", null, "產品說明")
+          ), 
+          React.createElement("article", null, 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "產地：台灣")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "主布材質：棉 100％")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "羅紋材質：棉 96％、彈性纖維 4％")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "不可烘乾／不可漂白／水溫請低於40℃")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "建議反面放入細網洗衣袋中清洗，深淺色請分開洗滌。")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "注意！實品顏色請以平拍單品照為準！")
+            )
+          )
+        ), 
+        React.createElement("div", {className: "banner"}, 
+          React.createElement("img", {className: "step-img", src: "img/ProductApp/step1.png", alt: "step1"})
+        ), 
+        React.createElement("img", {src: "img/ProductApp/product-detail.png", alt: "product detail"})
+      )
+    )
   }
 });
 
@@ -1375,6 +1461,9 @@ var SearchApp = React.createClass({displayName: "SearchApp",
 
     return (
       React.createElement("div", {id: "SearchApp"}, 
+        React.createElement("div", {className: "banner"}, 
+          React.createElement("img", {src: "img/store-banner.png", alt: "store banner"})
+        ), 
         React.createElement("div", {id: "searchBar"}, 
           React.createElement("span", null, "訂單代號："), 
           React.createElement("input", {id: "txtOrderId", type: "text"}), 
@@ -1399,10 +1488,18 @@ var SearchApp = React.createClass({displayName: "SearchApp",
     }.bind(this));
   },
 
+  /*************************/
+  /*   Html Event Handler  */
+  /*************************/
+
   _searchOnClick: function () {
     var orderId = document.getElementById('txtOrderId').value;
     AppAction.orderSearch(orderId);
   },
+
+  /*************************/
+  /*  View Change Handler  */
+  /*************************/
 
   _onOrderSearch: function () {
     this.setState({
@@ -1545,35 +1642,69 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
    }
 
    return (
-     React.createElement("div", null, 
-       React.createElement("div", {id: "home", onClick: this._homeOnClick}, 
-         React.createElement("div", null, 
-           React.createElement("i", {className: "fa fa-home"}), 
-           React.createElement("span", null, " 回首頁")
-         )
+     React.createElement("div", {className: "container flex flex-vertical-bottom"}, 
+       React.createElement("div", {id: "logo", className: "flex flex-horizontal-center flex-vertical-center", onClick: this._homeOnClick, style: {cursor: "pointer"}}, 
+         React.createElement("img", {src: "img/ubun-logo.svg", alt: "Ubun Logo"})
        ), 
-       React.createElement("div", {id: "searchOrder"}, 
-         React.createElement("div", {onClick: this._searchOnClick}, 
-           React.createElement("i", {className: "fa fa-search"}), 
-           React.createElement("span", null, " 搜尋訂單")
-         )
-       ), 
-       React.createElement("div", {id: "faq"}, 
-         React.createElement("div", null, 
-           React.createElement("i", {className: "fa fa-question-circle"}), 
-           React.createElement("span", null, " 常見問題FAQ")
-         )
-       ), 
-       React.createElement("div", {id: "shoppingCart", onMouseOver: this._shoppingCartOnMouseOver, onMouseOut: this._shoppingCartOnMouseOut}, 
-         React.createElement("div", {onClick: this._checkOnClick}, 
-           React.createElement("i", {className: "fa fa-shopping-cart"}), 
-           React.createElement("span", null, " ", productItemNum, " 件商品")
-         ), 
-         React.createElement("div", {id: "shoppingCartAlert", className: shoppingCartAlertClassNames}, 
-           shoppingCartAlertContent
+       React.createElement("div", {id: "navbarFunctionBlock", className: "flex flex-align-right"}, 
+         React.createElement("div", {className: "navbar-wrapper"}, 
+           React.createElement("div", null, 
+             React.createElement("div", null, 
+               React.createElement("i", {className: "fa fa-circle"}), 
+               React.createElement("span", null, 
+                 React.createElement("a", {href: "https://docs.google.com/forms/d/1DzL5GV7Qe1K3e9jYjuZwPmuB0Z2Jm35Bj9Oo_W52k44/viewform?c=0&w=1", target: "_blank"}, "我也要賣")
+               )
+             )
+           ), 
+           React.createElement("div", null, 
+             React.createElement("div", null, 
+               React.createElement("i", {className: "fa fa-circle"}), 
+               React.createElement("span", null, 
+                 React.createElement("a", {href: "https://www.facebook.com/ubun.tw/?fref=ts", target: "_blank"}, "關於Ubun")
+               )
+             )
+           ), 
+           React.createElement("div", null, 
+             React.createElement("div", null, 
+               React.createElement("i", {className: "fa fa-circle"}), 
+               React.createElement("span", null, 
+                 React.createElement("a", {href: "https://docs.google.com/forms/d/175-NO-BZVa1qlpYWyrl1B6IVRnxhgdu5miDNPwqQe7Q/viewform?usp=send_form", target: "_blank"}, "加入Ubun")
+               )
+             )
+           ), 
+           React.createElement("div", null, 
+             React.createElement("div", null, 
+               React.createElement("i", {className: "fa fa-circle"}), 
+               React.createElement("span", null, 
+                 React.createElement("a", {href: "https://www.facebook.com/FJUClassic/?fref=ts", target: "_blank"}, "關於輔大帽T")
+               )
+             )
+           ), 
+           React.createElement("div", {id: "searchOrder"}, 
+             React.createElement("div", {onClick: this._searchOnClick}, 
+               React.createElement("i", {className: "fa fa-search"}), 
+               React.createElement("span", null, "搜尋訂單")
+             )
+           ), 
+           React.createElement("div", {id: "faq"}, 
+             React.createElement("div", null, 
+               React.createElement("i", {className: "fa fa-question-circle"}), 
+               React.createElement("span", null, "常見問題")
+             )
+           ), 
+           React.createElement("div", {id: "shoppingCart", onMouseOver: this._shoppingCartOnMouseOver, onMouseOut: this._shoppingCartOnMouseOut}, 
+             React.createElement("div", null, 
+               React.createElement("i", {className: "fa fa-shopping-cart"}), 
+               React.createElement("span", null, productItemNum, " 件商品")
+             ), 
+             React.createElement("div", {id: "shoppingCartAlert", className: shoppingCartAlertClassNames}, 
+               shoppingCartAlertContent
+             )
+           )
          )
        )
      )
+
    )
   },
 

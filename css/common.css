@@ -20,6 +20,15 @@ body {
   font-size: 100%;
 }
 
+i {
+  margin-right: 6px;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
 p {
   font-size: 1em;
 }
@@ -51,21 +60,22 @@ input:focus {
 /* navy: rgb(36,39,51)  #242733*/
 
 #main {
-  margin-top: 80px;
+  margin-top: 100px;
 }
 
-/*************************/
-/*       SideBar         */
-/*************************/
-
-#sidebar {
-  position: absolute;
-  top: 0;
-  left: 0;
+.banner {
+  margin: 0 auto;
+  padding: 20px 0px;
 }
 
-#sidebar > ul {
-  padding: 10px;
+.banner > img {
+  display: block;
+  width: 100%;
+}
+
+.banner > img.step-img {
+  width: 500px;
+  margin: 80px auto;
 }
 
 /*************************/
@@ -78,20 +88,26 @@ input:focus {
   top: 0px;
   left: 0px;
   width: 100%;
-  height: 50px;
-  background-color: #A36745;
+  height: 100px;
+  /*background-color: #A36745;*/
+  background-color: white;
+  border-bottom: 1px double gray;
 }
 
 #navbar > .container {
+  position: relative;
   height: 100%;
 }
 
 #logo {
-  padding-bottom: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 #logo > img {
-  width: 90px;
+  width: auto;
+  height: 99px;
 }
 
 /* navbarFunctionBlock */
@@ -99,11 +115,14 @@ input:focus {
   position: relative;
 }
 
-#home, #searchOrder, #shoppingCart, #faq {
+#navbarFunctionBlock .navbar-wrapper > div {
   display: inline-block;
   cursor: pointer;
   margin: 5px 10px;
-  color: white;
+}
+
+#navbarFunctionBlock .navbar-wrapper i {
+  color: #4D0000;
 }
 
 #shoppingCartAlert {
@@ -126,7 +145,7 @@ input:focus {
   right: 30px;
   padding: 5px 10px;
   color: white;
-  background-color: #6F452D;
+  background-color: #4D0000;
 }
 
 #checkButton:hover {
@@ -145,7 +164,8 @@ input:focus {
   height: auto;
   max-height: 250px;
   opacity: 1;
-  border: 2px double #6F452D;
+  /*border: 2px double #6F452D;*/
+  border: 2px double gray;
   background-color: white;
 }
 
@@ -203,7 +223,7 @@ input:focus {
   color: white;
   opacity: 1;
   border-radius: 10px;
-  background-color: #6F452D;
+  background-color: #4D0000;
 }
 
 #shoppingCartAlertNotification {
@@ -218,7 +238,7 @@ input:focus {
   width: 0;
 	height: 0;
 	border-top: 10px solid transparent;
-	border-left: 30px solid #6F452D;
+	border-left: 30px solid #4D0000;
 	border-bottom: 10px solid transparent;
 }
 

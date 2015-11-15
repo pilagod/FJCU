@@ -25,7 +25,7 @@ var OrderApp = React.createClass({
       loading: false
     };
   },
-  
+
   componentDidMount: function () {
     this._initProductInfo();
     // Order ProductItems Changed
@@ -64,7 +64,7 @@ var OrderApp = React.createClass({
       'active': !isEmpty
     });
     var orderActionNextOnClick = isEmpty ? null : this._orderActionNextOnClick;
-    var orderAppHeader, orderProcess;
+    var orderAppHeader, orderProcess, orderStep;
 
     var loadingBlock = null,
         loadingContent = null,
@@ -94,18 +94,58 @@ var OrderApp = React.createClass({
       )
     }
 
+    if (this.state.orderConfirm === 1) {
+      orderStep = <img className="step-img" src="img/OrderApp/step3.png"></img>;
+    } else {
+      orderStep = <img className="step-img" src="img/OrderApp/step2.png"></img>;
+    }
+    // <span>如何繳費：代碼訂單已寄至您的信箱，11/16(一) - 11/25(三)帽T預購期間，請在訂單成立起三日內，帶訂單代碼至課輔組做繳費動作。</span>
+
     return (
       <div id="OrderApp">
         {loadingBlock}
+        <div className="banner">
+          <img src="img/store-banner.png" alt="store banner"></img>
+          {orderStep}
+        </div>
         <div id="orderInfo" className={classNames({'hidden': (this.state.orderConfirm !== 1)})}>
-          <span>訂單代碼：</span>
-          <h2 id="orderId">{this.state.orderInfo.orderId}</h2>
+          <header>
+            <div>
+              <span>訂單代碼：</span>
+              <h2>{this.state.orderInfo.orderId}</h2>
+            </div>
+            <div>
+              <span>繳費期限：</span>
+              <h2>{this.state.orderInfo.expiryDate}</h2>
+            </div>
+          </header>
+          <article>
+            <div>
+              <i className="fa fa-circle"></i>
+              <span>如何繳費：</span>
+              <p>代碼訂單已寄至您的信箱，11/16(一) - 11/25(三)帽T預購期間，請在訂單成立起三日內，憑訂單代碼，至焯炤館1F大廳攤位做繳費動作。</p>
+              <p>若逾期尚未繳費，訂單將撤銷，請您重新下訂。</p>
+            </div>
+            <div>
+              <i className="fa fa-circle"></i>
+              <span>如何取貨：</span>
+              <p>請在12/05(六)輔大校慶園遊會當日，持訂單代碼至輔大帽T團隊攤位領貨。</p>
+              <p>若本人不克前來領貨，請您託人代為領取，並攜帶可證明身份之證件。</p>
+            </div>
+            <div>
+              <i className="fa fa-circle"></i>
+              <span>退換貨須知：</span>
+              <p>由於此款商品為活動限量商品，若有商品瑕疵、尺碼領貨錯誤，請保留原包裝，我們將退款給您，恕無法換貨。</p>
+              <p>商品穿過或是經水洗滌，都視同驗收完成，恕無法進行退貨。</p>
+            </div>
+          </article>
         </div>
         <OrderDetail orderConfirm={this.state.orderConfirm} productItems={this.state.productItems} productInfo={this.state.productInfo}/>
         <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo}/>
         <div id="orderAction" className="flex flex-vertical-center flex-horizontal-center">
           <div id="orderActionBack" className="active" onClick={this._orderActionBackOnClick}>
-            <span>回上一頁</span>
+            <span className={classNames({'hidden': (this.state.orderConfirm === 1)})}>回上一頁</span>
+            <span className={classNames({'hidden': (this.state.orderConfirm !== 1)})}>訂購成功，回首頁。</span>
           </div>
           <div id="orderActionNext" className={orderActionNextClassName} onClick={orderActionNextOnClick}>
             <span>訂單確認</span>
@@ -183,8 +223,12 @@ var OrderApp = React.createClass({
       OriginalPrice: total,
       Discount: totalDiscount,
       TotalPrice: totalAfterDiscount,
-      NoSendMail: true
+      NoSendMail: false
     };
+
+    if (buyerInfo.name === "測試員") {
+      order.NoSendMail = true;
+    }
 
     console.log(order);
 

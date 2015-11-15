@@ -23,10 +23,35 @@
   padding: 20px 40px;
 }
 
-#orderId {
+#orderInfo > header {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px inset gray;
+}
+
+#orderInfo > header > div {
+  display: inline-block;
+  margin-right: 40px;
+}
+
+#orderInfo > header h2 {
   display: inline-block;
   color: red;
   font-weight: bold;
+}
+
+#orderInfo > article {
+  padding: 0px 20px;
+  color: gray;
+}
+
+#orderInfo > article > div {
+  margin: 15px 0px;
+}
+
+#orderInfo > article > div > p {
+  margin: 5px 0px;
+  padding: 0px 20px;
 }
 
 /**
@@ -130,9 +155,6 @@
 /**
  *  OrderDetail
  */
-
-#orderDetail {
-}
 
 #orderDetail .table {
   width: 100%;

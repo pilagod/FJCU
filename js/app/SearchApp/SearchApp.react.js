@@ -81,6 +81,9 @@ var SearchApp = React.createClass({
 
     return (
       <div id="SearchApp">
+        <div className="banner">
+          <img src="img/store-banner.png" alt="store banner"></img>
+        </div>
         <div id="searchBar">
           <span>訂單代號：</span>
           <input id="txtOrderId" type="text"></input>
@@ -105,10 +108,18 @@ var SearchApp = React.createClass({
     }.bind(this));
   },
 
+  /*************************/
+  /*   Html Event Handler  */
+  /*************************/
+
   _searchOnClick: function () {
     var orderId = document.getElementById('txtOrderId').value;
     AppAction.orderSearch(orderId);
   },
+
+  /*************************/
+  /*  View Change Handler  */
+  /*************************/
 
   _onOrderSearch: function () {
     this.setState({

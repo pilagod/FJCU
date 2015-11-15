@@ -36,6 +36,9 @@ var ProductApp = React.createClass({
     } else {
       return (
         <div id="ProductApp">
+          <div className="banner">
+            <img src="img/store-banner.png" alt="store banner"></img>
+          </div>
           <ProductInfo
             productInfo={this.state.productInfo}
             productSelected={this.state.productSelected}/>
