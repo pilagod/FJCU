@@ -1686,7 +1686,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
              )
            ), 
            React.createElement("div", {id: "faq"}, 
-             React.createElement("div", null, 
+             React.createElement("div", {onClick: this._faqTabOnClick}, 
                React.createElement("i", {className: "fa fa-question-circle"}), 
                React.createElement("span", null, "常見問題")
              )
@@ -1700,6 +1700,12 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
                shoppingCartAlertContent
              )
            )
+         )
+       ), 
+       React.createElement("div", {id: "faqBlock", className: "hidden", onClick: this._faqCloseOnClick}, 
+         React.createElement("div", {className: "container"}, 
+           React.createElement("i", {className: "fa fa-times fa-2x"}), 
+           React.createElement("img", {src: "img/FAQ.png", alt: "FAQ"})
          )
        )
      )
@@ -1733,6 +1739,16 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
   _homeOnClick: function () {
     history.pushState({app: "ProductApp"}, "ProductApp", "");
     window.onpopstate();
+  },
+
+  _faqTabOnClick: function () {
+    var faqBlock = document.getElementById('faqBlock');
+    faqBlock.classList.remove('hidden');
+  },
+
+  _faqCloseOnClick: function () {
+    var faqBlock = document.getElementById('faqBlock');
+    faqBlock.classList.add('hidden');
   },
 
   _checkOnClick: function () {

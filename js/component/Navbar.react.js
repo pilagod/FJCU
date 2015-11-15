@@ -163,7 +163,7 @@ var NavbarFunctionBlock = React.createClass({
              </div>
            </div>
            <div id="faq">
-             <div>
+             <div onClick={this._faqTabOnClick}>
                <i className="fa fa-question-circle"></i>
                <span>常見問題</span>
              </div>
@@ -177,6 +177,12 @@ var NavbarFunctionBlock = React.createClass({
                {shoppingCartAlertContent}
              </div>
            </div>
+         </div>
+       </div>
+       <div id="faqBlock" className="hidden" onClick={this._faqCloseOnClick}>
+         <div className="container">
+           <i className="fa fa-times fa-2x" ></i>
+           <img src="img/FAQ.png" alt="FAQ"></img>
          </div>
        </div>
      </div>
@@ -210,6 +216,16 @@ var NavbarFunctionBlock = React.createClass({
   _homeOnClick: function () {
     history.pushState({app: "ProductApp"}, "ProductApp", "");
     window.onpopstate();
+  },
+
+  _faqTabOnClick: function () {
+    var faqBlock = document.getElementById('faqBlock');
+    faqBlock.classList.remove('hidden');
+  },
+
+  _faqCloseOnClick: function () {
+    var faqBlock = document.getElementById('faqBlock');
+    faqBlock.classList.add('hidden');
   },
 
   _checkOnClick: function () {
