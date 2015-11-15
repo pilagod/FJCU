@@ -5,7 +5,6 @@
 var React = require('react'),
     ReactDOM = require('react-dom'),
     Navbar = require('./component/Navbar.react.js'),
-    SideBar = require('./component/SideBar.react.js'),
     ProductApp = require('./app/ProductApp/ProductApp.react.js'),
     OrderApp = require('./app/OrderApp/OrderApp.react.js'),
     SearchApp = require('./app/SearchApp/SearchApp.react.js');
