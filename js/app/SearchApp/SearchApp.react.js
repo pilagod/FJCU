@@ -52,8 +52,8 @@ var SearchApp = React.createClass({
           </div>
         );
       } else {
-        console.log(this.state.orderInfo);
-        // this.state.orderInfo.isPaid = true;
+        // console.log(this.state.orderInfo);
+        // this.state.orderInfo.isPaid = false;
         // this.state.orderInfo.isReceived = true;
         var paidClassName = classNames('status', {
               'done': this.state.orderInfo.isPaid,
@@ -73,6 +73,12 @@ var SearchApp = React.createClass({
               <div className="status-block">
                 <div className={receivedClassName}>取貨</div>
                 <div className="status-desc">取貨狀態</div>
+              </div>
+              <div>
+                <div className={classNames('status-block', {'hidden': this.state.orderInfo.isPaid})}>
+                  <div className="status" style={{color: 'red', fontSize: '1.2em'}}>{this.state.orderInfo.expiryDate}</div>
+                  <div className="status-desc">繳費期限</div>
+                </div>
               </div>
             </div>
           </div>

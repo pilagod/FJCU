@@ -1432,8 +1432,8 @@ var SearchApp = React.createClass({displayName: "SearchApp",
           )
         );
       } else {
-        console.log(this.state.orderInfo);
-        // this.state.orderInfo.isPaid = true;
+        // console.log(this.state.orderInfo);
+        // this.state.orderInfo.isPaid = false;
         // this.state.orderInfo.isReceived = true;
         var paidClassName = classNames('status', {
               'done': this.state.orderInfo.isPaid,
@@ -1453,6 +1453,12 @@ var SearchApp = React.createClass({displayName: "SearchApp",
               React.createElement("div", {className: "status-block"}, 
                 React.createElement("div", {className: receivedClassName}, "取貨"), 
                 React.createElement("div", {className: "status-desc"}, "取貨狀態")
+              ), 
+              React.createElement("div", null, 
+                React.createElement("div", {className: classNames('status-block', {'hidden': this.state.orderInfo.isPaid})}, 
+                  React.createElement("div", {className: "status", style: {color: 'red', fontSize: '1.2em'}}, this.state.orderInfo.expiryDate), 
+                  React.createElement("div", {className: "status-desc"}, "繳費期限")
+                )
               )
             )
           )
