@@ -358,7 +358,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
         React.createElement(OrderBuyerInfo, {orderConfirm: this.state.orderConfirm, buyerInfo: this.state.buyerInfo}), 
         React.createElement("div", {id: "orderAction", className: "flex flex-vertical-center flex-horizontal-center"}, 
           React.createElement("div", {id: "orderActionBack", className: "active", onClick: this._orderActionBackOnClick}, 
-            React.createElement("span", {className: classNames({'hidden': (this.state.orderConfirm === 1)})}, "回上一頁"), 
+            React.createElement("span", {className: classNames({'hidden': (this.state.orderConfirm === 1)})}, "回首頁"), 
             React.createElement("span", {className: classNames({'hidden': (this.state.orderConfirm !== 1)})}, "訂購成功，回首頁。")
           ), 
           React.createElement("div", {id: "orderActionNext", className: orderActionNextClassName, onClick: orderActionNextOnClick}, 
@@ -386,7 +386,8 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   /*************************/
 
   _orderActionBackOnClick: function () {
-    history.back();
+    history.pushState({app: "ProductApp"}, "ProductApp", "");
+    window.onpopstate();
   },
 
   _orderActionNextOnClick: function () {

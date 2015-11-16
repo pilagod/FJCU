@@ -144,7 +144,7 @@ var OrderApp = React.createClass({
         <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo}/>
         <div id="orderAction" className="flex flex-vertical-center flex-horizontal-center">
           <div id="orderActionBack" className="active" onClick={this._orderActionBackOnClick}>
-            <span className={classNames({'hidden': (this.state.orderConfirm === 1)})}>回上一頁</span>
+            <span className={classNames({'hidden': (this.state.orderConfirm === 1)})}>回首頁</span>
             <span className={classNames({'hidden': (this.state.orderConfirm !== 1)})}>訂購成功，回首頁。</span>
           </div>
           <div id="orderActionNext" className={orderActionNextClassName} onClick={orderActionNextOnClick}>
@@ -172,7 +172,8 @@ var OrderApp = React.createClass({
   /*************************/
 
   _orderActionBackOnClick: function () {
-    history.back();
+    history.pushState({app: "ProductApp"}, "ProductApp", "");
+    window.onpopstate();
   },
 
   _orderActionNextOnClick: function () {
