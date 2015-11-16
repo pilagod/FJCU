@@ -52,6 +52,7 @@ var SearchApp = React.createClass({
           </div>
         );
       } else {
+        console.log(this.state.orderInfo);
         // this.state.orderInfo.isPaid = true;
         // this.state.orderInfo.isReceived = true;
         var paidClassName = classNames('status', {
@@ -123,6 +124,7 @@ var SearchApp = React.createClass({
 
   _onOrderSearch: function () {
     this.setState({
+      orderInfo: AppStore.getOrderInfo(),
       productItems: AppStore.getSearchProductItem(),
       buyerInfo: AppStore.getSearchBuyerInfo(),
       isSearch: true
