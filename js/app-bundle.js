@@ -1652,7 +1652,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
              React.createElement("div", null, 
                React.createElement("i", {className: "fa fa-circle"}), 
                React.createElement("span", null, 
-                 React.createElement("a", {href: "https://docs.google.com/forms/d/1DzL5GV7Qe1K3e9jYjuZwPmuB0Z2Jm35Bj9Oo_W52k44/viewform?c=0&w=1", target: "_blank"}, "我也要賣")
+                 React.createElement("a", {href: "https://goo.gl/P5YCWK", target: "_blank"}, "我也要賣")
                )
              )
            ), 
@@ -1660,7 +1660,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
              React.createElement("div", null, 
                React.createElement("i", {className: "fa fa-circle"}), 
                React.createElement("span", null, 
-                 React.createElement("a", {href: "https://www.facebook.com/ubun.tw/?fref=ts", target: "_blank"}, "關於Ubun")
+                 React.createElement("a", {href: "https://goo.gl/dgd0Bj", target: "_blank"}, "關於Ubun")
                )
              )
            ), 
@@ -1668,7 +1668,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
              React.createElement("div", null, 
                React.createElement("i", {className: "fa fa-circle"}), 
                React.createElement("span", null, 
-                 React.createElement("a", {href: "https://docs.google.com/forms/d/175-NO-BZVa1qlpYWyrl1B6IVRnxhgdu5miDNPwqQe7Q/viewform?usp=send_form", target: "_blank"}, "加入Ubun")
+                 React.createElement("a", {href: "https://goo.gl/2y4hJv", target: "_blank"}, "加入Ubun")
                )
              )
            ), 
@@ -1676,7 +1676,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
              React.createElement("div", null, 
                React.createElement("i", {className: "fa fa-circle"}), 
                React.createElement("span", null, 
-                 React.createElement("a", {href: "https://www.facebook.com/FJUClassic/?fref=ts", target: "_blank"}, "關於輔大帽T")
+                 React.createElement("a", {href: "https://goo.gl/AJ7VOs", target: "_blank"}, "關於輔大帽踢")
                )
              )
            ), 
