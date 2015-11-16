@@ -31,7 +31,7 @@ ReactDOM.render(
 history.pushState({app: "ProductApp"}, "ProductApp", "");
 
 window.onpopstate = function (event) {
-  console.log("onpopstate", history.state);
+  // console.log("onpopstate", history.state);
   ReactDOM.unmountComponentAtNode(main);
   ReactDOM.render(
     React.createElement(app[history.state.app]),
