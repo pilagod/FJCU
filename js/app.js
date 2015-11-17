@@ -17,12 +17,6 @@ var app = {
   "SearchApp": SearchApp
 };
 
-//
-// ReactDOM.render(
-//   React.createElement(SideBar),
-//   document.getElementById('sidebar')
-// );
-
 ReactDOM.render(
   React.createElement(Navbar),
   document.getElementById('navbar')

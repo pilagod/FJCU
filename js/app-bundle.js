@@ -185,12 +185,6 @@ var app = {
   "SearchApp": SearchApp
 };
 
-//
-// ReactDOM.render(
-//   React.createElement(SideBar),
-//   document.getElementById('sidebar')
-// );
-
 ReactDOM.render(
   React.createElement(Navbar),
   document.getElementById('navbar')
@@ -265,6 +259,17 @@ var OrderApp = React.createClass({displayName: "OrderApp",
     AppStore.removeChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
 
+  componentDidUpdate: function () {
+    if (this.state.orderConfirm === 1) {
+      var orderInfo = document.getElementById('orderInfo');
+      if (navigator.userAgent.indexOf('Firefox') > -1) {
+        scrollTo(document.documentElement, orderInfo.offsetTop, 800);
+      } else {
+        scrollTo(document.body, orderInfo.offsetTop, 800);
+      }
+    }
+  },
+
   render: function () {
 
     if (Object.keys(this.state.productInfo).length === 0) {
@@ -313,7 +318,6 @@ var OrderApp = React.createClass({displayName: "OrderApp",
     } else {
       orderStep = React.createElement("img", {className: "step-img", src: "img/OrderApp/step2.png"});
     }
-    // <span>如何繳費：代碼訂單已寄至您的信箱，11/16(一) - 11/25(三)帽T預購期間，請在訂單成立起三日內，帶訂單代碼至課輔組做繳費動作。</span>
 
     return (
       React.createElement("div", {id: "OrderApp"}, 
@@ -445,7 +449,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       order.NoSendMail = true;
     }
 
-    console.log(order);
+    // console.log(order);
 
     AppAction.orderSend(order);
   },
@@ -467,13 +471,13 @@ var OrderApp = React.createClass({displayName: "OrderApp",
   },
 
   _onProductInfoChange: function () {
-    console.log("onOrderAppProductInfoChange");
-    console.log(this.state.productInfo);
+    // console.log("onOrderAppProductInfoChange");
+    // console.log(this.state.productInfo);
     AppStore.getProductInfo().then(function (productInfo) {
       this.setState({
         productInfo: productInfo
       });
-      console.log("new product Info:", productInfo);
+      // console.log("new product Info:", productInfo);
     }.bind(this));
   },
 
@@ -503,8 +507,24 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       this.setState({loading: false});
       this.setState({orderConfirm: 0});
     }.bind(this), 2500);
-  }
+  },
 });
+
+function scrollTo(element, to, duration) {
+  if (duration <= 0) {
+    return;
+  };
+  var difference = to - element.scrollTop;
+  var perTick = difference / duration * 10;
+
+  setTimeout(function() {
+    element.scrollTop = element.scrollTop + perTick;
+    if (element.scrollTop == to) {
+      return;
+    };
+    scrollTo(element, to, duration - 10);
+  }, 10);
+}
 
 module.exports = OrderApp;
 
