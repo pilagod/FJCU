@@ -43,7 +43,7 @@ var ProductDetail = React.createClass({
         <div className="banner">
           <img className="step-img" src="img/ProductApp/step1.png" alt="step1"></img>
         </div>
-        <img src="img/ProductApp/product-detail.png" alt="product detail"></img>
+        <img src="img/ProductApp/product-detail-2.png" alt="product detail"></img>
       </section>
     )
   }

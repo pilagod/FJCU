@@ -1065,7 +1065,7 @@ var ProductDetail = React.createClass({displayName: "ProductDetail",
         React.createElement("div", {className: "banner"}, 
           React.createElement("img", {className: "step-img", src: "img/ProductApp/step1.png", alt: "step1"})
         ), 
-        React.createElement("img", {src: "img/ProductApp/product-detail.png", alt: "product detail"})
+        React.createElement("img", {src: "img/ProductApp/product-detail-2.png", alt: "product detail"})
       )
     )
   }
@@ -1672,7 +1672,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
    return (
      React.createElement("div", {className: "container flex flex-vertical-bottom"}, 
        React.createElement("div", {id: "logo", className: "flex flex-horizontal-center flex-vertical-center", onClick: this._homeOnClick, style: {cursor: "pointer"}}, 
-         React.createElement("img", {src: "img/ubun-logo.svg", alt: "Ubun Logo"})
+         React.createElement("img", {src: "img/ubun-logo.jpg", alt: "Ubun Logo"})
        ), 
        React.createElement("div", {id: "navbarFunctionBlock", className: "flex flex-align-right"}, 
          React.createElement("div", {className: "navbar-wrapper"}, 
@@ -1734,7 +1734,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
        React.createElement("div", {id: "faqBlock", className: "hidden", onClick: this._faqCloseOnClick}, 
          React.createElement("div", {className: "container"}, 
            React.createElement("i", {className: "fa fa-times fa-2x"}), 
-           React.createElement("img", {src: "img/FAQ.png", alt: "FAQ"})
+           React.createElement("img", {src: "img/FAQ-2.png", alt: "FAQ"})
          )
        )
      )

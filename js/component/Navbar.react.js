@@ -120,7 +120,7 @@ var NavbarFunctionBlock = React.createClass({
    return (
      <div className="container flex flex-vertical-bottom">
        <div id="logo" className="flex flex-horizontal-center flex-vertical-center" onClick={this._homeOnClick} style={{cursor: "pointer"}}>
-         <img src="img/ubun-logo.svg" alt="Ubun Logo"/>
+         <img src="img/ubun-logo.jpg" alt="Ubun Logo"/>
        </div>
        <div id="navbarFunctionBlock" className="flex flex-align-right">
          <div className="navbar-wrapper">
@@ -182,7 +182,7 @@ var NavbarFunctionBlock = React.createClass({
        <div id="faqBlock" className="hidden" onClick={this._faqCloseOnClick}>
          <div className="container">
            <i className="fa fa-times fa-2x" ></i>
-           <img src="img/FAQ.png" alt="FAQ"></img>
+           <img src="img/FAQ-2.png" alt="FAQ"></img>
          </div>
        </div>
      </div>
