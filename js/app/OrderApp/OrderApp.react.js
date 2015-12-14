@@ -21,6 +21,7 @@ var OrderApp = React.createClass({
       productItems: AppStore.getOrderProductItem(),
       buyerInfo: AppStore.getBuyerInfo(),
       orderInfo: {},
+      orderType: 0, // 0: 輔大書坊領貨, 1: 郵寄取貨
       orderConfirm: 0, // 0: Initialize, 1: Success, 2: Fail
       loading: false
     };
@@ -73,6 +74,9 @@ var OrderApp = React.createClass({
     var orderActionNextClassName = classNames({
       'hidden': (this.state.orderConfirm === 1),
       'active': !isEmpty
+    });
+    var orderPaymentInfoClassName = classNames({
+      'hidden': (this.state.orderType === 0)
     });
     var orderActionNextOnClick = isEmpty ? null : this._orderActionNextOnClick;
     var orderAppHeader, orderProcess, orderStep;
@@ -150,8 +154,69 @@ var OrderApp = React.createClass({
             </div>
           </article>
         </div>
+        <div id="orderPaymentType">
+          <header className="flex flex-vertical-center">
+            <i className="fa fa-archive fa-2x"></i>
+            <h2>領貨方式</h2>
+          </header>
+          <article>
+            <div>
+              <input type="radio" name="orderType" value="0" defaultChecked onChange={this._orderPaymentTypeOnChanged}></input>
+              <h3>輔大書坊領貨</h3>
+            </div>
+            <div>
+              <input type="radio" name="orderType" value="1" onChange={this._orderPaymentTypeOnChanged}></input>
+              <h3>郵寄取貨</h3>
+            </div>
+          </article>
+        </div>
         <OrderDetail orderConfirm={this.state.orderConfirm} productItems={this.state.productItems} productInfo={this.state.productInfo}/>
-        <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo}/>
+        <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo} orderType={this.state.orderType}/>
+        <div id="orderPaymentInfo" className={orderPaymentInfoClassName}>
+          <header className="flex flex-vertical-center">
+            <i className="fa fa-file-text-o fa-lg"></i>
+            <h2>購買說明</h2>
+          </header>
+          <article>
+            <div>
+              <div className="order-payment-info-title">
+                <span>ATM匯款</span>
+              </div>
+              <div className="order-payment-info-content">
+                <p>
+                  請在訂單成立後三日內，匯款至帳號：XXXX-XXXX-XXXX<br/>
+                  團隊每日對帳，確定匯款後會寄「繳費成功」通知信至您的信箱。
+                </p>
+              </div>
+            </div>
+            <div>
+              <div className="order-payment-info-title">
+                <span>郵寄費用</span>
+              </div>
+              <div className="order-payment-info-content">
+                <table>
+                  <tr>
+                    <td>01件</td>
+                    <td>：$100</td>
+                  </tr>
+                  <tr>
+                    <td>02-05件</td>
+                    <td>：$150</td>
+                  </tr>
+                  <tr>
+                    <td>06-10件</td>
+                    <td>：$200</td>
+                  </tr>
+                  <tr>
+                    <td>10件以上</td>
+                    <td>：$250</td>
+                  </tr>
+                </table>
+
+              </div>
+            </div>
+          </article>
+        </div>
         <div id="orderAction" className="flex flex-vertical-center flex-horizontal-center">
           <div id="orderActionBack" className="active" onClick={this._orderActionBackOnClick}>
             <span className={classNames({'hidden': (this.state.orderConfirm === 1)})}>回首頁</span>
@@ -180,6 +245,10 @@ var OrderApp = React.createClass({
   /*************************/
   /*   Html Event Handler  */
   /*************************/
+
+  _orderPaymentTypeOnChanged: function (event) {
+    this.setState({orderType: parseInt(event.target.value)});
+  },
 
   _orderActionBackOnClick: function () {
     history.pushState({app: "ProductApp"}, "ProductApp", "");

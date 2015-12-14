@@ -30,7 +30,11 @@ window.onpopstate = function (event) {
   ReactDOM.render(
     React.createElement(app[history.state.app]),
     main
-  ).forceUpdate();
+  );
+  /* For Chrome, Safari, Opera */
+  document.body.scrollTop = 0;
+  /* For Firefox, IE */
+  document.documentElement.scrollTop = 0;
 };
 
 if (navigator.userAgent.indexOf('Chrome') > -1 && navigator.userAgent.indexOf('Edge') === -1 || navigator.userAgent.indexOf('Firefox') > -1) {

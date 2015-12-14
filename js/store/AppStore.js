@@ -242,6 +242,7 @@ function productSelectedUpdate(updates) {
  */
 function buyerInfoUpdate(updates) {
   _buyerInfo = assign({}, _buyerInfo, updates);
+  console.log(_buyerInfo);
 }
 
 /**************************/
