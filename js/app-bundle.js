@@ -398,8 +398,14 @@ var OrderApp = React.createClass({displayName: "OrderApp",
               ), 
               React.createElement("div", {className: "order-payment-info-content"}, 
                 React.createElement("p", null, 
-                  "請在訂單成立後三日內，匯款至帳號：XXXX-XXXX-XXXX", React.createElement("br", null), 
-                  "團隊每日對帳，確定匯款後會寄「繳費成功」通知信至您的信箱。"
+                  "訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼、訂單資訊和匯款帳號", React.createElement("br", null), 
+                  "請您在訂單成立後三日內，匯款至以下帳戶：", React.createElement("br", null), 
+                  "銀行名稱：新莊區農會", React.createElement("br", null), 
+                  "分行名稱：營盤分部", React.createElement("br", null), 
+                  "戶名：輔大書坊", React.createElement("br", null), 
+                  "匯款帳號：09020000013164", React.createElement("br", null), 
+                  "本團隊每日對帳，確定匯款後，會寄「繳費成功通知信」至您的信箱。", React.createElement("br", null), 
+                  "如有任何問題，請直接私訊輔大帽踢粉專，謝謝您！"
                 )
               )
             ), 
