@@ -12,15 +12,17 @@ var OrderDetail = React.createClass({
   propTypes: {
     orderConfirm: ReactPropTypes.number.isRequired,
     productInfo: ReactPropTypes.object.isRequired,
-    productItems: ReactPropTypes.object.isRequired
+    productItems: ReactPropTypes.object.isRequired,
+    orderType: ReactPropTypes.number.isRequired
   },
 
   render: function () {
     var productItemKey, amountAvailable, originalAmountAvailable,
         amountTable = this.props.productInfo.amountTable;
     var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)});
-    var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
+    var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0, totalShippingFee = 0,
         productItems = this.props.productItems,
+        shippingFee = null,
         orderItems = [],
         orderHeader = (
           <div id="orderDetailHeader" className="table-row">
@@ -53,8 +55,30 @@ var OrderDetail = React.createClass({
       );
     }
 
+
+    if (this.props.orderType === 1) {
+      if (totalNum === 1) {
+        totalShippingFee = 100;
+      } else if (totalNum <= 5) {
+        totalShippingFee = 150;
+      } else if (totalNum <= 10) {
+        totalShippingFee = 200;
+      } else {
+        totalShippingFee = 250;
+      }
+      shippingFee = (
+        <div>
+          <span>郵費：</span>
+          <div className="item-total">
+            <span>NT$</span>
+            <span>{totalShippingFee}</span>
+          </div>
+        </div>
+      )
+    }
+
     totalDiscount = Math.floor(totalNum / 2) * (this.props.productInfo.discount * 2);
-    totalAfterDiscount = total - totalDiscount;
+    totalAfterDiscount = total - totalDiscount + totalShippingFee;
 
     orderFooter = (
       <div id="orderDetailFooter" className="flex flex-vertical-center">
@@ -74,6 +98,7 @@ var OrderDetail = React.createClass({
                 <span>{totalDiscount}</span>
               </div>
             </div>
+            {shippingFee}
           </div>
           <div id="orderDetailTotal">
             <div>

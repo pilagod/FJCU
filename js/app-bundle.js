@@ -384,7 +384,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
             )
           )
         ), 
-        React.createElement(OrderDetail, {orderConfirm: this.state.orderConfirm, productItems: this.state.productItems, productInfo: this.state.productInfo}), 
+        React.createElement(OrderDetail, {orderConfirm: this.state.orderConfirm, productItems: this.state.productItems, productInfo: this.state.productInfo, orderType: this.state.orderType}), 
         React.createElement(OrderBuyerInfo, {orderConfirm: this.state.orderConfirm, buyerInfo: this.state.buyerInfo, orderType: this.state.orderType}), 
         React.createElement("div", {id: "orderPaymentInfo", className: orderPaymentInfoClassName}, 
           React.createElement("header", {className: "flex flex-vertical-center"}, 
@@ -409,24 +409,25 @@ var OrderApp = React.createClass({displayName: "OrderApp",
               ), 
               React.createElement("div", {className: "order-payment-info-content"}, 
                 React.createElement("table", null, 
-                  React.createElement("tr", null, 
-                    React.createElement("td", null, "01件"), 
-                    React.createElement("td", null, "：$100")
-                  ), 
-                  React.createElement("tr", null, 
-                    React.createElement("td", null, "02-05件"), 
-                    React.createElement("td", null, "：$150")
-                  ), 
-                  React.createElement("tr", null, 
-                    React.createElement("td", null, "06-10件"), 
-                    React.createElement("td", null, "：$200")
-                  ), 
-                  React.createElement("tr", null, 
-                    React.createElement("td", null, "10件以上"), 
-                    React.createElement("td", null, "：$250")
+                  React.createElement("tbody", null, 
+                    React.createElement("tr", null, 
+                      React.createElement("td", null, "01件"), 
+                      React.createElement("td", null, "：$100")
+                    ), 
+                    React.createElement("tr", null, 
+                      React.createElement("td", null, "02-05件"), 
+                      React.createElement("td", null, "：$150")
+                    ), 
+                    React.createElement("tr", null, 
+                      React.createElement("td", null, "06-10件"), 
+                      React.createElement("td", null, "：$200")
+                    ), 
+                    React.createElement("tr", null, 
+                      React.createElement("td", null, "10件以上"), 
+                      React.createElement("td", null, "：$250")
+                    )
                   )
                 )
-
               )
             )
           )
@@ -771,15 +772,17 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
   propTypes: {
     orderConfirm: ReactPropTypes.number.isRequired,
     productInfo: ReactPropTypes.object.isRequired,
-    productItems: ReactPropTypes.object.isRequired
+    productItems: ReactPropTypes.object.isRequired,
+    orderType: ReactPropTypes.number.isRequired
   },
 
   render: function () {
     var productItemKey, amountAvailable, originalAmountAvailable,
         amountTable = this.props.productInfo.amountTable;
     var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)});
-    var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
+    var totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0, totalShippingFee = 0,
         productItems = this.props.productItems,
+        shippingFee = null,
         orderItems = [],
         orderHeader = (
           React.createElement("div", {id: "orderDetailHeader", className: "table-row"}, 
@@ -812,8 +815,30 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
       );
     }
 
+
+    if (this.props.orderType === 1) {
+      if (totalNum === 1) {
+        totalShippingFee = 100;
+      } else if (totalNum <= 5) {
+        totalShippingFee = 150;
+      } else if (totalNum <= 10) {
+        totalShippingFee = 200;
+      } else {
+        totalShippingFee = 250;
+      }
+      shippingFee = (
+        React.createElement("div", null, 
+          React.createElement("span", null, "郵費："), 
+          React.createElement("div", {className: "item-total"}, 
+            React.createElement("span", null, "NT$"), 
+            React.createElement("span", null, totalShippingFee)
+          )
+        )
+      )
+    }
+
     totalDiscount = Math.floor(totalNum / 2) * (this.props.productInfo.discount * 2);
-    totalAfterDiscount = total - totalDiscount;
+    totalAfterDiscount = total - totalDiscount + totalShippingFee;
 
     orderFooter = (
       React.createElement("div", {id: "orderDetailFooter", className: "flex flex-vertical-center"}, 
@@ -832,7 +857,8 @@ var OrderDetail = React.createClass({displayName: "OrderDetail",
                 React.createElement("span", null, "NT$"), 
                 React.createElement("span", null, totalDiscount)
               )
-            )
+            ), 
+            shippingFee
           ), 
           React.createElement("div", {id: "orderDetailTotal"}, 
             React.createElement("div", null, 

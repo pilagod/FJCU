@@ -172,7 +172,7 @@ var OrderApp = React.createClass({
             </div>
           </article>
         </div>
-        <OrderDetail orderConfirm={this.state.orderConfirm} productItems={this.state.productItems} productInfo={this.state.productInfo}/>
+        <OrderDetail orderConfirm={this.state.orderConfirm} productItems={this.state.productItems} productInfo={this.state.productInfo} orderType={this.state.orderType}/>
         <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo} orderType={this.state.orderType}/>
         <div id="orderPaymentInfo" className={orderPaymentInfoClassName}>
           <header className="flex flex-vertical-center">
@@ -197,24 +197,25 @@ var OrderApp = React.createClass({
               </div>
               <div className="order-payment-info-content">
                 <table>
-                  <tr>
-                    <td>01件</td>
-                    <td>：$100</td>
-                  </tr>
-                  <tr>
-                    <td>02-05件</td>
-                    <td>：$150</td>
-                  </tr>
-                  <tr>
-                    <td>06-10件</td>
-                    <td>：$200</td>
-                  </tr>
-                  <tr>
-                    <td>10件以上</td>
-                    <td>：$250</td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <td>01件</td>
+                      <td>：$100</td>
+                    </tr>
+                    <tr>
+                      <td>02-05件</td>
+                      <td>：$150</td>
+                    </tr>
+                    <tr>
+                      <td>06-10件</td>
+                      <td>：$200</td>
+                    </tr>
+                    <tr>
+                      <td>10件以上</td>
+                      <td>：$250</td>
+                    </tr>
+                  </tbody>
                 </table>
-
               </div>
             </div>
           </article>
