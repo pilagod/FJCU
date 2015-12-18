@@ -327,11 +327,13 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       orderStep = React.createElement("img", {className: "step-img", src: "img/OrderApp/step2.png"});
     }
 
+    /* Banner: http://imgur.com/ctfMw4O.png */
+
     return (
       React.createElement("div", {id: "OrderApp"}, 
         loadingBlock, 
         React.createElement("div", {className: "banner"}, 
-          React.createElement("img", {src: "img/store-banner.png", alt: "store banner"}), 
+          React.createElement("img", {src: "http://imgur.com/ctfMw4O.png", alt: "store banner"}), 
           orderStep
         ), 
         React.createElement("div", {id: "orderInfo", className: classNames({'hidden': (this.state.orderConfirm !== 1)})}, 
@@ -1036,13 +1038,14 @@ var ProductApp = React.createClass({displayName: "ProductApp",
   },
 
   render: function () {
+    /* Banner: http://imgur.com/ctfMw4O.png */
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
     } else {
       return (
         React.createElement("div", {id: "ProductApp"}, 
           React.createElement("div", {className: "banner"}, 
-            React.createElement("img", {src: "img/store-banner.png", alt: "store banner"})
+            React.createElement("img", {src: "http://imgur.com/ctfMw4O.png", alt: "store banner"})
           ), 
           React.createElement(ProductInfo, {
             productInfo: this.state.productInfo, 
@@ -1059,6 +1062,7 @@ var ProductApp = React.createClass({displayName: "ProductApp",
         alert("載入資料發生錯誤，請稍候再重新整理看看。")
         return false;
       }
+      console.log(productInfo);
       this.setState({
         productInfo: productInfo
       });
@@ -1157,6 +1161,16 @@ var React = require('react');
 
 var ProductDetail = React.createClass({displayName: "ProductDetail",
   render: function () {
+    /* Page: {
+     *   1: http://imgur.com/0FWT2h9.png
+     *   2-1: http://imgur.com/OLLSZ76.png
+     *   2-2: http://imgur.com/w3GtZ5a.png
+     *   3: http://imgur.com/mGRTeyS.png
+     *   4: http://imgur.com/3dyR6m6.png
+     *   5: http://imgur.com/IC5OJML.png
+     *   6: http://imgur.com/c2vtGHL.png
+     * }
+     */
     return (
       React.createElement("section", {id: "productDetail"}, 
         React.createElement("div", {id: "productInstruction"}, 
@@ -1194,11 +1208,19 @@ var ProductDetail = React.createClass({displayName: "ProductDetail",
         React.createElement("div", {className: "banner"}, 
           React.createElement("img", {className: "step-img", src: "img/ProductApp/step1.png", alt: "step1"})
         ), 
-        React.createElement("img", {src: "img/ProductApp/product-detail-2.png", alt: "product detail"})
+        React.createElement("img", {src: "http://imgur.com/0FWT2h9.png", alt: "product detail 1"}), 
+        React.createElement("img", {src: "http://imgur.com/OLLSZ76.png", alt: "product detail 2-1"}), 
+        React.createElement("img", {src: "http://imgur.com/w3GtZ5a.png", alt: "product detail 2-2"}), 
+        React.createElement("img", {src: "http://imgur.com/mGRTeyS.png", alt: "product detail 3"}), 
+        React.createElement("img", {src: "http://imgur.com/3dyR6m6.png", alt: "product detail 4"}), 
+        React.createElement("img", {src: "http://imgur.com/IC5OJML.png", alt: "product detail 5"}), 
+        React.createElement("img", {src: "http://imgur.com/c2vtGHL.png", alt: "product detail 6"})
       )
     )
   }
 });
+
+
 
 module.exports = ProductDetail;
 
@@ -1687,6 +1709,7 @@ var React = require('react'),
     assign = require('object-assign'),
     classNames = require('classnames'),
     AppStore = require('../store/AppStore.js'),
+    AppAction = require('../action/AppAction.js'),
     AppConstant = require('../constant/AppConstant.js');
 
 function getOrderState() {
@@ -1702,6 +1725,8 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
   getInitialState: function () {
     var orderState = getOrderState();
     return assign({}, orderState, {
+      productInfo: {},
+      productSelected: AppStore.getProductSelected(),
       shoppingCartHover: false,
       shoppingCartAdd: false,
       check: (Object.keys(orderState.productItems).length > 0)
@@ -1709,13 +1734,16 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
   },
 
   componentDidMount: function () {
+    this._initProductInfo();
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
+    AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
     AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
     AppStore.addChangeListener(AppConstant.CLEAR_ALL_EVENT, this._onOrderChange);
   },
 
   componentWillUnmount: function () {
     AppStore.removeChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
+    AppStore.removeChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
     AppStore.removeChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
     AppStore.removeChangeListener(AppConstant.CLEAR_ALL_EVENT, this._onOrderChange);
   },
@@ -1765,6 +1793,9 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
               ), 
               React.createElement("div", {className: "table-cell"}, 
                 React.createElement("span", null, "NT$" + this.state.productItems[key].total)
+              ), 
+              React.createElement("div", {className: "table-cell"}, 
+                React.createElement("span", null, React.createElement("i", {className: "fa fa-trash-o", onClick: this._deleteOnClick.bind(this, this.state.productItems[key].id)}))
               )
             )
           ));
@@ -1871,6 +1902,26 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
    )
   },
 
+  _initProductInfo: function () {
+    AppStore.getProductInfo().then(function (productInfo) {
+      if (Object.keys(productInfo).length === 0) {
+        alert("載入資料發生錯誤，請稍候再重新整理看看。")
+        return false;
+      }
+      console.log(productInfo);
+      this.setState({
+        productInfo: productInfo
+      });
+      if (!this.state.productSelected.productId) {
+        AppAction.productUpdate({
+          productId: this.state.productInfo.productId,
+          productName: this.state.productInfo.productName,
+          price: this.state.productInfo.price
+        });
+      }
+    }.bind(this));
+  },
+
   /*************************/
   /*   Html Event Handler  */
   /*************************/
@@ -1926,6 +1977,27 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     window.onpopstate();
   },
 
+  _deleteOnClick: function (id) {
+    if (confirm("確定要刪除此產品？")) {
+      var totalAmount = this.state.productInfo.totalAmount - this.state.productItems[id].num;
+      var productItemKey = this.state.productItems[id].productItemKey;
+      AppAction.productItemDelete(id);
+      AppAction.productInfoUpdate({totalAmount: totalAmount});
+      AppAction.productInfoAmountUpdate(productItemKey, {
+        amountAvailable: this.state.productInfo.amountTable[productItemKey].originalAmountAvailable,
+        isSoldout: false
+      });
+
+      console.log(totalAmount);
+
+      if (totalAmount === 0) {
+        timeoutObject = setTimeout(function () {
+          this.setState({shoppingCartHover: false});
+        }.bind(this), 200);
+      }
+    }
+  },
+
   /*************************/
   /*  View Change Handler  */
   /*************************/
@@ -1935,6 +2007,17 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
     this.setState(assign({}, orderState, {
       check: (Object.keys(orderState.productItems).length > 0)
     }));
+  },
+
+  _onProductInfoChange: function () {
+    // console.log("onOrderAppProductInfoChange");
+    // console.log(this.state.productInfo);
+    AppStore.getProductInfo().then(function (productInfo) {
+      this.setState({
+        productInfo: productInfo
+      });
+      // console.log("new product Info:", productInfo);
+    }.bind(this));
   },
 
   _onProductAddToShoppingCart: function () {
@@ -1948,7 +2031,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
 
 module.exports = NavbarFunctionBlock;
 
-},{"../constant/AppConstant.js":18,"../store/AppStore.js":20,"classnames":22,"object-assign":27,"react":184}],18:[function(require,module,exports){
+},{"../action/AppAction.js":1,"../constant/AppConstant.js":18,"../store/AppStore.js":20,"classnames":22,"object-assign":27,"react":184}],18:[function(require,module,exports){
 /**
  *  AppConstant
  */
@@ -2050,6 +2133,10 @@ var _productInfo = {},
     },
     _productItemIdQueryTable = {
 
+      /**
+       *  Product 1
+       */
+
       // Gray
       "1#9e9f99XS": 1,
       "1#9e9f99S": 2,
@@ -2069,7 +2156,47 @@ var _productInfo = {},
       "1#6f0011S": 12,
       "1#6f0011M": 13,
       "1#6f0011L": 14,
-      "1#6f0011XL": 15
+      "1#6f0011XL": 15,
+
+
+      /**
+       *  Product 2
+       */
+
+      // Yellow
+      "2#EDCA00XS": 16,
+      "2#EDCA00S": 17,
+      "2#EDCA00M": 18,
+      "2#EDCA00L": 19,
+      "2#EDCA00XL": 20,
+
+      // Navy
+      "2#192750XS": 21,
+      "2#192750S": 22,
+      "2#192750M": 23,
+      "2#192750L": 24,
+      "2#192750XL": 25,
+
+      // Wine
+      "2#62262EXS": 26,
+      "2#62262ES": 27,
+      "2#62262EM": 28,
+      "2#62262EL": 29,
+      "2#62262EXL": 30,
+
+      // Black
+      "2#202228XS": 31,
+      "2#202228S": 32,
+      "2#202228M": 33,
+      "2#202228L": 34,
+      "2#202228XL": 35,
+
+      // White
+      "2#FAFAFAXS": 36,
+      "2#FAFAFAS": 37,
+      "2#FAFAFAM": 38,
+      "2#FAFAFAL": 39,
+      "2#FAFAFAXL": 40
     },
     _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
 
@@ -2079,12 +2206,39 @@ var _searchBuyerInfo = {},
 // Buyer Information
 var _buyerInfo = {};
 
+/**
+ *  Product 1 color table
+ */
 /* red: rgb(111,0,17)  #6f0011 */
 /* grey: rgb(158,159,153)  #9e9f99*/
 /* navy: rgb(36,39,51)  #242733*/
 
-_productInfo[_productId] = {
-   productId: _productId,
+/**
+ *  Product 2 color table
+ */
+/* yellow: rgb(237, 202, 0) #EDCA00 http://imgur.com/8rEmlAc.png */
+/* navy: rgb(25, 39, 80) #192750 http://imgur.com/zD8Dt2Z.png */
+/* wine: rgb(98, 38, 46) #62262E http://imgur.com/3GqUBlw.png */
+/* black: rgb(32, 34, 40) #202228 http://imgur.com/SlRGjZv.png */
+/* white: rgb(250, 250, 250) #FAFAFA http://imgur.com/nGB1cyb.png */
+
+/**
+ *  Image Url
+ */
+/* Banner: http://imgur.com/ctfMw4O.png */
+/* Page: {
+ *   1: http://imgur.com/0FWT2h9.png
+ *   2-1: http://imgur.com/OLLSZ76.png
+ *   2-2: http://imgur.com/w3GtZ5a.png
+ *   3: http://imgur.com/mGRTeyS.png
+ *   4: http://imgur.com/3dyR6m6.png
+ *   5: http://imgur.com/IC5OJML.png
+ *   6: http://imgur.com/c2vtGHL.png
+ * }
+ */
+
+_productInfo[1] = {
+   productId: 1,
    productName: "創校90週年校慶園遊會紀念T",
    price: 580,
    discount: 30,
@@ -2104,6 +2258,31 @@ _productInfo[_productId] = {
      "XL": {size: "XL"}
    }
 };
+
+_productInfo[2] = {
+   productId: 2,
+   productName: "輔仁大學經典帽踢",
+   price: 780,
+   discount: 30,
+   totalAmount: 0,
+   amountLimit: 20,
+   amountTable: {},
+   colorTable: {
+     "#EDCA00": {color: "#EDCA00", colorName: "經典黃", image: "http://imgur.com/8rEmlAc.png"},
+     "#192750": {color: "#192750", colorName: "丈青", image: "http://imgur.com/zD8Dt2Z.png"},
+     "#62262E": {color: "#62262E", colorName: "酒紅", image: "http://imgur.com/3GqUBlw.png"},
+     "#202228": {color: "#202228", colorName: "黑", image: "http://imgur.com/SlRGjZv.png"},
+     "#FAFAFA": {color: "#FAFAFA", colorName: "白", image: "http://imgur.com/nGB1cyb.png"},
+   },
+   sizeTable: {  // {size}
+     "XS": {size: "XS"},
+     "S": {size: "S"},
+     "M": {size: "M"},
+     "L": {size: "L"},
+     "XL": {size: "XL"}
+   }
+};
+
 
 /**************************/
 /*   Operations - Ajax    */
@@ -2356,6 +2535,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
    */
   getProductInfo: function () {
     var productId = this.getProductId();
+    // console.log(productId);
     if (Object.keys(_productInfo[productId].amountTable).length === 0) {
       return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
         var responseData = JSON.parse(response),
@@ -2380,6 +2560,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
               originalAmountAvailable: amountAvailable,
               isSoldout: !(amountAvailable > 0)
             }
+            // console.log(_productInfo[productId]);
             // console.log(amountAvailable, _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]]);
           }
           return _productInfo[productId];

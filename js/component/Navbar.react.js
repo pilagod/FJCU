@@ -6,6 +6,7 @@ var React = require('react'),
     assign = require('object-assign'),
     classNames = require('classnames'),
     AppStore = require('../store/AppStore.js'),
+    AppAction = require('../action/AppAction.js'),
     AppConstant = require('../constant/AppConstant.js');
 
 function getOrderState() {
@@ -21,6 +22,8 @@ var NavbarFunctionBlock = React.createClass({
   getInitialState: function () {
     var orderState = getOrderState();
     return assign({}, orderState, {
+      productInfo: {},
+      productSelected: AppStore.getProductSelected(),
       shoppingCartHover: false,
       shoppingCartAdd: false,
       check: (Object.keys(orderState.productItems).length > 0)
@@ -28,13 +31,16 @@ var NavbarFunctionBlock = React.createClass({
   },
 
   componentDidMount: function () {
+    this._initProductInfo();
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
+    AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
     AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
     AppStore.addChangeListener(AppConstant.CLEAR_ALL_EVENT, this._onOrderChange);
   },
 
   componentWillUnmount: function () {
     AppStore.removeChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
+    AppStore.removeChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
     AppStore.removeChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
     AppStore.removeChangeListener(AppConstant.CLEAR_ALL_EVENT, this._onOrderChange);
   },
@@ -84,6 +90,9 @@ var NavbarFunctionBlock = React.createClass({
               </div>
               <div className="table-cell">
                 <span>{"NT$" + this.state.productItems[key].total}</span>
+              </div>
+              <div className="table-cell">
+                <span><i className="fa fa-trash-o" onClick={this._deleteOnClick.bind(this, this.state.productItems[key].id)}></i></span>
               </div>
             </div>
           ));
@@ -190,6 +199,26 @@ var NavbarFunctionBlock = React.createClass({
    )
   },
 
+  _initProductInfo: function () {
+    AppStore.getProductInfo().then(function (productInfo) {
+      if (Object.keys(productInfo).length === 0) {
+        alert("載入資料發生錯誤，請稍候再重新整理看看。")
+        return false;
+      }
+      console.log(productInfo);
+      this.setState({
+        productInfo: productInfo
+      });
+      if (!this.state.productSelected.productId) {
+        AppAction.productUpdate({
+          productId: this.state.productInfo.productId,
+          productName: this.state.productInfo.productName,
+          price: this.state.productInfo.price
+        });
+      }
+    }.bind(this));
+  },
+
   /*************************/
   /*   Html Event Handler  */
   /*************************/
@@ -245,6 +274,27 @@ var NavbarFunctionBlock = React.createClass({
     window.onpopstate();
   },
 
+  _deleteOnClick: function (id) {
+    if (confirm("確定要刪除此產品？")) {
+      var totalAmount = this.state.productInfo.totalAmount - this.state.productItems[id].num;
+      var productItemKey = this.state.productItems[id].productItemKey;
+      AppAction.productItemDelete(id);
+      AppAction.productInfoUpdate({totalAmount: totalAmount});
+      AppAction.productInfoAmountUpdate(productItemKey, {
+        amountAvailable: this.state.productInfo.amountTable[productItemKey].originalAmountAvailable,
+        isSoldout: false
+      });
+
+      console.log(totalAmount);
+
+      if (totalAmount === 0) {
+        timeoutObject = setTimeout(function () {
+          this.setState({shoppingCartHover: false});
+        }.bind(this), 200);
+      }
+    }
+  },
+
   /*************************/
   /*  View Change Handler  */
   /*************************/
@@ -254,6 +304,17 @@ var NavbarFunctionBlock = React.createClass({
     this.setState(assign({}, orderState, {
       check: (Object.keys(orderState.productItems).length > 0)
     }));
+  },
+
+  _onProductInfoChange: function () {
+    // console.log("onOrderAppProductInfoChange");
+    // console.log(this.state.productInfo);
+    AppStore.getProductInfo().then(function (productInfo) {
+      this.setState({
+        productInfo: productInfo
+      });
+      // console.log("new product Info:", productInfo);
+    }.bind(this));
   },
 
   _onProductAddToShoppingCart: function () {

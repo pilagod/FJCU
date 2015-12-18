@@ -115,11 +115,13 @@ var OrderApp = React.createClass({
       orderStep = <img className="step-img" src="img/OrderApp/step2.png"></img>;
     }
 
+    /* Banner: http://imgur.com/ctfMw4O.png */
+
     return (
       <div id="OrderApp">
         {loadingBlock}
         <div className="banner">
-          <img src="img/store-banner.png" alt="store banner"></img>
+          <img src="http://imgur.com/ctfMw4O.png" alt="store banner"></img>
           {orderStep}
         </div>
         <div id="orderInfo" className={classNames({'hidden': (this.state.orderConfirm !== 1)})}>

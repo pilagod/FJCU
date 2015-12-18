@@ -23,6 +23,10 @@ var _productInfo = {},
     },
     _productItemIdQueryTable = {
 
+      /**
+       *  Product 1
+       */
+
       // Gray
       "1#9e9f99XS": 1,
       "1#9e9f99S": 2,
@@ -42,7 +46,47 @@ var _productInfo = {},
       "1#6f0011S": 12,
       "1#6f0011M": 13,
       "1#6f0011L": 14,
-      "1#6f0011XL": 15
+      "1#6f0011XL": 15,
+
+
+      /**
+       *  Product 2
+       */
+
+      // Yellow
+      "2#EDCA00XS": 16,
+      "2#EDCA00S": 17,
+      "2#EDCA00M": 18,
+      "2#EDCA00L": 19,
+      "2#EDCA00XL": 20,
+
+      // Navy
+      "2#192750XS": 21,
+      "2#192750S": 22,
+      "2#192750M": 23,
+      "2#192750L": 24,
+      "2#192750XL": 25,
+
+      // Wine
+      "2#62262EXS": 26,
+      "2#62262ES": 27,
+      "2#62262EM": 28,
+      "2#62262EL": 29,
+      "2#62262EXL": 30,
+
+      // Black
+      "2#202228XS": 31,
+      "2#202228S": 32,
+      "2#202228M": 33,
+      "2#202228L": 34,
+      "2#202228XL": 35,
+
+      // White
+      "2#FAFAFAXS": 36,
+      "2#FAFAFAS": 37,
+      "2#FAFAFAM": 38,
+      "2#FAFAFAL": 39,
+      "2#FAFAFAXL": 40
     },
     _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
 
@@ -52,12 +96,39 @@ var _searchBuyerInfo = {},
 // Buyer Information
 var _buyerInfo = {};
 
+/**
+ *  Product 1 color table
+ */
 /* red: rgb(111,0,17)  #6f0011 */
 /* grey: rgb(158,159,153)  #9e9f99*/
 /* navy: rgb(36,39,51)  #242733*/
 
-_productInfo[_productId] = {
-   productId: _productId,
+/**
+ *  Product 2 color table
+ */
+/* yellow: rgb(237, 202, 0) #EDCA00 http://imgur.com/8rEmlAc.png */
+/* navy: rgb(25, 39, 80) #192750 http://imgur.com/zD8Dt2Z.png */
+/* wine: rgb(98, 38, 46) #62262E http://imgur.com/3GqUBlw.png */
+/* black: rgb(32, 34, 40) #202228 http://imgur.com/SlRGjZv.png */
+/* white: rgb(250, 250, 250) #FAFAFA http://imgur.com/nGB1cyb.png */
+
+/**
+ *  Image Url
+ */
+/* Banner: http://imgur.com/ctfMw4O.png */
+/* Page: {
+ *   1: http://imgur.com/0FWT2h9.png
+ *   2-1: http://imgur.com/OLLSZ76.png
+ *   2-2: http://imgur.com/w3GtZ5a.png
+ *   3: http://imgur.com/mGRTeyS.png
+ *   4: http://imgur.com/3dyR6m6.png
+ *   5: http://imgur.com/IC5OJML.png
+ *   6: http://imgur.com/c2vtGHL.png
+ * }
+ */
+
+_productInfo[1] = {
+   productId: 1,
    productName: "創校90週年校慶園遊會紀念T",
    price: 580,
    discount: 30,
@@ -77,6 +148,31 @@ _productInfo[_productId] = {
      "XL": {size: "XL"}
    }
 };
+
+_productInfo[2] = {
+   productId: 2,
+   productName: "輔仁大學經典帽踢",
+   price: 780,
+   discount: 30,
+   totalAmount: 0,
+   amountLimit: 20,
+   amountTable: {},
+   colorTable: {
+     "#EDCA00": {color: "#EDCA00", colorName: "經典黃", image: "http://imgur.com/8rEmlAc.png"},
+     "#192750": {color: "#192750", colorName: "丈青", image: "http://imgur.com/zD8Dt2Z.png"},
+     "#62262E": {color: "#62262E", colorName: "酒紅", image: "http://imgur.com/3GqUBlw.png"},
+     "#202228": {color: "#202228", colorName: "黑", image: "http://imgur.com/SlRGjZv.png"},
+     "#FAFAFA": {color: "#FAFAFA", colorName: "白", image: "http://imgur.com/nGB1cyb.png"},
+   },
+   sizeTable: {  // {size}
+     "XS": {size: "XS"},
+     "S": {size: "S"},
+     "M": {size: "M"},
+     "L": {size: "L"},
+     "XL": {size: "XL"}
+   }
+};
+
 
 /**************************/
 /*   Operations - Ajax    */
@@ -329,6 +425,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
    */
   getProductInfo: function () {
     var productId = this.getProductId();
+    // console.log(productId);
     if (Object.keys(_productInfo[productId].amountTable).length === 0) {
       return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
         var responseData = JSON.parse(response),
@@ -353,6 +450,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
               originalAmountAvailable: amountAvailable,
               isSoldout: !(amountAvailable > 0)
             }
+            // console.log(_productInfo[productId]);
             // console.log(amountAvailable, _productInfo[productId].amountTable[Object.keys(_productItemIdQueryTable)[items[key].ID - 1]]);
           }
           return _productInfo[productId];

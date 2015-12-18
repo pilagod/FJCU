@@ -6,6 +6,16 @@ var React = require('react');
 
 var ProductDetail = React.createClass({
   render: function () {
+    /* Page: {
+     *   1: http://imgur.com/0FWT2h9.png
+     *   2-1: http://imgur.com/OLLSZ76.png
+     *   2-2: http://imgur.com/w3GtZ5a.png
+     *   3: http://imgur.com/mGRTeyS.png
+     *   4: http://imgur.com/3dyR6m6.png
+     *   5: http://imgur.com/IC5OJML.png
+     *   6: http://imgur.com/c2vtGHL.png
+     * }
+     */
     return (
       <section id="productDetail">
         <div id="productInstruction">
@@ -43,10 +53,18 @@ var ProductDetail = React.createClass({
         <div className="banner">
           <img className="step-img" src="img/ProductApp/step1.png" alt="step1"></img>
         </div>
-        <img src="img/ProductApp/product-detail-2.png" alt="product detail"></img>
+        <img src="http://imgur.com/0FWT2h9.png" alt="product detail 1"></img>
+        <img src="http://imgur.com/OLLSZ76.png" alt="product detail 2-1"></img>
+        <img src="http://imgur.com/w3GtZ5a.png" alt="product detail 2-2"></img>
+        <img src="http://imgur.com/mGRTeyS.png" alt="product detail 3"></img>
+        <img src="http://imgur.com/3dyR6m6.png" alt="product detail 4"></img>
+        <img src="http://imgur.com/IC5OJML.png" alt="product detail 5"></img>
+        <img src="http://imgur.com/c2vtGHL.png" alt="product detail 6"></img>
       </section>
     )
   }
 });
+
+
 
 module.exports = ProductDetail;

@@ -31,13 +31,14 @@ var ProductApp = React.createClass({
   },
 
   render: function () {
+    /* Banner: http://imgur.com/ctfMw4O.png */
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
     } else {
       return (
         <div id="ProductApp">
           <div className="banner">
-            <img src="img/store-banner.png" alt="store banner"></img>
+            <img src="http://imgur.com/ctfMw4O.png" alt="store banner"></img>
           </div>
           <ProductInfo
             productInfo={this.state.productInfo}
@@ -54,6 +55,7 @@ var ProductApp = React.createClass({
         alert("載入資料發生錯誤，請稍候再重新整理看看。")
         return false;
       }
+      console.log(productInfo);
       this.setState({
         productInfo: productInfo
       });

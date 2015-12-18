@@ -215,6 +215,10 @@ input:focus {
   width: 18%;
 }
 
+#shoppingCartAlertContent i {
+  cursor: pointer;
+}
+
 #shoppingCartAlert.shoppingCartAlertNotificationShow {
   top: 40px;
   right: -100px;
