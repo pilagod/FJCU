@@ -611,6 +611,7 @@ AppDispatcher.register(function (action) {
             orderId: data.Order.Code,
             message: responseData.message,
             expiryDate: data.Order.ExpiryDate,
+            isMail: data.Order.IsMail,
             isPaid: data.Order.IsPaid,
             isReceived: data.Order.IsReceived,
             isCancel: data.Order.IsCancel
@@ -619,7 +620,10 @@ AppDispatcher.register(function (action) {
           _searchBuyerInfo = {
             name: data.Order.BuyerName,
             phone: data.Order.BuyerPhone,
-            email: data.Order.BuyerEmail
+            email: data.Order.BuyerEmail,
+            bankCode: data.Order.BankCode,
+            accountLast: data.Order.AccountLast,
+            address: data.Order.Address
           };
 
           searchProductItem = assign({}, {

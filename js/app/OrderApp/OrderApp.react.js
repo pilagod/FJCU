@@ -156,7 +156,7 @@ var OrderApp = React.createClass({
             </div>
           </article>
         </div>
-        <div id="orderPaymentType">
+        <div id="orderPaymentType" className={classNames({'hidden': this.state.orderConfirm === 1})}>
           <header className="flex flex-vertical-center">
             <i className="fa fa-archive fa-2x"></i>
             <h2>領貨方式</h2>
@@ -268,12 +268,13 @@ var OrderApp = React.createClass({
 
     this.setState({loading: true});
 
-    var order, orderItems = [], productName, totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
+    var order, orderItems = [], productName, totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0, totalShippingFee = 0,
         buyerInfo = this.state.buyerInfo,
         productItems = this.state.productItems,
         amountTable = this.state.productInfo.amountTable;
 
-    if (!buyerInfo.name || !buyerInfo.phone || !buyerInfo.email) {
+    if (!buyerInfo.name || !buyerInfo.phone || !buyerInfo.email ||
+       (this.state.orderType === 1 && (!buyerInfo.bankCode || !buyerInfo.accountLast || !buyerInfo.address))) {
       alert("訂購人資訊尚未填寫完整！");
       this.setState({loading: false});
       return false;
@@ -281,16 +282,19 @@ var OrderApp = React.createClass({
 
     for (var key in productItems) {
       productName = productItems[key].productName + "（" + productItems[key].colorName + "-" + productItems[key].size + "）" ;
+
       if (productItems[key].num <= 0) {
         alert(productName + "數量不可為0！");
         this.setState({loading: false});
         return false;
       }
+
       if (amountTable[productItems[key].productItemKey].amountAvailable < 0) {
         alert(productName + "超過庫存上限！");
         this.setState({loading: false});
         return false;
       }
+
       totalNum += productItems[key].num;
       total += productItems[key].total;
 
@@ -301,8 +305,20 @@ var OrderApp = React.createClass({
       });
     }
 
+    if (this.state.orderType === 1) {
+      if (totalNum === 1) {
+        totalShippingFee = 100;
+      } else if (totalNum <= 5) {
+        totalShippingFee = 150;
+      } else if (totalNum <= 10) {
+        totalShippingFee = 200;
+      } else {
+        totalShippingFee = 250;
+      }
+    }
+
     totalDiscount = Math.floor(totalNum / 2) * (this.state.productInfo.discount * 2);
-    totalAfterDiscount = total - totalDiscount;
+    totalAfterDiscount = total - totalDiscount + totalShippingFee;
 
     order = {
       BuyerName: buyerInfo.name,
@@ -311,7 +327,12 @@ var OrderApp = React.createClass({
       Item: orderItems,
       OriginalPrice: total,
       Discount: totalDiscount,
+      ShippingFee: totalShippingFee,
       TotalPrice: totalAfterDiscount,
+      IsMail: this.state.orderType === 0 ? false : true,
+      BankCode: buyerInfo.bankCode,
+      AccountLast: buyerInfo.accountLast,
+      Address: buyerInfo.address,
       NoSendMail: false
     };
 

@@ -368,7 +368,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
             )
           )
         ), 
-        React.createElement("div", {id: "orderPaymentType"}, 
+        React.createElement("div", {id: "orderPaymentType", className: classNames({'hidden': this.state.orderConfirm === 1})}, 
           React.createElement("header", {className: "flex flex-vertical-center"}, 
             React.createElement("i", {className: "fa fa-archive fa-2x"}), 
             React.createElement("h2", null, "領貨方式")
@@ -480,12 +480,13 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
     this.setState({loading: true});
 
-    var order, orderItems = [], productName, totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0,
+    var order, orderItems = [], productName, totalNum = 0, total = 0, totalDiscount = 0, totalAfterDiscount = 0, totalShippingFee = 0,
         buyerInfo = this.state.buyerInfo,
         productItems = this.state.productItems,
         amountTable = this.state.productInfo.amountTable;
 
-    if (!buyerInfo.name || !buyerInfo.phone || !buyerInfo.email) {
+    if (!buyerInfo.name || !buyerInfo.phone || !buyerInfo.email ||
+       (this.state.orderType === 1 && (!buyerInfo.bankCode || !buyerInfo.accountLast || !buyerInfo.address))) {
       alert("訂購人資訊尚未填寫完整！");
       this.setState({loading: false});
       return false;
@@ -493,16 +494,19 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
     for (var key in productItems) {
       productName = productItems[key].productName + "（" + productItems[key].colorName + "-" + productItems[key].size + "）" ;
+
       if (productItems[key].num <= 0) {
         alert(productName + "數量不可為0！");
         this.setState({loading: false});
         return false;
       }
+
       if (amountTable[productItems[key].productItemKey].amountAvailable < 0) {
         alert(productName + "超過庫存上限！");
         this.setState({loading: false});
         return false;
       }
+
       totalNum += productItems[key].num;
       total += productItems[key].total;
 
@@ -513,8 +517,20 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       });
     }
 
+    if (this.state.orderType === 1) {
+      if (totalNum === 1) {
+        totalShippingFee = 100;
+      } else if (totalNum <= 5) {
+        totalShippingFee = 150;
+      } else if (totalNum <= 10) {
+        totalShippingFee = 200;
+      } else {
+        totalShippingFee = 250;
+      }
+    }
+
     totalDiscount = Math.floor(totalNum / 2) * (this.state.productInfo.discount * 2);
-    totalAfterDiscount = total - totalDiscount;
+    totalAfterDiscount = total - totalDiscount + totalShippingFee;
 
     order = {
       BuyerName: buyerInfo.name,
@@ -523,7 +539,12 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       Item: orderItems,
       OriginalPrice: total,
       Discount: totalDiscount,
+      ShippingFee: totalShippingFee,
       TotalPrice: totalAfterDiscount,
+      IsMail: this.state.orderType === 0 ? false : true,
+      BankCode: buyerInfo.bankCode,
+      AccountLast: buyerInfo.accountLast,
+      Address: buyerInfo.address,
       NoSendMail: false
     };
 
@@ -736,6 +757,8 @@ var OrderBuyerInfoRow = React.createClass({displayName: "OrderBuyerInfoRow",
     var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)}),
         infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
     var passClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.infoValue}, editClassName);
+
+    console.log(this.props.infoValue);
 
     return (
       React.createElement("div", null, 
@@ -1606,6 +1629,7 @@ var SearchApp = React.createClass({displayName: "SearchApp",
       productItems: {},
       buyerInfo: {},
       orderConfirm: 1,
+      orderType: 0,
       isSearch: false
     }
   },
@@ -1625,8 +1649,8 @@ var SearchApp = React.createClass({displayName: "SearchApp",
     var orderStatus, orderDetail, orderBuyerInfo;
 
     if (this.state.isSearch) {
-      orderDetail = React.createElement(OrderDetail, {orderConfirm: this.state.orderConfirm, productItems: this.state.productItems, productInfo: this.state.productInfo});
-      orderBuyerInfo = React.createElement(OrderBuyerInfo, {orderConfirm: this.state.orderConfirm, buyerInfo: this.state.buyerInfo})
+      orderDetail = React.createElement(OrderDetail, {orderConfirm: this.state.orderConfirm, orderType: this.state.orderType, productItems: this.state.productItems, productInfo: this.state.productInfo});
+      orderBuyerInfo = React.createElement(OrderBuyerInfo, {orderConfirm: this.state.orderConfirm, orderType: this.state.orderType, buyerInfo: this.state.buyerInfo})
       if (this.state.orderInfo.isCancel) {
         orderStatus = (
           React.createElement("div", {id: "orderStatus"}, 
@@ -1685,7 +1709,32 @@ var SearchApp = React.createClass({displayName: "SearchApp",
         ), 
         orderStatus, 
         orderDetail, 
-        orderBuyerInfo
+        orderBuyerInfo, 
+        React.createElement("div", {id: "orderPaymentInfo", className: classNames({'hidden': this.state.orderType === 0})}, 
+          React.createElement("header", {className: "flex flex-vertical-center"}, 
+            React.createElement("i", {className: "fa fa-file-text-o fa-lg"}), 
+            React.createElement("h2", null, "購買說明")
+          ), 
+          React.createElement("article", null, 
+            React.createElement("div", null, 
+              React.createElement("div", {className: "order-payment-info-title"}, 
+                React.createElement("span", null, "ATM匯款")
+              ), 
+              React.createElement("div", {className: "order-payment-info-content"}, 
+                React.createElement("p", null, 
+                  "訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼、訂單資訊和匯款帳號", React.createElement("br", null), 
+                  "請您在訂單成立後三日內，匯款至以下帳戶：", React.createElement("br", null), 
+                  "銀行名稱：新莊區農會", React.createElement("br", null), 
+                  "分行名稱：營盤分部", React.createElement("br", null), 
+                  "戶名：輔大書坊", React.createElement("br", null), 
+                  "匯款帳號：09020000013164", React.createElement("br", null), 
+                  "本團隊每日對帳，確定匯款後，會寄「繳費成功通知信」至您的信箱。", React.createElement("br", null), 
+                  "如有任何問題，請直接私訊輔大帽踢粉專，謝謝您！"
+                )
+              )
+            )
+          )
+        )
       )
     );
   },
@@ -1720,6 +1769,7 @@ var SearchApp = React.createClass({displayName: "SearchApp",
       orderInfo: AppStore.getOrderInfo(),
       productItems: AppStore.getSearchProductItem(),
       buyerInfo: AppStore.getSearchBuyerInfo(),
+      orderType: AppStore.getOrderInfo().isMail ? 1 : 0,
       isSearch: true
     });
     AppAction.clearOrderSearch();
@@ -2756,6 +2806,7 @@ AppDispatcher.register(function (action) {
             orderId: data.Order.Code,
             message: responseData.message,
             expiryDate: data.Order.ExpiryDate,
+            isMail: data.Order.IsMail,
             isPaid: data.Order.IsPaid,
             isReceived: data.Order.IsReceived,
             isCancel: data.Order.IsCancel
@@ -2764,7 +2815,10 @@ AppDispatcher.register(function (action) {
           _searchBuyerInfo = {
             name: data.Order.BuyerName,
             phone: data.Order.BuyerPhone,
-            email: data.Order.BuyerEmail
+            email: data.Order.BuyerEmail,
+            bankCode: data.Order.BankCode,
+            accountLast: data.Order.AccountLast,
+            address: data.Order.Address
           };
 
           searchProductItem = assign({}, {

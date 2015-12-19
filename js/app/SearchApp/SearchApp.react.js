@@ -19,6 +19,7 @@ var SearchApp = React.createClass({
       productItems: {},
       buyerInfo: {},
       orderConfirm: 1,
+      orderType: 0,
       isSearch: false
     }
   },
@@ -38,8 +39,8 @@ var SearchApp = React.createClass({
     var orderStatus, orderDetail, orderBuyerInfo;
 
     if (this.state.isSearch) {
-      orderDetail = <OrderDetail orderConfirm={this.state.orderConfirm} productItems={this.state.productItems} productInfo={this.state.productInfo}/>;
-      orderBuyerInfo = <OrderBuyerInfo orderConfirm={this.state.orderConfirm} buyerInfo={this.state.buyerInfo}/>
+      orderDetail = <OrderDetail orderConfirm={this.state.orderConfirm} orderType={this.state.orderType} productItems={this.state.productItems} productInfo={this.state.productInfo}/>;
+      orderBuyerInfo = <OrderBuyerInfo orderConfirm={this.state.orderConfirm} orderType={this.state.orderType} buyerInfo={this.state.buyerInfo}/>
       if (this.state.orderInfo.isCancel) {
         orderStatus = (
           <div id="orderStatus">
@@ -99,6 +100,31 @@ var SearchApp = React.createClass({
         {orderStatus}
         {orderDetail}
         {orderBuyerInfo}
+        <div id="orderPaymentInfo" className={classNames({'hidden': this.state.orderType === 0})}>
+          <header className="flex flex-vertical-center">
+            <i className="fa fa-file-text-o fa-lg"></i>
+            <h2>購買說明</h2>
+          </header>
+          <article>
+            <div>
+              <div className="order-payment-info-title">
+                <span>ATM匯款</span>
+              </div>
+              <div className="order-payment-info-content">
+                <p>
+                  訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼、訂單資訊和匯款帳號<br/>
+                  請您在訂單成立後三日內，匯款至以下帳戶：<br/>
+                  銀行名稱：新莊區農會<br/>
+                  分行名稱：營盤分部<br/>
+                  戶名：輔大書坊<br/>
+                  匯款帳號：09020000013164<br/>
+                  本團隊每日對帳，確定匯款後，會寄「繳費成功通知信」至您的信箱。<br/>
+                  如有任何問題，請直接私訊輔大帽踢粉專，謝謝您！
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
       </div>
     );
   },
@@ -133,6 +159,7 @@ var SearchApp = React.createClass({
       orderInfo: AppStore.getOrderInfo(),
       productItems: AppStore.getSearchProductItem(),
       buyerInfo: AppStore.getSearchBuyerInfo(),
+      orderType: AppStore.getOrderInfo().isMail ? 1 : 0,
       isSearch: true
     });
     AppAction.clearOrderSearch();
