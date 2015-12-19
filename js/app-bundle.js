@@ -1070,6 +1070,7 @@ var ProductApp = React.createClass({displayName: "ProductApp",
   },
 
   render: function () {
+    console.log(this.state.productInfo);
     /* Banner: http://imgur.com/ctfMw4O.png */
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
@@ -1094,7 +1095,6 @@ var ProductApp = React.createClass({displayName: "ProductApp",
         alert("載入資料發生錯誤，請稍候再重新整理看看。")
         return false;
       }
-      console.log(productInfo);
       this.setState({
         productInfo: productInfo
       });
@@ -1155,7 +1155,7 @@ var ProductColorSelector = React.createClass({displayName: "ProductColorSelector
     var colorSelector = [];
 
     for (var key in this.props.colorTable) {
-      var style = { backgroundColor: this.props.colorTable[key].color },
+      var style = { backgroundColor: this.props.colorTable[key].color, border: "0.5px solid rgb(200, 200, 200)" },
           className = classNames("colorSelect", {
             "focus": this.props.colorTable[key].color === this.props.colorSelected.color
           });
@@ -1462,7 +1462,7 @@ var ProductSelector = React.createClass({displayName: "ProductSelector",
           sizeSelected: sizeSelected, 
           sizeTable: sizeTable}), 
         React.createElement("div", {id: "discountInfo"}, 
-          React.createElement("span", null, "2件合購價$1,100，確定金額會在結帳頁面顯示。")
+          React.createElement("span", null, "2件合購價$1,500，確定金額會在結帳頁面顯示。")
         ), 
         React.createElement(ProductNumberSelector, {
           productItemKey: productItemKey, 
@@ -1495,8 +1495,12 @@ var ProductShow = React.createClass({displayName: "ProductShow",
 
   render: function () {
     if (Object.keys(this.props.productSelected).length > 0) {
-      var imageSrc = this.props.productSelected.image,
-          imageAlt = this.props.productSelected.productName + "(" + this.props.productSelected.colorName + ")" ;
+      var imageSrc, imageAlt;
+      if (this.props.productSelected.colorName) {
+        imageSrc = this.props.productSelected.image;
+        imageAlt = this.props.productSelected.productName + "(" + this.props.productSelected.colorName + ")" ;
+      }
+      // <img src={imageSrc} alt={imageAlt}></img>
       return (
         React.createElement("div", {id: "productShow"}, 
           React.createElement("img", {src: imageSrc, alt: imageAlt})
@@ -1940,7 +1944,6 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
         alert("載入資料發生錯誤，請稍候再重新整理看看。")
         return false;
       }
-      console.log(productInfo);
       this.setState({
         productInfo: productInfo
       });
@@ -2156,7 +2159,7 @@ var assign = require('object-assign'),
     AppConstant = require('../constant/AppConstant.js');
 
 // Products Information
-var _productId = 1,
+var _productId = 2,
     _orderInfo = {};  // orderId,
 
 var _productInfo = {},
@@ -2300,11 +2303,11 @@ _productInfo[2] = {
    amountLimit: 20,
    amountTable: {},
    colorTable: {
-     "#EDCA00": {color: "#EDCA00", colorName: "經典黃", image: "http://imgur.com/8rEmlAc.png"},
-     "#192750": {color: "#192750", colorName: "丈青", image: "http://imgur.com/zD8Dt2Z.png"},
-     "#62262E": {color: "#62262E", colorName: "酒紅", image: "http://imgur.com/3GqUBlw.png"},
-     "#202228": {color: "#202228", colorName: "黑", image: "http://imgur.com/SlRGjZv.png"},
-     "#FAFAFA": {color: "#FAFAFA", colorName: "白", image: "http://imgur.com/nGB1cyb.png"},
+     "#EDCA00": {color: "#EDCA00", colorName: "經典黃", image: "./img/new yellow.png"},
+     "#192750": {color: "#192750", colorName: "復刻藍", image: "./img/new navy.png"},
+     "#62262E": {color: "#62262E", colorName: "復刻紅", image: "./img/new wine.png"},
+     "#202228": {color: "#202228", colorName: "復刻黑", image: "./img/new black.png"},
+     "#FAFAFA": {color: "#FAFAFA", colorName: "復刻白", image: "./img/new white.png"},
    },
    sizeTable: {  // {size}
      "XS": {size: "XS"},
@@ -2573,7 +2576,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
         var responseData = JSON.parse(response),
             items, amountAvailable;
         if (responseData.success) {
-          items = responseData.data.Order.Item;
+          items = responseData.data.Product.Item;
           for (var key in items) {
             var originalNum = 0;
             var item = _productItems[parseInt(key) + 1];

@@ -23,7 +23,7 @@ var ProductColorSelector = React.createClass({
     var colorSelector = [];
 
     for (var key in this.props.colorTable) {
-      var style = { backgroundColor: this.props.colorTable[key].color },
+      var style = { backgroundColor: this.props.colorTable[key].color, border: "0.5px solid rgb(200, 200, 200)" },
           className = classNames("colorSelect", {
             "focus": this.props.colorTable[key].color === this.props.colorSelected.color
           });

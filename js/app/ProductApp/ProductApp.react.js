@@ -31,6 +31,7 @@ var ProductApp = React.createClass({
   },
 
   render: function () {
+    console.log(this.state.productInfo);
     /* Banner: http://imgur.com/ctfMw4O.png */
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
@@ -55,7 +56,6 @@ var ProductApp = React.createClass({
         alert("載入資料發生錯誤，請稍候再重新整理看看。")
         return false;
       }
-      console.log(productInfo);
       this.setState({
         productInfo: productInfo
       });

@@ -14,7 +14,7 @@ var assign = require('object-assign'),
     AppConstant = require('../constant/AppConstant.js');
 
 // Products Information
-var _productId = 1,
+var _productId = 2,
     _orderInfo = {};  // orderId,
 
 var _productInfo = {},
@@ -158,11 +158,11 @@ _productInfo[2] = {
    amountLimit: 20,
    amountTable: {},
    colorTable: {
-     "#EDCA00": {color: "#EDCA00", colorName: "經典黃", image: "http://imgur.com/8rEmlAc.png"},
-     "#192750": {color: "#192750", colorName: "丈青", image: "http://imgur.com/zD8Dt2Z.png"},
-     "#62262E": {color: "#62262E", colorName: "酒紅", image: "http://imgur.com/3GqUBlw.png"},
-     "#202228": {color: "#202228", colorName: "黑", image: "http://imgur.com/SlRGjZv.png"},
-     "#FAFAFA": {color: "#FAFAFA", colorName: "白", image: "http://imgur.com/nGB1cyb.png"},
+     "#EDCA00": {color: "#EDCA00", colorName: "經典黃", image: "./img/new yellow.png"},
+     "#192750": {color: "#192750", colorName: "復刻藍", image: "./img/new navy.png"},
+     "#62262E": {color: "#62262E", colorName: "復刻紅", image: "./img/new wine.png"},
+     "#202228": {color: "#202228", colorName: "復刻黑", image: "./img/new black.png"},
+     "#FAFAFA": {color: "#FAFAFA", colorName: "復刻白", image: "./img/new white.png"},
    },
    sizeTable: {  // {size}
      "XS": {size: "XS"},
@@ -431,7 +431,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
         var responseData = JSON.parse(response),
             items, amountAvailable;
         if (responseData.success) {
-          items = responseData.data.Order.Item;
+          items = responseData.data.Product.Item;
           for (var key in items) {
             var originalNum = 0;
             var item = _productItems[parseInt(key) + 1];

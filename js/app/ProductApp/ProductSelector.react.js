@@ -64,7 +64,7 @@ var ProductSelector = React.createClass({
           sizeSelected={sizeSelected}
           sizeTable={sizeTable} />
         <div id="discountInfo">
-          <span>2件合購價$1,100，確定金額會在結帳頁面顯示。</span>
+          <span>2件合購價$1,500，確定金額會在結帳頁面顯示。</span>
         </div>
         <ProductNumberSelector
           productItemKey={productItemKey}
