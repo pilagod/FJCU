@@ -117,6 +117,8 @@ var OrderApp = React.createClass({
 
     /* Banner: http://imgur.com/ctfMw4O.png */
 
+    console.log('order: ', this.state.orderInfo);
+
     return (
       <div id="OrderApp">
         {loadingBlock}
@@ -138,21 +140,32 @@ var OrderApp = React.createClass({
           <article>
             <div>
               <i className="fa fa-circle"></i>
-              <span>如何繳費：</span>
-              <p>代碼訂單已寄至您的信箱，11/16(一) - 11/25(三)帽T預購期間，請在訂單成立起三日內，憑訂單代碼，至焯炤館1F大廳攤位做繳費動作。</p>
+              <span>【 如何繳費 】</span>
+              <p>代碼訂單已寄至您的信箱，12/21(一) - 12/31(四)帽T預購期間，若您選擇『現場領貨』者，請在訂單成立起三日內，憑訂單代碼，至輔大書坊做繳費動作。若您選擇『郵遞寄貨』者，請在訂單成立起三日內，用您填寫的帳號轉帳至下方帳戶，謝謝。</p>
               <p>若逾期尚未繳費，訂單將撤銷，請您重新下訂。</p>
             </div>
             <div>
               <i className="fa fa-circle"></i>
-              <span>如何取貨：</span>
-              <p>請在12/05(六)輔大校慶園遊會當日，持訂單代碼至輔大帽T團隊攤位領貨。</p>
-              <p>若本人不克前來領貨，請您託人代為領取，並攜帶可證明身份之證件。</p>
+              <span>【 取貨須知 】</span>
+              <p>每款出貨時間不一，將會個別通知領貨。</p>
+              <p>限量款黃色帽踢預計於2016年1月底提供領貨，復刻版帽踢預計於2016年3月底提供領貨。</p>
+              <p>選擇<span style={{color: 'red'}}>實體店面取貨</span>者，等到貨品到貨時，將會寄出通知信通知您攜帶繳費代碼與發票直接到輔大書坊領貨。</p>
+              <p>選擇<span style={{color: 'red'}}>郵遞寄貨</span>者，將等到所有貨物到齊時一次寄送，預計在2016年4月開始配送，若提早或延後將會寄信通知，恕不提供您更改訂單到現場領貨。</p>
             </div>
             <div>
               <i className="fa fa-circle"></i>
-              <span>退換貨須知：</span>
-              <p>由於此款商品為活動限量商品，若有商品瑕疵、尺碼領貨錯誤，請保留原包裝，我們將退款給您，恕無法換貨。</p>
+              <span>【 退換貨須知 】</span>
+              <p>尺碼訂購錯誤、想更改顏色者，恕無法提供退換貨。 </p>
               <p>商品穿過或是經水洗滌，都視同驗收完成，恕無法進行退貨。</p>
+              <p>由於此款商品為活動限量商品，若有商品瑕疵、尺碼領貨錯誤等失誤，請保留原包裝，我們將做退款處理。</p>
+            </div>
+            <div>
+              <i className="fa fa-circle"></i>
+              <span>【 匯款資訊 】</span>
+              <p>戶名：輔大書坊</p>
+              <p>銀行名稱：新莊農會</p>
+              <p>分行號碼：904</p>
+              <p>匯款帳號：09020000013164</p>
             </div>
           </article>
         </div>
@@ -186,14 +199,13 @@ var OrderApp = React.createClass({
               </div>
               <div className="order-payment-info-content">
                 <p>
-                  訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼、訂單資訊和匯款帳號<br/>
+                  訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼 / 訂單資訊和匯款帳號，<br/>
                   請您在訂單成立後三日內，匯款至以下帳戶：<br/>
-                  銀行名稱：新莊區農會<br/>
-                  分行名稱：營盤分部<br/>
+                  銀行名稱：新莊農會<br/>
+                  分行號碼：904<br/>
                   戶名：輔大書坊<br/>
                   匯款帳號：09020000013164<br/>
                   本團隊每日對帳，確定匯款後，會寄「繳費成功通知信」至您的信箱。<br/>
-                  如有任何問題，請直接私訊輔大帽踢粉專，謝謝您！
                 </p>
               </div>
             </div>
@@ -368,13 +380,13 @@ var OrderApp = React.createClass({
       this.setState({
         productInfo: productInfo
       });
-      // console.log("new product Info:", productInfo);
+      return true;
     }.bind(this));
   },
 
   _onOrderConfirm: function () {
-    this.setState({orderConfirm: 1});
     this.setState({
+      orderConfirm: 1,
       orderInfo: AppStore.getOrderInfo()
     });
 

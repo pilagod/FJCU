@@ -18,8 +18,6 @@ var OrderBuyerInfoRow = React.createClass({
         infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
     var passClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.infoValue}, editClassName);
 
-    console.log(this.props.infoValue);
-
     return (
       <div>
         <h3>{this.props.infoDisplayName}：</h3>

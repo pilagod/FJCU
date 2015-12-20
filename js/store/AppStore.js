@@ -158,7 +158,7 @@ _productInfo[2] = {
    amountLimit: 20,
    amountTable: {},
    colorTable: {
-     "#EDCA00": {color: "#EDCA00", colorName: "經典黃", image: "./img/new yellow.png"},
+     "#EDCA00": {color: "#EDCA00", colorName: "年度限量黃", image: "./img/new yellow.png"},
      "#192750": {color: "#192750", colorName: "復刻藍", image: "./img/new navy.png"},
      "#62262E": {color: "#62262E", colorName: "復刻紅", image: "./img/new wine.png"},
      "#202228": {color: "#202228", colorName: "復刻黑", image: "./img/new black.png"},
@@ -338,7 +338,6 @@ function productSelectedUpdate(updates) {
  */
 function buyerInfoUpdate(updates) {
   _buyerInfo = assign({}, _buyerInfo, updates);
-  console.log(_buyerInfo);
 }
 
 /**************************/
@@ -406,6 +405,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
    *  Get Order Information
    */
   getOrderInfo: function () {
+    console.log(_orderInfo);
     return _orderInfo;
   },
 
@@ -581,7 +581,6 @@ AppDispatcher.register(function (action) {
         if (responseData.success) {
           var data = responseData.data;
           orderInfoUpdate({
-            id: data.Order.ID,
             orderId: data.Order.Code,
             message: responseData.message,
             expiryDate: data.Order.ExpiryDate

@@ -329,6 +329,8 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
     /* Banner: http://imgur.com/ctfMw4O.png */
 
+    console.log('order: ', this.state.orderInfo);
+
     return (
       React.createElement("div", {id: "OrderApp"}, 
         loadingBlock, 
@@ -350,21 +352,32 @@ var OrderApp = React.createClass({displayName: "OrderApp",
           React.createElement("article", null, 
             React.createElement("div", null, 
               React.createElement("i", {className: "fa fa-circle"}), 
-              React.createElement("span", null, "如何繳費："), 
-              React.createElement("p", null, "代碼訂單已寄至您的信箱，11/16(一) - 11/25(三)帽T預購期間，請在訂單成立起三日內，憑訂單代碼，至焯炤館1F大廳攤位做繳費動作。"), 
+              React.createElement("span", null, "【 如何繳費 】"), 
+              React.createElement("p", null, "代碼訂單已寄至您的信箱，12/21(一) - 12/31(四)帽T預購期間，若您選擇『現場領貨』者，請在訂單成立起三日內，憑訂單代碼，至輔大書坊做繳費動作。若您選擇『郵遞寄貨』者，請在訂單成立起三日內，用您填寫的帳號轉帳至下方帳戶，謝謝。"), 
               React.createElement("p", null, "若逾期尚未繳費，訂單將撤銷，請您重新下訂。")
             ), 
             React.createElement("div", null, 
               React.createElement("i", {className: "fa fa-circle"}), 
-              React.createElement("span", null, "如何取貨："), 
-              React.createElement("p", null, "請在12/05(六)輔大校慶園遊會當日，持訂單代碼至輔大帽T團隊攤位領貨。"), 
-              React.createElement("p", null, "若本人不克前來領貨，請您託人代為領取，並攜帶可證明身份之證件。")
+              React.createElement("span", null, "【 取貨須知 】"), 
+              React.createElement("p", null, "每款出貨時間不一，將會個別通知領貨。"), 
+              React.createElement("p", null, "限量款黃色帽踢預計於2016年1月底提供領貨，復刻版帽踢預計於2016年3月底提供領貨。"), 
+              React.createElement("p", null, "選擇", React.createElement("span", {style: {color: 'red'}}, "實體店面取貨"), "者，等到貨品到貨時，將會寄出通知信通知您攜帶繳費代碼與發票直接到輔大書坊領貨。"), 
+              React.createElement("p", null, "選擇", React.createElement("span", {style: {color: 'red'}}, "郵遞寄貨"), "者，將等到所有貨物到齊時一次寄送，預計在2016年4月開始配送，若提早或延後將會寄信通知，恕不提供您更改訂單到現場領貨。")
             ), 
             React.createElement("div", null, 
               React.createElement("i", {className: "fa fa-circle"}), 
-              React.createElement("span", null, "退換貨須知："), 
-              React.createElement("p", null, "由於此款商品為活動限量商品，若有商品瑕疵、尺碼領貨錯誤，請保留原包裝，我們將退款給您，恕無法換貨。"), 
-              React.createElement("p", null, "商品穿過或是經水洗滌，都視同驗收完成，恕無法進行退貨。")
+              React.createElement("span", null, "【 退換貨須知 】"), 
+              React.createElement("p", null, "尺碼訂購錯誤、想更改顏色者，恕無法提供退換貨。 "), 
+              React.createElement("p", null, "商品穿過或是經水洗滌，都視同驗收完成，恕無法進行退貨。"), 
+              React.createElement("p", null, "由於此款商品為活動限量商品，若有商品瑕疵、尺碼領貨錯誤等失誤，請保留原包裝，我們將做退款處理。")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "【 匯款資訊 】"), 
+              React.createElement("p", null, "戶名：輔大書坊"), 
+              React.createElement("p", null, "銀行名稱：新莊農會"), 
+              React.createElement("p", null, "分行號碼：904"), 
+              React.createElement("p", null, "匯款帳號：09020000013164")
             )
           )
         ), 
@@ -398,14 +411,13 @@ var OrderApp = React.createClass({displayName: "OrderApp",
               ), 
               React.createElement("div", {className: "order-payment-info-content"}, 
                 React.createElement("p", null, 
-                  "訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼、訂單資訊和匯款帳號", React.createElement("br", null), 
+                  "訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼 / 訂單資訊和匯款帳號，", React.createElement("br", null), 
                   "請您在訂單成立後三日內，匯款至以下帳戶：", React.createElement("br", null), 
-                  "銀行名稱：新莊區農會", React.createElement("br", null), 
-                  "分行名稱：營盤分部", React.createElement("br", null), 
+                  "銀行名稱：新莊農會", React.createElement("br", null), 
+                  "分行號碼：904", React.createElement("br", null), 
                   "戶名：輔大書坊", React.createElement("br", null), 
                   "匯款帳號：09020000013164", React.createElement("br", null), 
-                  "本團隊每日對帳，確定匯款後，會寄「繳費成功通知信」至您的信箱。", React.createElement("br", null), 
-                  "如有任何問題，請直接私訊輔大帽踢粉專，謝謝您！"
+                  "本團隊每日對帳，確定匯款後，會寄「繳費成功通知信」至您的信箱。", React.createElement("br", null)
                 )
               )
             ), 
@@ -580,13 +592,13 @@ var OrderApp = React.createClass({displayName: "OrderApp",
       this.setState({
         productInfo: productInfo
       });
-      // console.log("new product Info:", productInfo);
+      return true;
     }.bind(this));
   },
 
   _onOrderConfirm: function () {
-    this.setState({orderConfirm: 1});
     this.setState({
+      orderConfirm: 1,
       orderInfo: AppStore.getOrderInfo()
     });
 
@@ -757,8 +769,6 @@ var OrderBuyerInfoRow = React.createClass({displayName: "OrderBuyerInfoRow",
     var editClassName = classNames({'hidden': (this.props.orderConfirm === 1)}),
         infoClassName = classNames({'hidden': (this.props.orderConfirm !== 1)});
     var passClassName = classNames('fa', 'fa-check-circle', 'fa-lg', {'pass': this.props.infoValue}, editClassName);
-
-    console.log(this.props.infoValue);
 
     return (
       React.createElement("div", null, 
@@ -1700,7 +1710,7 @@ var SearchApp = React.createClass({displayName: "SearchApp",
     return (
       React.createElement("div", {id: "SearchApp"}, 
         React.createElement("div", {className: "banner"}, 
-          React.createElement("img", {src: "img/store-banner.png", alt: "store banner"})
+          React.createElement("img", {src: "http://imgur.com/ctfMw4O.png", alt: "store banner"})
         ), 
         React.createElement("div", {id: "searchBar"}, 
           React.createElement("span", null, "訂單代號："), 
@@ -1708,6 +1718,39 @@ var SearchApp = React.createClass({displayName: "SearchApp",
           React.createElement("span", {id: "btnSearch", onClick: this._searchOnClick}, "搜尋")
         ), 
         orderStatus, 
+        React.createElement("div", {id: "orderInfo", className: classNames({'hidden': !this.state.isSearch})}, 
+          React.createElement("article", null, 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "【 如何繳費 】"), 
+              React.createElement("p", null, "代碼訂單已寄至您的信箱，12/21(一) - 12/31(四)帽T預購期間，若您選擇『現場領貨』者，請在訂單成立起三日內，憑訂單代碼，至輔大書坊做繳費動作。若您選擇『郵遞寄貨』者，請在訂單成立起三日內，用您填寫的帳號轉帳至下方帳戶，謝謝。"), 
+              React.createElement("p", null, "若逾期尚未繳費，訂單將撤銷，請您重新下訂。")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "【 取貨須知 】"), 
+              React.createElement("p", null, "每款出貨時間不一，將會個別通知領貨。"), 
+              React.createElement("p", null, "限量款黃色帽踢預計於2016年1月底提供領貨，復刻版帽踢預計於2016年3月底提供領貨。"), 
+              React.createElement("p", null, "選擇", React.createElement("span", {style: {color: 'red'}}, "實體店面取貨"), "者，等到貨品到貨時，將會寄出通知信通知您攜帶繳費代碼與發票直接到輔大書坊領貨。"), 
+              React.createElement("p", null, "選擇", React.createElement("span", {style: {color: 'red'}}, "郵遞寄貨"), "者，將等到所有貨物到齊時一次寄送，預計在2016年4月開始配送，若提早或延後將會寄信通知，恕不提供您更改訂單到現場領貨。")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "【 退換貨須知 】"), 
+              React.createElement("p", null, "尺碼訂購錯誤、想更改顏色者，恕無法提供退換貨。 "), 
+              React.createElement("p", null, "商品穿過或是經水洗滌，都視同驗收完成，恕無法進行退貨。"), 
+              React.createElement("p", null, "由於此款商品為活動限量商品，若有商品瑕疵、尺碼領貨錯誤等失誤，請保留原包裝，我們將做退款處理。")
+            ), 
+            React.createElement("div", null, 
+              React.createElement("i", {className: "fa fa-circle"}), 
+              React.createElement("span", null, "【 匯款資訊 】"), 
+              React.createElement("p", null, "戶名：輔大書坊"), 
+              React.createElement("p", null, "銀行名稱：新莊農會"), 
+              React.createElement("p", null, "分行號碼：904"), 
+              React.createElement("p", null, "匯款帳號：09020000013164")
+            )
+          )
+        ), 
         orderDetail, 
         orderBuyerInfo, 
         React.createElement("div", {id: "orderPaymentInfo", className: classNames({'hidden': this.state.orderType === 0})}, 
@@ -1722,14 +1765,13 @@ var SearchApp = React.createClass({displayName: "SearchApp",
               ), 
               React.createElement("div", {className: "order-payment-info-content"}, 
                 React.createElement("p", null, 
-                  "訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼、訂單資訊和匯款帳號", React.createElement("br", null), 
+                  "訂單成立後，會寄「訂單成立通知信」給您，裏頭包含訂單代碼 / 訂單資訊和匯款帳號，", React.createElement("br", null), 
                   "請您在訂單成立後三日內，匯款至以下帳戶：", React.createElement("br", null), 
-                  "銀行名稱：新莊區農會", React.createElement("br", null), 
-                  "分行名稱：營盤分部", React.createElement("br", null), 
+                  "銀行名稱：新莊農會", React.createElement("br", null), 
+                  "分行號碼：904", React.createElement("br", null), 
                   "戶名：輔大書坊", React.createElement("br", null), 
                   "匯款帳號：09020000013164", React.createElement("br", null), 
-                  "本團隊每日對帳，確定匯款後，會寄「繳費成功通知信」至您的信箱。", React.createElement("br", null), 
-                  "如有任何問題，請直接私訊輔大帽踢粉專，謝謝您！"
+                  "本團隊每日對帳，確定匯款後，會寄「繳費成功通知信」至您的信箱。", React.createElement("br", null)
                 )
               )
             )
@@ -1980,7 +2022,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
        React.createElement("div", {id: "faqBlock", className: "hidden", onClick: this._faqCloseOnClick}, 
          React.createElement("div", {className: "container"}, 
            React.createElement("i", {className: "fa fa-times fa-2x"}), 
-           React.createElement("img", {src: "img/FAQ-2.png", alt: "FAQ"})
+           React.createElement("img", {src: "img/new FAQ.png", alt: "FAQ"})
          )
        )
      )
@@ -2353,7 +2395,7 @@ _productInfo[2] = {
    amountLimit: 20,
    amountTable: {},
    colorTable: {
-     "#EDCA00": {color: "#EDCA00", colorName: "經典黃", image: "./img/new yellow.png"},
+     "#EDCA00": {color: "#EDCA00", colorName: "年度限量黃", image: "./img/new yellow.png"},
      "#192750": {color: "#192750", colorName: "復刻藍", image: "./img/new navy.png"},
      "#62262E": {color: "#62262E", colorName: "復刻紅", image: "./img/new wine.png"},
      "#202228": {color: "#202228", colorName: "復刻黑", image: "./img/new black.png"},
@@ -2533,7 +2575,6 @@ function productSelectedUpdate(updates) {
  */
 function buyerInfoUpdate(updates) {
   _buyerInfo = assign({}, _buyerInfo, updates);
-  console.log(_buyerInfo);
 }
 
 /**************************/
@@ -2601,6 +2642,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
    *  Get Order Information
    */
   getOrderInfo: function () {
+    console.log(_orderInfo);
     return _orderInfo;
   },
 
@@ -2776,7 +2818,6 @@ AppDispatcher.register(function (action) {
         if (responseData.success) {
           var data = responseData.data;
           orderInfoUpdate({
-            id: data.Order.ID,
             orderId: data.Order.Code,
             message: responseData.message,
             expiryDate: data.Order.ExpiryDate

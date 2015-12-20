@@ -191,7 +191,7 @@ var NavbarFunctionBlock = React.createClass({
        <div id="faqBlock" className="hidden" onClick={this._faqCloseOnClick}>
          <div className="container">
            <i className="fa fa-times fa-2x" ></i>
-           <img src="img/FAQ-2.png" alt="FAQ"></img>
+           <img src="img/new FAQ.png" alt="FAQ"></img>
          </div>
        </div>
      </div>
