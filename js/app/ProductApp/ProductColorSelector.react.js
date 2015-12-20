@@ -23,9 +23,10 @@ var ProductColorSelector = React.createClass({
     var colorSelector = [];
 
     for (var key in this.props.colorTable) {
-      var style = { backgroundColor: this.props.colorTable[key].color, border: "0.5px solid rgb(200, 200, 200)" },
-          className = classNames("colorSelect", {
-            "focus": this.props.colorTable[key].color === this.props.colorSelected.color
+      var style = { backgroundColor: this.props.colorTable[key].color, border: '1px solid rgb(200, 200, 200)' },
+          className = classNames('colorSelect', {
+            'focus': this.props.colorTable[key].color === this.props.colorSelected.color,
+            'limit': this.props.colorTable[key].color === '#EDCA00'
           });
       colorSelector.push((
         <div key={key} className={className} onClick={this._colorSelectOnClick.bind(this, assign({}, this.props.colorTable[key], {size: ""}))}>

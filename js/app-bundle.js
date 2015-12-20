@@ -1188,9 +1188,10 @@ var ProductColorSelector = React.createClass({displayName: "ProductColorSelector
     var colorSelector = [];
 
     for (var key in this.props.colorTable) {
-      var style = { backgroundColor: this.props.colorTable[key].color, border: "0.5px solid rgb(200, 200, 200)" },
-          className = classNames("colorSelect", {
-            "focus": this.props.colorTable[key].color === this.props.colorSelected.color
+      var style = { backgroundColor: this.props.colorTable[key].color, border: '1px solid rgb(200, 200, 200)' },
+          className = classNames('colorSelect', {
+            'focus': this.props.colorTable[key].color === this.props.colorSelected.color,
+            'limit': this.props.colorTable[key].color === '#EDCA00'
           });
       colorSelector.push((
         React.createElement("div", {key: key, className: className, onClick: this._colorSelectOnClick.bind(this, assign({}, this.props.colorTable[key], {size: ""}))}, 
@@ -2323,7 +2324,14 @@ var _productInfo = {},
       "2#FAFAFAS": 37,
       "2#FAFAFAM": 38,
       "2#FAFAFAL": 39,
-      "2#FAFAFAXL": 40
+      "2#FAFAFAXL": 40,
+
+      // 2L
+      "2#EDCA002L": 41,
+      "2#1927502L": 42,
+      "2#62262E2L": 43,
+      "2#2022282L": 44,
+      "2#FAFAFA2L": 45
     },
     _productSelected = {}; // {productId, productName, image, color, colorName, size, num, price, total} (productId, name are fixed)
 
@@ -2406,7 +2414,8 @@ _productInfo[2] = {
      "S": {size: "S"},
      "M": {size: "M"},
      "L": {size: "L"},
-     "XL": {size: "XL"}
+     "XL": {size: "XL"},
+     "2L": {size: "2L"}
    }
 };
 
@@ -2475,8 +2484,8 @@ function makeRequest(method, url, data) {
  *  @return {object} Promise
  */
 function orderSend(orderInfo) {
-  // return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
-  return makeRequest('POST', "/api/Order/new", JSON.stringify(orderInfo));
+  return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
+  // return makeRequest('POST', "/api/Order/new", JSON.stringify(orderInfo));
 }
 
 /**
@@ -2493,8 +2502,8 @@ function orderInfoUpdate(orderInfo) {
  */
 function orderSearch(id) {
   // console.log("http://fju90t.sp.ubun.tw/api/Order/" + id);
-  // return makeRequest('GET', "http://fju90t.sp.ubun.tw/api/Order/" + id, null);
-  return makeRequest('GET', "/api/Order/" + id, null);
+  return makeRequest('GET', "http://fju90t.sp.ubun.tw/api/Order/" + id, null);
+  // return makeRequest('GET', "/api/Order/" + id, null);
 }
 
 /**
@@ -2666,8 +2675,8 @@ var AppStore = assign({}, EventEmitter.prototype, {
     var productId = this.getProductId();
     // console.log(productId);
     if (Object.keys(_productInfo[productId].amountTable).length === 0) {
-      // return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
-      return makeRequest("GET", "/api/Product/" + productId, null).then(function (response) {
+      return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
+      // return makeRequest("GET", "/api/Product/" + productId, null).then(function (response) {
         var responseData = JSON.parse(response),
             items, amountAvailable;
         if (responseData.success) {
