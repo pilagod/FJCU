@@ -186,7 +186,7 @@ var app = {
 };
 
 var currentTime = new Date();
-var onlineTime = new Date("December 21, 2015 11:59:59");
+var onlineTime = new Date("December 21, 2015 23:59:59");
 
 if (currentTime < onlineTime) {
   alert("現在網站還在測試階段，所有下訂訂單皆視為無效。");
