@@ -2475,7 +2475,8 @@ function makeRequest(method, url, data) {
  *  @return {object} Promise
  */
 function orderSend(orderInfo) {
-  return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
+  // return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
+  return makeRequest('POST', "/api/Order/new", JSON.stringify(orderInfo));
 }
 
 /**
@@ -2491,8 +2492,9 @@ function orderInfoUpdate(orderInfo) {
  *  @param {string} id: order id
  */
 function orderSearch(id) {
-  console.log("http://fju90t.sp.ubun.tw/api/Order/" + id);
-  return makeRequest('GET', "http://fju90t.sp.ubun.tw/api/Order/" + id, null);
+  // console.log("http://fju90t.sp.ubun.tw/api/Order/" + id);
+  // return makeRequest('GET', "http://fju90t.sp.ubun.tw/api/Order/" + id, null);
+  return makeRequest('GET', "/api/Order/" + id, null);
 }
 
 /**
@@ -2664,7 +2666,8 @@ var AppStore = assign({}, EventEmitter.prototype, {
     var productId = this.getProductId();
     // console.log(productId);
     if (Object.keys(_productInfo[productId].amountTable).length === 0) {
-      return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
+      // return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
+      return makeRequest("GET", "/api/Product/" + productId, null).then(function (response) {
         var responseData = JSON.parse(response),
             items, amountAvailable;
         if (responseData.success) {
