@@ -166,8 +166,8 @@ _productInfo[2] = {
    amountTable: {},
    colorTable: {
      "#EDCA00": {color: "#EDCA00", colorName: "年度限量黃", image: "./img/new yellow.png"},
-     "#192750": {color: "#192750", colorName: "復刻藍", image: "./img/new navy.png"},
-     "#62262E": {color: "#62262E", colorName: "復刻紅", image: "./img/new wine.png"},
+     "#192750": {color: "#192750", colorName: "復刻丈青", image: "./img/new navy.png"},
+     "#62262E": {color: "#62262E", colorName: "復刻酒紅", image: "./img/new wine.png"},
      "#202228": {color: "#202228", colorName: "復刻黑", image: "./img/new black.png"},
      "#FAFAFA": {color: "#FAFAFA", colorName: "復刻白", image: "./img/new white.png"},
    },
@@ -246,8 +246,8 @@ function makeRequest(method, url, data) {
  *  @return {object} Promise
  */
 function orderSend(orderInfo) {
-  return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
-  // return makeRequest('POST', "/api/Order/new", JSON.stringify(orderInfo));
+  // return makeRequest('POST', "http://fju90t.sp.ubun.tw/api/Order/new", JSON.stringify(orderInfo));
+  return makeRequest('POST', "/api/Order/new", JSON.stringify(orderInfo));
 }
 
 /**
@@ -264,8 +264,8 @@ function orderInfoUpdate(orderInfo) {
  */
 function orderSearch(id) {
   // console.log("http://fju90t.sp.ubun.tw/api/Order/" + id);
-  return makeRequest('GET', "http://fju90t.sp.ubun.tw/api/Order/" + id, null);
-  // return makeRequest('GET', "/api/Order/" + id, null);
+  // return makeRequest('GET', "http://fju90t.sp.ubun.tw/api/Order/" + id, null);
+  return makeRequest('GET', "/api/Order/" + id, null);
 }
 
 /**
@@ -437,8 +437,8 @@ var AppStore = assign({}, EventEmitter.prototype, {
     var productId = this.getProductId();
     // console.log(productId);
     if (Object.keys(_productInfo[productId].amountTable).length === 0) {
-      return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
-      // return makeRequest("GET", "/api/Product/" + productId, null).then(function (response) {
+      // return makeRequest("GET", "http://fju90t.sp.ubun.tw/api/Product/" + productId, null).then(function (response) {
+      return makeRequest("GET", "/api/Product/" + productId, null).then(function (response) {
         var responseData = JSON.parse(response),
             items, amountAvailable;
         if (responseData.success) {

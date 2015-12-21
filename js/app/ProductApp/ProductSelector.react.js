@@ -38,13 +38,13 @@ var ProductSelector = React.createClass({
       amountAvailable = amountTable[productItemKey].amountAvailable;
     }
 
-    // if (this.props.productSelected.color) {
-    //   productName += "(" + this.props.productSelected.colorName;
-    //   if (this.props.productSelected.size) {
-    //     productName += "-" + this.props.productSelected.size;
-    //   }
-    //   productName += ")";
-    // }
+    if (this.props.productSelected.color) {
+      productName += "(" + this.props.productSelected.colorName;
+      // if (this.props.productSelected.size) {
+      //   productName += "-" + this.props.productSelected.size;
+      // }
+      productName += ")";
+    }
 
     return (
       <div id="productSelect">

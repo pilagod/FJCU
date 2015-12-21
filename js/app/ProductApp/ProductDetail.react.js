@@ -53,13 +53,7 @@ var ProductDetail = React.createClass({
         <div className="banner">
           <img className="step-img" src="img/ProductApp/step1.png" alt="step1"></img>
         </div>
-        <img src="http://imgur.com/0FWT2h9.png" alt="product detail 1"></img>
-        <img src="http://imgur.com/OLLSZ76.png" alt="product detail 2-1"></img>
-        <img src="http://imgur.com/w3GtZ5a.png" alt="product detail 2-2"></img>
-        <img src="http://imgur.com/mGRTeyS.png" alt="product detail 3"></img>
-        <img src="http://imgur.com/3dyR6m6.png" alt="product detail 4"></img>
-        <img src="http://imgur.com/IC5OJML.png" alt="product detail 5"></img>
-        <img src="http://imgur.com/c2vtGHL.png" alt="product detail 6"></img>
+        <img src="http://imgur.com/voJxmkI.png" alt="product detail"></img>
       </section>
     )
   }

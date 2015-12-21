@@ -1281,13 +1281,7 @@ var ProductDetail = React.createClass({displayName: "ProductDetail",
         React.createElement("div", {className: "banner"}, 
           React.createElement("img", {className: "step-img", src: "img/ProductApp/step1.png", alt: "step1"})
         ), 
-        React.createElement("img", {src: "http://imgur.com/0FWT2h9.png", alt: "product detail 1"}), 
-        React.createElement("img", {src: "http://imgur.com/OLLSZ76.png", alt: "product detail 2-1"}), 
-        React.createElement("img", {src: "http://imgur.com/w3GtZ5a.png", alt: "product detail 2-2"}), 
-        React.createElement("img", {src: "http://imgur.com/mGRTeyS.png", alt: "product detail 3"}), 
-        React.createElement("img", {src: "http://imgur.com/3dyR6m6.png", alt: "product detail 4"}), 
-        React.createElement("img", {src: "http://imgur.com/IC5OJML.png", alt: "product detail 5"}), 
-        React.createElement("img", {src: "http://imgur.com/c2vtGHL.png", alt: "product detail 6"})
+        React.createElement("img", {src: "http://imgur.com/voJxmkI.png", alt: "product detail"})
       )
     )
   }
@@ -1477,13 +1471,13 @@ var ProductSelector = React.createClass({displayName: "ProductSelector",
       amountAvailable = amountTable[productItemKey].amountAvailable;
     }
 
-    // if (this.props.productSelected.color) {
-    //   productName += "(" + this.props.productSelected.colorName;
-    //   if (this.props.productSelected.size) {
-    //     productName += "-" + this.props.productSelected.size;
-    //   }
-    //   productName += ")";
-    // }
+    if (this.props.productSelected.color) {
+      productName += "(" + this.props.productSelected.colorName;
+      // if (this.props.productSelected.size) {
+      //   productName += "-" + this.props.productSelected.size;
+      // }
+      productName += ")";
+    }
 
     return (
       React.createElement("div", {id: "productSelect"}, 
@@ -2411,8 +2405,8 @@ _productInfo[2] = {
    amountTable: {},
    colorTable: {
      "#EDCA00": {color: "#EDCA00", colorName: "年度限量黃", image: "./img/new yellow.png"},
-     "#192750": {color: "#192750", colorName: "復刻藍", image: "./img/new navy.png"},
-     "#62262E": {color: "#62262E", colorName: "復刻紅", image: "./img/new wine.png"},
+     "#192750": {color: "#192750", colorName: "復刻丈青", image: "./img/new navy.png"},
+     "#62262E": {color: "#62262E", colorName: "復刻酒紅", image: "./img/new wine.png"},
      "#202228": {color: "#202228", colorName: "復刻黑", image: "./img/new black.png"},
      "#FAFAFA": {color: "#FAFAFA", colorName: "復刻白", image: "./img/new white.png"},
    },
