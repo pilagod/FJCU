@@ -31,7 +31,7 @@ var ProductApp = React.createClass({
   },
 
   render: function () {
-    console.log(this.state.productInfo);
+    // console.log(this.state.productInfo);
     /* Banner: http://imgur.com/ctfMw4O.png */
     if (Object.keys(this.state.productInfo).length === 0) {
       return null;
