@@ -117,7 +117,7 @@ var OrderApp = React.createClass({
 
     /* Banner: http://imgur.com/ctfMw4O.png */
 
-    console.log('order: ', this.state.orderInfo);
+    // console.log('order: ', this.state.orderInfo);
 
     return (
       <div id="OrderApp">

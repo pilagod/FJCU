@@ -336,7 +336,7 @@ var OrderApp = React.createClass({displayName: "OrderApp",
 
     /* Banner: http://imgur.com/ctfMw4O.png */
 
-    console.log('order: ', this.state.orderInfo);
+    // console.log('order: ', this.state.orderInfo);
 
     return (
       React.createElement("div", {id: "OrderApp"}, 
@@ -2117,7 +2117,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
         isSoldout: false
       });
 
-      console.log(totalAmount);
+      // console.log(totalAmount);
 
       if (totalAmount === 0) {
         timeoutObject = setTimeout(function () {

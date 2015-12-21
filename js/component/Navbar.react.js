@@ -284,7 +284,7 @@ var NavbarFunctionBlock = React.createClass({
         isSoldout: false
       });
 
-      console.log(totalAmount);
+      // console.log(totalAmount);
 
       if (totalAmount === 0) {
         timeoutObject = setTimeout(function () {
