@@ -214,7 +214,7 @@ function makeRequest(method, url, data) {
       reject(false);
     }
 
-    httpRequest.onreadystatechange = function() {
+    httpRequest.onreadystatechange = function () {
       if (this.readyState === 4) {
         if (this.status === 200) {
           resolve(this.responseText);

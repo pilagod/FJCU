@@ -1099,7 +1099,7 @@ var ProductApp = React.createClass({displayName: "ProductApp",
   },
 
   componentDidMount: function () {
-    this._initProductInfo();
+    // this._initProductInfo();
     AppStore.addChangeListener(AppConstant.PRODUCT_CHANGE_EVENT, this._onProductChange);
     AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
   },
@@ -1113,21 +1113,30 @@ var ProductApp = React.createClass({displayName: "ProductApp",
     // console.log(this.state.productInfo);
     /* Banner: http://imgur.com/ctfMw4O.png */
     if (Object.keys(this.state.productInfo).length === 0) {
-      return null;
+      // return null;
+      return (
+        React.createElement("div", {id: "ProductApp"}, 
+          React.createElement("div", {className: "banner"}, 
+            React.createElement("img", {src: "http://imgur.com/ctfMw4O.png", alt: "store banner"})
+          ), 
+          React.createElement(ProductDetail, null)
+        )
+      )
     } else {
       return (
         React.createElement("div", {id: "ProductApp"}, 
           React.createElement("div", {className: "banner"}, 
             React.createElement("img", {src: "http://imgur.com/ctfMw4O.png", alt: "store banner"})
           ), 
-          React.createElement(ProductInfo, {
-            productInfo: this.state.productInfo, 
-            productSelected: this.state.productSelected}), 
           React.createElement(ProductDetail, null)
         )
       )
     }
   },
+
+  // <ProductInfo
+  //   productInfo={this.state.productInfo}
+  //   productSelected={this.state.productSelected}/>
 
   _initProductInfo: function () {
     AppStore.getProductInfo().then(function (productInfo) {
@@ -1278,16 +1287,15 @@ var ProductDetail = React.createClass({displayName: "ProductDetail",
             )
           )
         ), 
-        React.createElement("div", {className: "banner"}, 
-          React.createElement("img", {className: "step-img", src: "img/ProductApp/step1.png", alt: "step1"})
-        ), 
         React.createElement("img", {src: "http://imgur.com/voJxmkI.png", alt: "product detail"})
       )
     )
   }
 });
 
-
+// <div className="banner">
+//   <img className="step-img" src="img/ProductApp/step1.png" alt="step1"></img>
+// </div>
 
 module.exports = ProductDetail;
 
@@ -1864,7 +1872,7 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
   },
 
   componentDidMount: function () {
-    this._initProductInfo();
+    // this._initProductInfo();
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
     AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
     AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
@@ -2009,16 +2017,8 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
                React.createElement("i", {className: "fa fa-question-circle"}), 
                React.createElement("span", null, "常見問題")
              )
-           ), 
-           React.createElement("div", {id: "shoppingCart", onMouseOver: this._shoppingCartOnMouseOver, onMouseOut: this._shoppingCartOnMouseOut}, 
-             React.createElement("div", null, 
-               React.createElement("i", {className: "fa fa-shopping-cart"}), 
-               React.createElement("span", null, productItemNum, " 件商品")
-             ), 
-             React.createElement("div", {id: "shoppingCartAlert", className: shoppingCartAlertClassNames}, 
-               shoppingCartAlertContent
-             )
            )
+
          )
        ), 
        React.createElement("div", {id: "faqBlock", className: "hidden", onClick: this._faqCloseOnClick}, 
@@ -2031,6 +2031,16 @@ var NavbarFunctionBlock = React.createClass({displayName: "NavbarFunctionBlock",
 
    )
   },
+
+  // <div id="shoppingCart" onMouseOver={this._shoppingCartOnMouseOver} onMouseOut={this._shoppingCartOnMouseOut}>
+  //   <div>
+  //     <i className="fa fa-shopping-cart"></i>
+  //     <span>{productItemNum} 件商品</span>
+  //   </div>
+  //   <div id="shoppingCartAlert" className={shoppingCartAlertClassNames}>
+  //     {shoppingCartAlertContent}
+  //   </div>
+  // </div>
 
   _initProductInfo: function () {
     AppStore.getProductInfo().then(function (productInfo) {
@@ -2453,7 +2463,7 @@ function makeRequest(method, url, data) {
       reject(false);
     }
 
-    httpRequest.onreadystatechange = function() {
+    httpRequest.onreadystatechange = function () {
       if (this.readyState === 4) {
         if (this.status === 200) {
           resolve(this.responseText);

@@ -50,15 +50,14 @@ var ProductDetail = React.createClass({
             </div>
           </article>
         </div>
-        <div className="banner">
-          <img className="step-img" src="img/ProductApp/step1.png" alt="step1"></img>
-        </div>
         <img src="http://imgur.com/voJxmkI.png" alt="product detail"></img>
       </section>
     )
   }
 });
 
-
+// <div className="banner">
+//   <img className="step-img" src="img/ProductApp/step1.png" alt="step1"></img>
+// </div>
 
 module.exports = ProductDetail;

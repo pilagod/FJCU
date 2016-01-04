@@ -31,7 +31,7 @@ var NavbarFunctionBlock = React.createClass({
   },
 
   componentDidMount: function () {
-    this._initProductInfo();
+    // this._initProductInfo();
     AppStore.addChangeListener(AppConstant.ORDER_CHANGE_EVENT, this._onOrderChange);
     AppStore.addChangeListener(AppConstant.PRODUCTINFO_CHANGE_EVENT, this._onProductInfoChange);
     AppStore.addChangeListener(AppConstant.SHOPPING_CART_NOTIFICATION_SHOW_EVENT, this._onProductAddToShoppingCart);
@@ -177,15 +177,7 @@ var NavbarFunctionBlock = React.createClass({
                <span>常見問題</span>
              </div>
            </div>
-           <div id="shoppingCart" onMouseOver={this._shoppingCartOnMouseOver} onMouseOut={this._shoppingCartOnMouseOut}>
-             <div>
-               <i className="fa fa-shopping-cart"></i>
-               <span>{productItemNum} 件商品</span>
-             </div>
-             <div id="shoppingCartAlert" className={shoppingCartAlertClassNames}>
-               {shoppingCartAlertContent}
-             </div>
-           </div>
+
          </div>
        </div>
        <div id="faqBlock" className="hidden" onClick={this._faqCloseOnClick}>
@@ -198,6 +190,16 @@ var NavbarFunctionBlock = React.createClass({
 
    )
   },
+
+  // <div id="shoppingCart" onMouseOver={this._shoppingCartOnMouseOver} onMouseOut={this._shoppingCartOnMouseOut}>
+  //   <div>
+  //     <i className="fa fa-shopping-cart"></i>
+  //     <span>{productItemNum} 件商品</span>
+  //   </div>
+  //   <div id="shoppingCartAlert" className={shoppingCartAlertClassNames}>
+  //     {shoppingCartAlertContent}
+  //   </div>
+  // </div>
 
   _initProductInfo: function () {
     AppStore.getProductInfo().then(function (productInfo) {
